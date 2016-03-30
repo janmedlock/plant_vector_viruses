@@ -1,9 +1,38 @@
-\documentclass{jpmarticle}
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{lmodern}
+
+\usepackage{hyperref}
+\hypersetup{breaklinks}
+\hypersetup{pdfborder=0 0 0}
+
+\usepackage{datetime}
+\newdateformat{jpmdate}{\THEDAY~\monthname[\THEMONTH] \THEYEAR}
+\AtBeginDocument{\jpmdate}
+
+\usepackage[babel=true]{microtype}
+
+\usepackage{amsmath}
+
+\usepackage{geometry}
+
+\usepackage{tikz}
+
+\usepackage[normalem]{ulem}
+
 
 \title{The impact of vector interaction with other insect species on
   disease spread}
 
 \author{
+  Elizabeth Borer
+  \and
   David Crowder
   \and
   Deborah Finke
@@ -18,6 +47,11 @@
 }
 
 
+\newcommand{\md}{\mathrm{d}}
+\newcommand{\me}{\mathrm{e}}
+\newcommand{\mT}{\mathrm{T}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\elasticity}[2]{\mathcal{E}_{#2}\negthickspace\left({#1}\right)}
 
 
@@ -25,849 +59,556 @@
 
 \maketitle
 
-To-do:
-\begin{enumerate}
-\item Why is the speed in my code sensitive to the spatial step size?
-\end{enumerate}
+\textbf{Does the model have the gamma-distributed infection time that
+  we want?}
 
 
 \section{Model description}
+
+
+\subsection{Movement \& feeding model}
+
+Initially, vectors are moving: the number of moving vectors is
+$V_M(t)$.  After an exponential waiting time with mean duration
+$1 / \sigma_V$, they begin feeding on a plant: the number of feeding
+vectors is $V_F(t)$.  They stop feeding and go back to the moving
+state after an exponential waiting time of $1 / \tau_V$.  Including
+birth and death, the numbers over time evolve by
+\begin{equation}
+  \begin{split}
+    \frac{\md V_M}{\md t} &=
+    - \sigma_V V_M + \tau_V V_F - \mu_V V_M
+    + b_V V \left[1 - \frac{V(t)}{K_V}\right],
+    \\
+    \frac{\md V_F}{\md t} &=
+    \sigma_V V_M - \tau_V V_F - \mu_V V_F,
+  \end{split}
+\end{equation}
+where $V = V_F + V_M$.
+
+Dropping birth and death, the probability density for the time between
+the start of one feeding to the start of the next feeding is $V_G(t)$
+that satisfies
+\begin{equation}
+  \begin{aligned}
+    \frac{\md V_F}{\md t} &=
+    - \tau_V V_F,
+    & V_F(0) &= 1,
+    \\
+    \frac{\md V_M}{\md t} &=
+    \tau_V V_F - \sigma_V V_M,
+    & V_M(0) &= 0,
+    \\
+    \frac{\md V_G}{\md t} &=
+    \sigma_V V_M,
+    & V_G(0) &= 0,
+  \end{aligned}
+\end{equation}
+which is
+\begin{equation}
+  \begin{split}
+    V_F(t) &= \me^{-\tau_V t},
+    \\
+    V_M(t) &= \frac{\tau_V}{\tau_V - \sigma_V}
+    \me^{- \sigma_V t} \left(
+      1 - \me^{- (\tau_V -\sigma_V) t}
+    \right)
+    = \frac{\tau_V}{\sigma_V - \tau_V}
+    \me^{- \tau_V t} \left(
+      1 - \me^{- (\sigma_V - \tau_V) t}
+    \right),
+    \\
+    V_G(t) &= 1
+    - \frac{\tau_V}{\tau_V - \sigma_V} \me^{- \sigma_V t}
+    + \frac{\sigma_V}{\tau_V - \sigma_V} \me^{- \tau_V t},
+  \end{split}
+\end{equation}
+
+
+
+\subsection{Full model}
 
 Let $r$ be the level of interaction of the vector species with the
 other insect species, with $r = 0$ being no interaction.  Initially,
 we will consider just this implicit representation of the 2nd insect
 species, but later we will explicitly model this population as well.
 
-Let $V_S(x, t)$ and $V_I(x, t)$ be the density per unit distance of
-susceptible and infective vectors at distance $x$ and time $t$.
-Likewise, let $P_S(x, t)$ and $P_I(x, t)$ be the density per unit
-distance of susceptible and infective plants at distance $x$ and time
-$t$.  The total density of vectors is
-$V(x, t) = V_S(x, t) + V_I(x, t)$ and the total density of plants is
-$P(x, t) = P_S(x, t) + P_I(x, t)$.  The model is
+Let $V_{MS}(t)$ and $V_{FS}(t)$ be the number of moving and feeding
+susceptible vectors at time $t$ and $V_{MI}(t)$ and $V_{FI}(t)$ be the
+number of moving and feeding infectious vectors at time $t$.
+Likewise, let $P_S(t)$ and $P_I(t)$ be the number of susceptible and
+infective plants at time $t$.  The total number of vectors is
+$V(t) = V_{MS}(t) + V_{FS}(t) + V_{MI}(t) + V_{FI}(t)$ and the total
+number of plants is $P(t) = P_S(t) + P_I(t)$.  The model is
 \begin{equation}
+  \label{odesystemdimensional}
   \begin{split}
-    \frac{\partial V_S}{\partial t}(x, t)
-    &= - \beta_V \frac{P_I(x, t)}{P(x, t)} V_S(x, t)
-    - \mu_V(r) V_S(x, t)
+    \frac{\md V_{MS}}{\md t}(t)
+    &=
+    - \tau_V V_{MS}(t)
+    + \sigma_V V_{FS}(t)
+    + \gamma_V V_{MI}(t)
+    - \mu_V V_{MS}(t)
+    + b_V V(t) \left[1 - \frac{V(t)}{K_V}\right],
     \\
-    & \quad
-    {} + b_V(r) V(x, t) \left[1 - \frac{V(x, t)}{K_V(r)}\right]
-    + D_V(r) \frac{\partial^2 V_S}{\partial x^2}(x, t),
+    \frac{\md V_{FS}}{\md t}(t)
+    &= - \beta_V \frac{P_I(t)}{P(t)} V_{FS}(t)
+    + \tau_V V_{MS}(t)
+    - \sigma_V V_{FS}(t)
+    + \gamma_V V_{FI}(t)
+    - \mu_V V_{FS}(t),
     \\
-    \frac{\partial V_I}{\partial t}(x, t)
-    &= \beta_V \frac{P_I(x, t)}{P(x, t)} V_S(x, t)
-    - \mu_V(r) V_I(x, t)
-    + D_V(r) \frac{\partial^2 V_I}{\partial x^2}(x, t),
+    \frac{\md V_{MI}}{\md t}(t)
+    &=
+    - \tau_V V_{MI}(t)
+    + \sigma_V V_{FI}(t)
+    - \gamma_V V_{MI}(t)
+    - \mu_V V_{MI}(t),
     \\
-    \frac{\partial P_S}{\partial t}(x, t)
-    &= - \beta_P V_I(x, t) \frac{P_S(x, t)}{P(x, t)},
+    \frac{\md V_{FI}}{\md t}(t)
+    &=
+    \beta_V \frac{P_I(t)}{P(t)} V_{FS}(t)
+    + \tau_V V_{MI}(t)
+    - \sigma_V V_{FI}(t)
+    - \gamma_V V_{FI}(t)
+    - \mu_V V_{FI}(t),
     \\
-    \frac{\partial P_I}{\partial t}(x, t)
-    &= \beta_P V_I(x, t) \frac{P_S(x, t)}{P(x, t)}.
+    \frac{\md P_S}{\md t}(t)
+    &= - \beta_P V_{FI}(t) \frac{P_S(t)}{P(t)}
+    - \mu_P P_S(t)
+    + b_P P(t) \left[1 - \frac{P(t)}{K_P}\right],
+    \\
+    \frac{\md P_I}{\md t}(t)
+    &= \beta_P V_{FI}(t) \frac{P_S(t)}{P(t)}
+    - \mu_P P_I(t),
   \end{split}
 \end{equation}
-The total plant density is constant in time, $\frac{\partial
-  P}{\partial t}(x, t) = \frac{\partial P_S}{\partial t}(x, t)
-+ \frac{\partial P_I}{\partial t}(x, t) = 0$, so
-$P(x, t) = P_S(x, t) + P_I(x, t)
-\implies P_S(x, t) = P(x, t) - P_I(x, t)$.  Thus
-\begin{equation}
-  \label{pdesystemdimensional}
-  \begin{split}
-    \frac{\partial V_S}{\partial t}
-    &= - \beta_V \frac{P_I}{P} V_S
-    - \mu_V V_S
-    + b_V V \left(1 - \frac{V}{K_V}\right)
-    + D_V \frac{\partial^2 V_S}{\partial x^2},
-    \\
-    \frac{\partial V_I}{\partial t}
-    &= \beta_V \frac{P_I}{P} V_S
-    - \mu_V V_I
-    + D_V \frac{\partial^2 V_I}{\partial x^2},
-    \\
-    \frac{\partial P_I}{\partial t}
-    &= \beta_P V_I \left(1 - \frac{P_I}{P}\right).
-  \end{split}
-\end{equation}
+where $\beta_V$ is the infection rate from plants to vectors,
+$\beta_P$ is the infection rate from vectors to plants, $\gamma_V$ is
+the rate of pathogen clearance in vectors, $\mu_V$ is the death rate
+of vectors, $\mu_P$ is the death rate of vectors, $b_V$ is the birth
+rate of vectors in the absence of crowding, $b_P$ is the birth rate of
+vectors in the absence of crowding, $K_V$ is the carrying capacity of
+vectors and $K_P$ is the carrying capacity of vectors (n.b.~this is
+the population density at which birth rate is $0$, not where the birth
+rate is equal to the death rate).
 
-We are initially thinking that the effects of the second insect
-species will be
-\begin{equation}
-  \begin{split}
-    \mu_V(r) &= \overline{\mu}_V (1 + a_1 r),
-    \\
-    b_V(r) &= \overline{b}_V,
-    \\
-    K_V(r) &= \overline{K_V},
-    \\
-    D_V(r) &= \overline{D}_V (1 + a_2 r).
-  \end{split}
-\end{equation}
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[
+    thick,
+    scale = 1,
+    %
+    compartment/.style = {draw,
+      font = \large,
+      minimum size = {3em}},
+    %
+    plant/.style = {green},
+    vector/.style = {red},
+    ]
+
+    \node at (0, 5)
+    [compartment, vector, name = V_MS] {$V_{MS}$};
+    \node at (4, 5)
+    [compartment, vector, name = V_MI] {$V_{MI}$};
+
+    \node at (0, 3)
+    [compartment, vector, name = V_FS] {$V_{FS}$};
+    \node at (4, 3)
+    [compartment, vector, name = V_FI] {$V_{FI}$};
+
+    \node at (0, 0)
+    [compartment, plant, name = P_S] {$P_S$};
+    \node at (4, 0)
+    [compartment, plant, name = P_I] {$P_I$};
+
+    \draw [->] (P_S) to node [above]
+    {$\beta_P \frac{\textcolor{red}{V_{FI}}}{\textcolor{green}{P}}$}
+    (P_I);
+
+    \draw [->] (V_FS.20) to node [above]
+    {$\beta_V \frac{\textcolor{green}{P_I}}{\textcolor{green}{P}}$}
+    (V_FI.160);
+
+    \draw [->] (V_FI.200) to node [below] {$\gamma_V$} (V_FS.340);
+    \draw [->] (V_MI) to node [below] {$\gamma_V$} (V_MS);
+
+    \draw [->] (V_MS.250) to node [left] {$\sigma_V$} (V_FS.110);
+    \draw [->] (V_MI.250) to node [left] {$\sigma_V$} (V_FI.110);
+
+    \draw [->] (V_FS.70) to node [right] {$\tau_V$} (V_MS.290);
+    \draw [->] (V_FI.70) to node [right] {$\tau_V$} (V_MI.290);
+
+    \draw [<-] (P_S.160) to node [above]
+    {$b_P \textcolor{green}{P} \left(1 - \frac{\textcolor{green}{P}}{K_P}\right)$}
+    +(180: 3);
+
+    \draw [->] (P_S.200) to node [below] {$\mu_P$} +(180: 3);
+
+    \draw [->] (P_I) to node [above] {$\mu_P$} +(0: 3);
+
+    \draw [<-] (V_MS.160) to node [above]
+    {$b_V \textcolor{red}{V} \left(1 - \frac{\textcolor{red}{V}}{K_V}\right)$}
+    +(180: 3);
+
+    \draw [->] (V_FS.180) to node [below] {$\mu_V$} +(180: 3);
+    \draw [->] (V_MS.200) to node [below] {$\mu_V$} +(180: 3);
+
+    \draw [->] (V_FI) to node [above] {$\mu_V$} +(0: 3);
+    \draw [->] (V_MI) to node [above] {$\mu_V$} +(0: 3);
+
+  \end{tikzpicture}
+  \caption{Model diagram.  $P_S$ and $P_I$ (green) are the numbers
+    of uninfected and plants.  $V_S$ and $V_I$ (red) are numbers of
+    uninfected and infected vectors.}
+\end{figure}
 
 
 \section{Nondimensionalization}
 
-The disease-free spatially uniform steady state is
+The disease-free steady state is
 \begin{align}
-  V_S = V^* &= K_V \left(1 - \frac{\mu_V}{b_V}\right),
+  V^* &= K_V \left(1 - \frac{\mu_V}{b_V}\right),
   &
-  V_I &= 0,
+  V_{MS} &= \frac{\tau_V + \mu_V}{\sigma_V + \tau_V + \mu_V} V^*,
+  &
+  V_{FS} &= \frac{\sigma_V}{\sigma_V + \tau_V + \mu_V} V^*,
+  \\
+  P^* &= P_V \left(1 - \frac{\mu_P}{b_P}\right),
+  &
+  P_S &= P^*,
+  \\
+  V_{MI} &= 0,
+  &
+  V_{FI} &= 0,
   &
   P_I &= 0.
 \end{align}
-We will use $V^*$ for the scale of $V_S$ and $V_I$, $\beta_V$ for the
-time scale, and $\sqrt{\frac{\beta_V}{D_V}}$ for the spatial scale:
+We will use $V^*$ for the scale of $V_{MS}$, $V_{FS}$, $V_{MI}$ and
+$V_{FI}$; $P^*$ for the scale of $P_S$ and $P_I$; and $\beta_V$ for
+the time scale:
 \begin{equation}
   \begin{aligned}
-    \hat{V}_S &= \frac{V_S}{V^*},
+    \hat{V}_{MS} &= \frac{V_{MS}}{V^*},
     &
-    \hat{V}_I &= \frac{V_I}{V^*},
+    \hat{V}_{FS} &= \frac{V_{FS}}{V^*},
     &
-    \hat{P}_I &= \frac{P_I}{P},
+    \hat{V}_{MI} &= \frac{V_{MI}}{V^*},
+    &
+    \hat{V}_{FI} &= \frac{V_{FI}}{V^*},
     \\
+    \hat{P}_S &= \frac{P_S}{P^*},
+    &
+    \hat{P}_I &= \frac{P_I}{P^*},
+    &
     \hat{t} &= \beta_V t,
-    &
-    \hat{x} &= \sqrt{\frac{\beta_V}{D_V}} x,
     \\
-    \hat{\beta}_P &= \frac{\beta_P}{\beta_V}\frac{V^*}{P},
+    \hat{\beta}_P &= \frac{\beta_P}{\beta_V},
+    &
+    \hat{\gamma}_V &= \frac{\gamma_V}{\beta_V},
     &
     \hat{b}_V &= \frac{b_V}{\beta_V},
     &
     \hat{\mu}_V &= \frac{\mu_V}{\beta_V},
+    \\
+    \hat{\sigma}_V &= \frac{\sigma_V}{\beta_V},
+    &
+    \hat{\tau}_V &= \frac{\tau_V}{\beta_V},
+    &
+    \hat{b}_P &= \frac{b_P}{\beta_V},
+    &
+    \hat{\mu}_P &= \frac{\mu_P}{\beta_V},
   \end{aligned}
 \end{equation}
 Then
 \begin{equation}
-  \label{pdesystem}
+  \label{odesystem}
   \begin{split}
-    \frac{\partial \hat{V}_S}{\partial \hat{t}}
-    &= - \hat{P}_I \hat{V}_S
-    - \hat{\mu}_V \hat{V}_S
-    + \hat{b}_V \hat{V} \left[1 - \left(1 - \frac{\hat{\mu}_V}{\hat{b}_V}\right) \hat{V}\right]
-    + \frac{\partial^2 \hat{V}_S}{\partial \hat{x}^2},
+    \frac{\md \hat{V}_{MS}}{\md \hat{t}}
+    &=
+    - \hat{\tau}_V \hat{V}_{MS}
+    + \hat{\sigma}_V \hat{V}_{FS}
+    + \hat{\gamma}_V \hat{V}_{MI}
+    - \hat{\mu}_V \hat{V}_{MS}
+    + \hat{b}_V \hat{V} \left[
+      1 - \left(1 - \frac{\hat{\mu}_V}{\hat{b}_V}\right)
+      \hat{V}
+    \right],
     \\
-    \frac{\partial \hat{V}_I}{\partial \hat{t}}
-    &= \hat{P}_I \hat{V}_S
-    - \hat{\mu}_V \hat{V}_I
-    + \frac{\partial^2 \hat{V}_I}{\partial \hat{x}^2},
+    \frac{\md \hat{V}_{FS}}{\md \hat{t}}
+    &= - \frac{\hat{P}_I}{\hat{P}} \hat{V}_{FS}
+    + \hat{\tau}_V \hat{V}_{MS}
+    - \hat{\sigma}_V \hat{V}_{FS}
+    + \hat{\gamma}_V \hat{V}_{FI}
+    - \hat{\mu}_V \hat{V}_{FS},
     \\
-    \frac{\partial \hat{P}_I}{\partial \hat{t}}
-    &= \hat{\beta}_P \hat{V}_I (1 - \hat{P}_I).
+    \frac{\md \hat{V}_{MI}}{\md \hat{t}}
+    &=
+    - \hat{\tau}_V \hat{V}_{MI}
+    + \hat{\sigma}_V \hat{V}_{FI}
+    - \hat{\gamma}_V \hat{V}_{MI}
+    - \hat{\mu}_V \hat{V}_{MI},
+    \\
+    \frac{\md \hat{V}_{FI}}{\md \hat{t}}
+    &=
+    \frac{\hat{P}_I}{\hat{P}} \hat{V}_{FS}
+    + \hat{\tau}_V \hat{V}_{MI}
+    - \hat{\sigma}_V \hat{V}_{FI}
+    - \hat{\gamma}_V \hat{V}_{FI}
+    - \hat{\mu}_V \hat{V}_{FI},
+    \\
+    \frac{\md \hat{P}_S}{\md \hat{t}}
+    &= - \hat{\beta}_P \hat{V}_{FI} \frac{\hat{P}_S}{\hat{P}}
+    - \hat{\mu}_P \hat{P}_S
+    + \hat{b}_P \hat{P}
+    \left[
+      1 - \left(1 - \frac{\hat{\mu}_V}{\hat{b}_V}\right) \hat{P}
+    \right],
+    \\
+    \frac{\md \hat{P}_I}{\md t}
+    &= \hat{\beta}_P \hat{V}_{FI} \frac{\hat{P}_S}{\hat{P}}
+    - \hat{\mu}_P \hat{P}_I.
   \end{split}
 \end{equation}
-
 In what follows, we will drop the $\hat{}$, which hopefully won't
 cause too much confusion.
 
-\section{Wave-speed analysis}
+\section{$R_0$ analysis}
 
-We assume a solution that is a constant-shape wave traveling at speed
-$c$.  The coordinate traveling with this wave is $z = x - c t$.  Let
+The infected states are
 \begin{equation}
-  \begin{split}
-    v_S(z) = v_S(x - c t) &= V_S(x, t),
-    \\
-    v_I(z) = v_I(x - c t) &= V_I(x, t),
-    \\
-    p_I(z) = p_I(x - c t) &= P_I(x, t).
-  \end{split}
-\end{equation}
-Then \eqref{pdesystem} becomes
-\begin{equation}
-  \label{nonlinearode}
-  \begin{split}
-    - c \frac{\md v_S}{\md z}
-    &= - p_I v_S - \mu_V v_S
-    + b_V v \left[1 - \left(1 - \frac{\mu_V}{b_V}\right) v\right]
-    + \frac{\md^2 v_S}{\md z^2},
-    \\
-    - c \frac{\md v_I}{\md z}
-    &= p_I v_S
-    - \mu_V v_I
-    + \frac{\md^2 v_I}{\md z^2},
-    \\
-    - c \frac{\md p_I}{\md t}
-    &= \beta_P v_I (1 - p_I).
-  \end{split}
-\end{equation}
-Converting this to a first-order system gives
-\begin{equation}
-  \label{nonlinearode}
-  \begin{split}
-    \frac{\md v_S}{\md z} &= w_S,
-    \\
-    \frac{\md w_S}{\md z}
-    &= \mu_V v_S
-    - b_V v \left[1 - \left(1 - \frac{\mu_V}{b_V}\right) v\right]
-    - c w_S + p_I v_S,
-    \\
-    \frac{\md v_I}{\md z} &= w_I,
-    \\
-    \frac{\md w_I}{\md z}
-    &= \mu_V v_I - c w_I - p_I v_S,
-    \\
-    \frac{\md p_I}{\md t}
-    &= - \frac{\beta_P}{c} v_I (1 - p_I).
-  \end{split}
-\end{equation}
-
-At the wave front, the susceptible vectors are at carrying capacity
-and no infectious vectors or plants,
-$v_S = 1$, $v_I = 0$, $p_I = 0$.
-Linearizing \eqref{nonlinearode} here gives
-% \begin{equation}
-%   \label{firstorderode}
-%   \begin{split}
-%     \frac{\md v_S}{\md z} &= w_S,
-%     \\
-%     \frac{\md w_S}{\md z}
-%     &= 
-%     (b_V - \mu_V) v_S - c w_S  + (b_V - 2 \mu_V) v_I + p_I,
-%     \\
-%     \frac{\md v_I}{\md z} &= w_I,
-%     \\
-%     \frac{\md w_I}{\md z}
-%     &=  \mu_V v_I - c w_I - p_I,
-%     \\
-%     \frac{\md p_I}{\md t}
-%     &= - \frac{\beta_P}{c} v_I,
-%   \end{split}
-% \end{equation}
-% or
-\begin{equation}
-  \frac{\md \vec{u}}{\md z}
-  = \mat{A} \vec{u},
-\end{equation}
-with
-\begin{align}
-  \vec{u} &=
+  \vec{u} =
   \begin{pmatrix}
-    v_S \\ w_S \\ v_I \\ w_I \\ p_I
-  \end{pmatrix},
-  &
-  \mat{A} &=
-  \begin{bmatrix}
-    0 & 1 & 0 & 0 & 0
+    V_{MI} \\ V_{FI} \\ P_I
+  \end{pmatrix}.
+\end{equation}
+System \eqref{odesystem} can be written as
+\begin{equation}
+  \frac{\md \vec{u}}{\md t} =
+  \mathcal{F}(\vec{u})
+  - \mathcal{V}(\vec{u}),
+\end{equation}
+with infection rates
+\begin{equation}
+  \label{scriptF}
+  \mathcal{F} =
+  \begin{pmatrix}
+    0
     \\
-    b_V - \mu_V & - c & b_V - 2 \mu_V & 0 & 1
+    \frac{P_I}{P} V_{FS}
     \\
-    0 & 0 & 0 & 1 & 0 \\
-    0 & 0 & \mu_V & - c & - 1 \\
-    0 & 0 & - \frac{\beta_P}{c} & 0 & 0
-  \end{bmatrix}.
-\end{align}
+    \beta_P V_{FI} \frac{P_S}{P}
+  \end{pmatrix}
+\end{equation}
+and the remaining rates
+\begin{equation}
+  \label{scriptV}
+  \mathcal{V} =
+  \begin{pmatrix}
+    \tau_V V_{MI} - \sigma_V V_{FI} + \gamma_V V_{MI} + \mu_V V_{MI}
+    \\
+    - \tau_V V_{MI} + \sigma_V V_{FI} + \gamma_V V_{FI} + \mu_V V_{FI}
+    \\
+    \mu_P P_I
+  \end{pmatrix}.
+\end{equation}
 
-For a traveling wave, we need that all the eigenvalues of $\mat{A}$
-are real.  Due to the $0$s in the bottom 3 entries of the left 2
-columns, $\mat{A}$ is block diagonal and so its eigenvalues are
-\begin{equation}
-  \sigma(\mat{A}) = \sigma(\mat{A}_1) \cup \sigma(\mat{A}_2),
-\end{equation}
-with
+The disease-free equilibrium has the susceptible vectors and plants at
+their carrying capacities and no infectious vectors or plants,
 \begin{align}
-  \mat{A}_1 &=
-  \begin{bmatrix}
-    0 & 1 \\
-    b_V - \mu_V & - c
-  \end{bmatrix},
+  V_{MS} &= \frac{\sigma_V + \mu_V}{\tau_V + \sigma_V + \mu_V},
   &
-  \mat{A}_2 &=
-  \begin{bmatrix}
-    0 & 1 & 0 \\
-    \mu_V & - c & - 1 \\
-    - \frac{\beta_P}{c} & 0 & 0
-  \end{bmatrix}.
+  V_{FS} &= \frac{\tau_V}{\tau_V + \sigma_V + \mu_V},
+  &
+  V_{MI} &= 0,
+  &
+  V_{FI} &= 0,
+  \\
+  P_S &= 1,
+  &
+  P_I &= 0.
 \end{align}
-The eigenvalues of $\mat{A}_1$ are
-\begin{equation}
-  \lambda = \frac{-c \pm \sqrt{c^2 + 4 (b_V - \mu_V)}}{2},
-\end{equation}
-which are always real provided that $b_V \geq \mu_V$, which is a
-necessary condition for existence of the waves of interest.  The
-characteristic equation for $\mat{A}_2$ is
-\begin{subequations}
-  \begin{equation}
-    a_3 \lambda^3 + a_2 \lambda^2 +
-    a_1 \lambda + a_0 = 0,
-  \end{equation}
-  with
-  \begin{align}
-    a_3 &= c, &
-    a_2 &= c^2, &
-    a_1 &= - c \mu_V, &
-    a_0 &= - \beta_P.
-  \end{align}
-\end{subequations}
-This has all real roots if the discriminant is non-negative:
+Linearizing
+\eqref{scriptF} and \eqref{scriptV} at the disease-free equilibrium
+gives
 \begin{equation}
   \begin{split}
-    \Delta &=
-    18 a_3 a_2 a_1 a_0
-    - 4 a_2^3 a_0
-    + a_2^2 a_1^2
-    - 4 a_3 a_1^3
-    - 27 a_3^2 a_0^2
+    \mat{F} &=
+    \begin{bmatrix}
+      0 & 0 & 0
+      \\
+      0 & 0 & \frac{\tau_V}{\tau_V + \sigma_V + \mu_V}
+      \\
+      0 & \beta_P & 0
+    \end{bmatrix},
     \\
-    &= c^2 \Delta_1,
+    \mat{V} &=
+    \begin{bmatrix}
+      \tau_V + \gamma_V + \mu_V & - \sigma_V & 0
+      \\
+      - \tau_V & \sigma_V + \gamma_V + \mu_V & 0
+      \\
+      0 & 0 & \mu_P
+    \end{bmatrix}.
   \end{split}
 \end{equation}
-with
+The residence times are
 \begin{equation}
-  \Delta_1
-  =
-  \left(\mu_V^2 + 4 \beta_P\right) c^4
-  + 2 \mu_V \left(2 \mu_V^2 + 9 \beta_P\right) c^2
-  - 27 \beta_P^2.
+  \mat{V}^{-1} =
+  \begin{bmatrix}
+    \frac{\sigma_V + \gamma_V + \mu_V}
+    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+    &  \frac{\sigma_V}
+    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+    & 0
+    \\
+    \frac{\tau_V}
+    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+    & \frac{\tau_V + \gamma_V + \mu_V}
+    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+    & 0
+    \\
+    0 & 0 & \frac{1}{\mu_P}
+  \end{bmatrix}.
 \end{equation}
-The discriminant is non-negative if $c = 0$ or $\Delta_1 = 0$.  For
-$c = 0$, we have $v_I = 0$, which is the stationary disease-free
-equilibrium, which is not the invasion wave of interest.  To find
-where $\Delta_1 \geq 0$, we see that $\Delta_1 < 0$ at $c = 0$, so
-$\Delta_1 \geq 0$ if
+Then the next-generation matrix is
 \begin{equation}
-  c^2 \geq 
-  \frac{2 \left(\mu_V^2 + 3 \beta_P\right)^{3/2}
-    - \mu_V \left(2 \mu_V^2 + 9 \beta_P\right)}
-  {\mu_V^2 + 4 \beta_P}
-  > 0
+  \begin{split}
+    \mat{G} &= \mat{F} \mat{V}^{-1}
+    \\
+    &=
+    \begin{bmatrix}
+      0 & 0 & 0
+      \\
+      0 & 0 & \frac{\tau_V}{\mu_P (\tau_V + \sigma_V + \mu_V)}
+      \\
+      \frac{\beta_P \tau_V}
+      {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+      & \frac{\beta_P (\tau_V + \gamma_V + \mu_V)}
+      {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+      & 0
+    \end{bmatrix}.
+  \end{split}
 \end{equation}
-which is
+The leading eigenvalue of $G$ is
 \begin{equation}
-  \label{speedcondition}
-  |c| \geq 
-  \sqrt{\frac{2 \left(\mu_V^2 + 3 \beta_P\right)^{3/2}
-      - \mu_V \left(2 \mu_V^2 + 9 \beta_P\right)}
-    {\mu_V^2 + 4 \beta_P}}.
+  R_0 = \sqrt{
+    \frac{\beta_P \tau_V}
+    {\mu_P (\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
+  }
 \end{equation}
-
-The usual theory says that the emergent wave speed is the minimum one
-that satisfies \eqref{speedcondition} (although I need to check that the
-``cooperativity'' conditions of Weinberger et al are satisfied):
+or
 \begin{equation}
-  c^* = \pm \sqrt{\frac{2 \left(\mu_V^2 + 3 \beta_P\right)^{3/2}
-      - \mu_V \left(2 \mu_V^2 + 9 \beta_P\right)}
-    {\mu_V^2 + 4 \beta_P}}.
+  R_0^2 =
+  \frac{\beta_P \tau_V}
+  {\mu_P (\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}.
 \end{equation}
 
-
-% \subsection{Invasion wave of vectors}
-
-% At the wave front, there are no vectors and no infectious plants:
-% $v_S = v_I = p_I = 0$.  Linearizing \eqref{nonlinearode} here gives
-% \begin{equation}
-%   \label{firstorderode0}
-%   \begin{split}
-%     \frac{\md v_S}{\md z} &= w_S,
-%     \\
-%     \frac{\md w_S}{\md z}
-%     &= (1 - b_V) v_S - c w_S - b_V v_I
-%     \\
-%     \frac{\md v_I}{\md z} &= w_I,
-%     \\
-%     \frac{\md w_I}{\md z}
-%     &= v_I - c w_I,
-%     \\
-%     \frac{\md p_I}{\md t}
-%     &= - \frac{\beta_P}{c} v_I,
-%   \end{split}
-% \end{equation}
-% or
-% \begin{equation}
-%   \frac{\md}{\md z}
-%   \begin{pmatrix}
-%     v_S \\ w_S \\ v_I \\ w_I \\ p_I
-%   \end{pmatrix}
-%   = \mat{A}
-%   \begin{pmatrix}
-%     v_S \\ w_S \\ v_I \\ w_I \\ p_I
-%   \end{pmatrix},
-% \end{equation}
-% with
-% \begin{equation}
-%   \mat{A} =
-%   \begin{bmatrix}
-%     0 & 1 & 0 & 0 & 0 \\
-%     1 - b_V & - c & - b_V & 0 & 0 \\
-%     0 & 0 & 0 & 1 & 0 \\
-%     0 & 0 & 1 & - c & 0 \\
-%     0 & 0 & - \frac{\beta_P}{c} & 0 & 0
-%   \end{bmatrix}.
-% \end{equation}
-% To have a wave, we need all real eigenvalues of $\mat{A}$.  The
-% eigenvalues of $\mat{A}$ are
-% $\sigma(\mat{A}) = \{0\} \cup \sigma(\mat{A}_1) \cup
-% \sigma(\mat{A}_2)$,
-% where
-% \begin{align}
-%   \mat{A}_1 &=
-%   \begin{bmatrix}
-%     0 & 1 \\
-%     1 - b_V & - c
-%   \end{bmatrix},
-%   &
-%   \mat{A}_2 &=
-%   \begin{bmatrix}
-%     0 & 1 \\
-%     1 & - c
-%   \end{bmatrix}.
-% \end{align}
-% These have eigenvalues
-% \begin{equation}
-%   \begin{split}
-%     \sigma(\mat{A}_1) &= \left\{
-%       \frac{-c \pm \sqrt{c^2 - 4 (b_v - 1)}}{2}
-%     \right\},
-%     \\
-%     \sigma(\mat{A}_2) &= \left\{
-%       \frac{-c \pm \sqrt{c^2 + 4}}{2}
-%     \right\}.
-%   \end{split}
-% \end{equation}
-% The eigenvalues of $\mat{A}_2$ are always real.  The eigenvalues of
-% $\mat{A}_1$ are real if
-% \begin{equation}
-%   \label{wavespeed}
-%   |c| \geq 2 \sqrt{b_v - 1}.
-% \end{equation}
-% The minimum wave speed is
-% \begin{equation}
-%   c^* = \pm 2 \sqrt{b_v - 1}.
-% \end{equation}
-% This is the usual invasion speed for a single species.
-
-
-
-\section{Increasing $r$}
-
-The wave speed in dimensional parameters is
+In dimensional parameters, $R_0$ is
 \begin{equation}
-  {c^*}^2 = D_V
-    \frac{2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-      - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)}
-    {\mu_V^2 + 4 \beta V^*},
+  R_0^2 =
+  \frac{\beta_P \beta_V \tau_V}
+  {\mu_P \left(\gamma_V + \mu_V\right)
+    \left(\sigma_V + \tau_V + \gamma_V + \mu_V\right)},
 \end{equation}
-where
-\begin{align}
-  V^* &= K_V \left(1 - \frac{\mu_V}{b_V}\right),
-  &
-  \beta &= \frac{\beta_P \beta_V}{P}.
-\end{align}
+or
+\begin{equation}
+  R_0^2 =
+  \beta_V \frac{1}{\mu_P}
+  \beta_P
+  \frac{1}{\gamma_V + \mu_V}
+  \frac{\tau_V}
+  {\sigma_V + \tau_V + \gamma_V + \mu_V},
+\end{equation}
+where $\beta_V$ is the transmission rate from infected plants to
+susceptible vectors, $\frac{1}{\mu_P}$ is the duration of
+infectiousness in plants, $\beta_P$ is the transmission rate from
+infected vectors to susceptible plants, $\frac{1}{\gamma_V + \mu_V}$
+is the duration of infectiousness in vectors, and
+$\frac{\tau_V}{\sigma_V + \tau_V + \gamma_V + \mu_V}$ is the
+proportion of the vectors' infectious period spent feeding.
+
+
+\section{Increasing $n$}
 
 We are initially thinking that the effects of the second insect
-species will be on $\mu_V$ and $D_V$.  Differentiating
+species will only be on vector death rate and vector movement rate,
+and for now we will take these to have constant semi-elasticity for
+simplicity:
 \begin{equation}
   \begin{split}
-    \frac{\md {c^*}^2}{\md r}
-    &=
-    \frac{\md}{\md r} \left[
-      D_V
-      \frac{2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-        - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)}
-      {\mu_V^2 + 4 \beta V^*}
-    \right],
+    \mu_V(n) &= \overline{\mu_V} \me^{\epsilon_{\mu_V} n},
+    \\
+    \tau_V(n) &= \overline{\tau_V} \me^{\epsilon_{\tau_V} n}.
+  \end{split}
+\end{equation}
+
+Then
+\begin{equation}
+  \begin{split}
+    \elasticity{R_0^2}{n} &=
+    \frac{1}{R_0^2} \frac{\md R_0^2}{\md n}
     \\
     &=
+    \frac{\left(\gamma_V + \mu_V\right)
+      \left(\sigma_V + \tau_V + \gamma_V + \mu_V\right)}
+    {\tau_V}
+    \frac{\md}{\md n}
     \left(
-      \frac{\partial {c^*}^2}{\partial \mu_V}
-      +
-      \frac{\partial {c^*}^2}{\partial V^*} \frac{\md V^*}{\md \mu_V}
+      \frac{1}{\gamma_V + \mu_V}
+      \frac{\tau_V}{\sigma_V + \tau_V + \gamma_V + \mu_V}
     \right)
-    \frac{\md \mu_V}{\md r}
-    +
-    \frac{{c^*}^2}{D_V} \frac{\md D_V}{\md r},
     \\
     &=
+    \frac{\left(\gamma_V + \mu_V\right)
+      \left(\sigma_V + \tau_V + \gamma_V + \mu_V\right)}
+    {\tau_V}
+    \frac{\partial}{\partial \mu_V}
     \left(
-      \frac{\partial {c^*}^2}{\partial \mu_V}
-      -
-      \frac{K_V}{b_V}
-      \frac{\partial {c^*}^2}{\partial V^*}
+      \frac{1}{\gamma_V + \mu_V}
+      \frac{\tau_V}{\sigma_V + \tau_V + \gamma_V + \mu_V}
     \right)
-    \frac{\md \mu_V}{\md r}
-    +
-    \frac{{c^*}^2}{D_V} \frac{\md D_V}{\md r},
-  \end{split}
-\end{equation}
-with
-\begin{equation}
-  \begin{split}
-    \frac{\partial {c^*}^2}{\partial \mu_V}
-    &=
-    D_V
-    \frac{\partial}{\partial \mu_V} \left[
-      \frac{2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-        - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)}
-      {\mu_V^2 + 4 \beta V^*}
-    \right],
-    % \\
-    % &=
-    % D_V
-    % \frac{1}{\mu_V^2 + 4 \beta V^*}
-    % \frac{
-    %   3 \left(
-    %     2 \mu_V \sqrt{\mu_V^2 + 3 \beta V^*}
-    %     - 2 \mu_V^2 - 3 \beta V^*
-    %   \right)
-    %   \left(\mu_V^2 + 4 \beta V^*\right)
-    %   -
-    %   2 \mu_V
-    %   \left[
-    %     2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)
-    %   \right]
-    % }
-    % {\mu_V^2 + 4 \beta V^*},
-    % \\
-    % &=
-    % {c^*}^2
-    % \frac{
-    %   3 \left(
-    %     2 \mu_V \sqrt{\mu_V^2 + 3 \beta V^*}
-    %     - 2 \mu_V^2 - 3 \beta V^*
-    %   \right)
-    %   \left(\mu_V^2 + 4 \beta V^*\right)
-    %   -
-    %   2 \mu_V
-    %   \left[
-    %     2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)
-    %   \right]
-    % }
-    % {\left(\mu_V^2 + 4 \beta V^*\right)
-    % \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-    % \\
-    % &=
-    % {c^*}^2
-    % \frac{
-    %   2 \mu_V \sqrt{\mu_V^2 + 3 \beta V^*}
-    %   \left(\mu_V^2 + 6 \beta V^*\right)
-    %   - 3 \left(2 \mu_V^2 + 3 \beta V^*\right)
-    %   \left(\mu_V^2 + 4 \beta V^*\right)
-    %   + 2 \mu_V^2 \left(2 \mu_V^2 + 9 \beta V^*\right)
-    % }
-    % {\left(\mu_V^2 + 4 \beta V^*\right)
-    % \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
+    \frac{\md \mu_V}{\md n}
+    \\ & \quad\quad\quad {}
+    + \frac{\left(\gamma_V + \mu_V\right)
+      \left(\sigma_V + \tau_V + \gamma_V + \mu_V\right)}
+    {\tau_V}
+    \frac{1}{\gamma_V + \mu_V}
+    \frac{\partial}{\partial \tau_V}
+    \left(
+      \frac{\tau_V}{\sigma_V + \tau_V + \gamma_V + \mu_V}
+    \right)
+    \frac{\md \tau_V}{\md n}
     \\
     &=
-    {c^*}^2
-    \frac{
-      2 \mu_V \left(\mu_V^2 + 6 \beta V^*\right)
-      \sqrt{\mu_V^2 + 3 \beta V^*}
-      - \left(
-        2 \mu_V^4
-        + 15 \beta V^* \mu_V^2
-        + 36 \beta^2 {V^*}^2
-      \right)
-    }
-    {\left(\mu_V^2 + 4 \beta V^*\right)
-    \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-        - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-  \end{split}
-\end{equation}
-and
-\begin{equation}
-  \begin{split}
-    \frac{\partial {c^*}^2}{\partial V^*}
-    &=
-    D_V
-    \frac{\partial}{\partial V^*} \left[
-      \frac{2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-        - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)}
-      {\mu_V^2 + 4 \beta V^*}
-    \right],
-    \\
-    % &=
-    % D_V
-    % \frac{1}{\mu_V^2 + 4 \beta V^*}
-    % \beta
-    % \frac{
-    %   9 \left(\sqrt{\mu_V^2 + 3 \beta V^*}
-    %     - \mu_V\right)
-    %   \left(\mu_V^2 + 4 \beta V^*\right)
-    %   -
-    %   4 \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]
-    % }
-    % {\mu_V^2 + 4 \beta V^*},
-    % \\
-    % &=
-    % {c^*}^2 \beta
-    % \frac{
-    %   9 \left(\sqrt{\mu_V^2 + 3 \beta V^*}
-    %     - \mu_V\right)
-    %   \left(\mu_V^2 + 4 \beta V^*\right)
-    %   -
-    %   4 \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]
-    % }
-    % {\left(\mu_V^2 + 4 \beta V^*\right)
-    %   \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-    % \\
-    % &=
-    % {c^*}^2 \beta
-    % \frac{
-    %   9 \sqrt{\mu_V^2 + 3 \beta V^*} \left(\mu_V^2 + 4 \beta V^*\right)
-    %   - 8 \sqrt{\mu_V^2 + 3 \beta V^*} \left(\mu_V^2 + 3 \beta V^*\right)
-    %   - 9 \mu_V \left(\mu_V^2 + 4 \beta V^*\right)
-    %   + 4 \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)
-    % }
-    % {\left(\mu_V^2 + 4 \beta V^*\right)
-    %   \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-    % \\
-    % &=
-    % {c^*}^2 \beta
-    % \frac{
-    %   \sqrt{\mu_V^2 + 3 \beta V^*} \left[
-    %     9 \left(\mu_V^2 + 4 \beta V^*\right)
-    %     - 8 \left(\mu_V^2 + 3 \beta V^*\right)
-    %   \right]
-    %   + \mu_V
-    %   \left[4 \left(2 \mu_V^2 + 9 \beta V^*\right)
-    %     - 9 \left(\mu_V^2 + 4 \beta V^*\right)
-    %   \right]
-    % }
-    % {\left(\mu_V^2 + 4 \beta V^*\right)
-    %   \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-    % \\
-    % &=
-    % {c^*}^2 \beta
-    % \frac{
-    %   \sqrt{\mu_V^2 + 3 \beta V^*} \left(\mu_V^2 + 12 \beta V^*\right)
-    %   - \mu_V^3
-    % }
-    % {\left(\mu_V^2 + 4 \beta V^*\right)
-    %   \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-    %     - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-    \\
-    &=
-    {c^*}^2 \beta
-    \frac{\left(\mu_V^2 + 12 \beta V^*\right)
-      \sqrt{\mu_V^2 + 3 \beta V^*} - \mu_V^3}
-    {\left(\mu_V^2 + 4 \beta V^*\right)
-      \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-        - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]}.
-  \end{split}
-\end{equation}
-Alternately, in terms of semi-elasticities,
-\begin{equation}
-  \elasticity{y}{x}
-  = \frac{1}{y} \frac{\partial y}{\partial x}
-  = \frac{\partial \log y}{\partial x},
-\end{equation}
-we have
-% \begin{equation}
-%   \frac{4}{{c^*}^2}
-%   \frac{\md {c^*}^2}{\md r}
-%   =
-%   \left(
-%     \frac{\mu_V}{{c^*}^2}
-%     \frac{\partial {c^*}^2}{\partial \mu_V}
-%     -
-%     \frac{\mu_V}{V^*}
-%     \frac{K_V}{b_V}
-%     \frac{V^*}{{c^*}^2}
-%     \frac{\partial {c^*}^2}{\partial V^*}
-%   \right)
-%   \frac{r}{\mu_V}
-%   \frac{\md \mu_V}{\md r}
-%   +
-%   \frac{r}{D_V} \frac{\md D_V}{\md r},
-% \end{equation}
-\begin{equation}
-  \elasticity{{c^*}^2}{r}
-  =
-  \mu_V \left[
-    \elasticity{{c^*}^2}{\mu_V}
-    - \frac{K_V}{b_V} \elasticity{{c^*}^2}{V^*}
-  \right]
-  \elasticity{\mu_V}{r}
-  +
-  \elasticity{D_V}{r},
-\end{equation}
-with
-\begin{equation}
-  % \frac{1}{{c^*}^2} \frac{\partial {c^*}^2}{\partial \mu_V}
-  % =
-  \elasticity{{c^*}^2}{\mu_V}
-  =
-  \frac{
-    2 \mu_V \left(\mu_V^2 + 6 \beta V^*\right)
-    \sqrt{\mu_V^2 + 3 \beta V^*}
     - \left(
-      2 \mu_V^4
-      + 15 \beta V^* \mu_V^2
-      + 36 \beta^2 {V^*}^2
+      \frac{1}{\gamma_V + \mu_V}
+      +
+      \frac{1}{\sigma_V + \tau_V + \gamma_V + \mu_V}
     \right)
-  }
-  {\left(\mu_V^2 + 4 \beta V^*\right)
-    \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-      - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]},
-\end{equation}
-and
-\begin{equation}
-  % \frac{1}{{c^*}^2} \frac{\partial {c^*}^2}{\partial V^*}
-  % =
-  \elasticity{{c^*}^2}{V^*}
-  =
-  \beta
-  \frac{\left(\mu_V^2 + 12 \beta V^*\right)
-    \sqrt{\mu_V^2 + 3 \beta V^*} - \mu_V^3}
-  {\left(\mu_V^2 + 4 \beta V^*\right)
-    \left[2 \left(\mu_V^2 + 3 \beta V^*\right)^{3/2}
-      - \mu_V \left(2 \mu_V^2 + 9 \beta V^*\right)\right]}.
-\end{equation}
-
-
-\section{1 species}
-
-\begin{equation}
-  \frac{\partial U}{\partial t}
-  = b U \left(1 - \frac{U}{K}\right)
-  - \mu U
-  + D \frac{\partial^2 U}{\partial x^2}
-\end{equation}
-  
-Traveling wave: $z = x - c t$, $U(x, t) = u(z)$,
-\begin{equation}
-  - c \frac{\md u}{\md z}
-  = b u \left(1 - \frac{u}{K}\right)
-  - \mu u
-  + D \frac{\md^2 u}{\md z^2}
-\end{equation}
-
-Linearizing: $u = 0$
-\begin{equation}
-  - c \frac{\md u}{\md z}
-  =
-  (b - \mu) u
-  + D \frac{\md^2 u}{\md z^2}
-\end{equation}
-
-First order:
-\begin{equation}
-  \begin{split}
-    \frac{\md u}{\md z} &= w
-    \\
-    \frac{\md w}{\md z}
-    &=
-    - \frac{b - \mu}{D} u
-    - \frac{c}{D} w
-  \end{split}
-\end{equation}
-or
-\begin{equation}
-  \frac{\md \vec{y}}{\md z}
-  =
-  \begin{bmatrix}
-    0 & 1 \\
-    - \frac{b - \mu}{D} & - \frac{c}{D}
-  \end{bmatrix}
-  \vec{y}
-\end{equation}
-
-The characteristic equation is
-\begin{equation}
-  D \lambda^2 + c \lambda + (b - \mu) = 0
-\end{equation}
-so
-\begin{equation}
-  \lambda = \frac{- c \pm \sqrt{c^2 - 4 D (b - \mu)}}{2 D}
-\end{equation}
-thus
-\begin{equation}
-  {c^*}^2 = 4 D (b - \mu)
-\end{equation}
-
-Now
-\begin{equation}
-  \begin{split}
-    \frac{\md {c^*}^2}{\md r}
-    &=
-    \frac{\partial {c^*}^2}{\partial D} \frac{\md D}{\md r}
-    + \frac{\partial {c^*}^2}{\partial b} \frac{\md b}{\md r}
-    + \frac{\partial {c^*}^2}{\partial \mu} \frac{\md \mu}{\md r}
-    \\
-    &=
-    4 (b - \mu) \frac{\md D}{\md r}
-    + 4 D \frac{\md b}{\md r}
-    - 4 D \frac{\md \mu}{\md r}
-    \\
-    &=
-    {c^*}^2 \left[
-      \frac{1}{D} \frac{\md D}{\md r}
-      + \frac{b}{b - \mu} \frac{1}{b} \frac{\md b}{\md r}
-      - \frac{\mu}{b - \mu} \frac{1}{\mu} \frac{\md \mu}{\md r}
-    \right]
-  \end{split}
-\end{equation}
-or
-\begin{equation}
-  \begin{split}
-    \elasticity{{c^*}^2}{r}
-    % =
-    % \frac{1}{{c^*}^2} \frac{\md {c^*}^2}{\md r}
-    % &=
-    % D \frac{1}{{c^*}^2} \frac{\partial {c^*}^2}{\partial D}
-    % \frac{1}{D} \frac{\md D}{\md r}
-    % + b \frac{1}{{c^*}^2} \frac{\partial {c^*}^2}{\partial b}
-    % \frac{1}{b} \frac{\md b}{\md r}
-    % + \mu \frac{1}{{c^*}^2} \frac{\partial {c^*}^2}{\partial \mu}
-    % \frac{1}{\mu} \frac{\md \mu}{\md r}
-    % \\
-    &=
-    D \elasticity{{c^*}^2}{D} \elasticity{D}{r}
-    + b \elasticity{{c^*}^2}{b} \elasticity{b}{r}
-    + \mu \elasticity{{c^*}^2}{\mu} \elasticity{\mu}{r}
-    \\
-    &=
-    \elasticity{D}{r}
-    + \frac{b}{b - \mu} \elasticity{b}{r}
-    - \frac{\mu}{b - \mu} \elasticity{\mu}{r}
-    \\
-    &=
-    \elasticity{D}{r}
-    + \frac{b \elasticity{b}{r}
-      - \mu \elasticity{\mu}{r}}{b - \mu} 
+    \mu_V \epsilon_{\mu_V}
+    +
+    \frac{\sigma_V + \gamma_V + \mu_V}
+    {\sigma_V + \tau_V + \gamma_V + \mu_V}
+    \epsilon_{\tau_V}.
   \end{split}
 \end{equation}
 
-For example,
-\begin{align}
-  \elasticity{b}{r} &= 0,
-\end{align}
-then
-\begin{equation}
-  \elasticity{{c^*}^2}{r} 
-  =
-  \elasticity{D}{r} - \frac{\mu}{b - \mu} \elasticity{\mu}{r}
-\end{equation}
 
-\section{Other ideas}
+\section{Plots to make}
 
-\begin{enumerate}
-\item Explicitly model interacting species: $r = X(x, t)$ and then
-  some reaction--diffusion equation for $X(x, t)$.
-\item The diffusion rate should be density dependent:
-  $D_V\big(r, V(x, t)\big)$ or even
-  $D_V\big(r, V_S(x, t), V_I(x, t)\big)$.
-\item Currently, we have forces of infection
-  $\lambda_V = \beta_V \frac{P_I}{P}$ and
-  $\lambda_P = \beta_P \frac{V_I}{P}$.  Instead incorporate uninfected
-  and infected vector preference for infected and uninfected plants:
-  $\lambda_V = \beta_V \frac{a_1 P_I}{P_S + a_1 P_I}$ and
-  $\lambda_P = \beta_P \frac{a_2 V_I}{a_2 P_S + P_I}$.
-\item The loss of infection in vectors.
-\item Exposed classes for vectors and plants.
-\item Separate nymph and adult classes of vectors.
-\item Separate stationary, feeding, transmitting vectors and moving
-  vectors.
-\item Separate crawling and flying vectors.
-\end{enumerate}
+\begin{itemize}
+\item Persistent vs.~non-persistent
+\item Movement, birth, death
+\item Number of interactors
+\end{itemize}
+
+\begin{itemize}
+\item $R_0$ vs.~$n$
+\item $R_0$ (or $\md R_0$) vs.~$\epsilon$'s (imshow, pcolor, contour,
+  etc)
+\item How to balance results from sensitivities (i.e.~derivatives)
+  vs.~results from choosing functional forms.
+\end{itemize}
 
 \end{document}
