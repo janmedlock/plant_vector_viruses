@@ -66,132 +66,74 @@
 \section{Model description}
 
 
-\subsection{Movement \& feeding model}
 
-Initially, vectors are moving: the number of moving vectors is
-$V_M(t)$.  After an exponential waiting time with mean duration
-$1 / \sigma_V$, they begin feeding on a plant: the number of feeding
-vectors is $V_F(t)$.  They stop feeding and go back to the moving
-state after an exponential waiting time of $1 / \tau_V$.  Including
-birth and death, the numbers over time evolve by
+Let $V_{ms}(t)$ and $V_{fs}(t)$ be the number of moving and feeding
+susceptible vectors at time $t$, and $V_{mi}(t)$ and $V_{fi}(t)$ be
+the number of moving and feeding infectious vectors at time $t$.
+Likewise, let $P_s(t)$ and $P_i(t)$ be the number of susceptible and
+infectious plants at time $t$.  The total number of feeding vectors is
+$V_f(t) = V_{fs}(t) + V_{fi}(t)$.
+
+Vectors are born moving.  After an exponential waiting time with mean
+duration $1 / \sigma_V$, they begin feeding on a plant.  They stop
+feeding and go back to the moving state after an exponential waiting
+time of $1 / \tau_V$.  Feeding susceptible vectors ($V_{fs}$) can
+become infected, transitioning to feeding exposed vectors ($V_{fi}$).
+Once these exposed vectors start moving, they become infectious
+($V_{mi}$), after which they can feed and infect plants ($V_{fi}$).
+
+Infected vectors might lose infection at rate $\gamma_V$, which could
+be set to $0$ for persistent infections.
+
+The model is
 \begin{equation}
+  \label{odesystemnumbers}
   \begin{split}
-    \frac{\md V_M}{\md t} &=
-    - \sigma_V V_M + \tau_V V_F - \mu_V V_M
-    + b_V V \left[1 - \frac{V(t)}{K_V}\right],
-    \\
-    \frac{\md V_F}{\md t} &=
-    \sigma_V V_M - \tau_V V_F - \mu_V V_F,
-  \end{split}
-\end{equation}
-where $V = V_F + V_M$.
-
-Dropping birth and death, the probability density for the time between
-the start of one feeding to the start of the next feeding is $V_G(t)$
-that satisfies
-\begin{equation}
-  \begin{aligned}
-    \frac{\md V_F}{\md t} &=
-    - \tau_V V_F,
-    & V_F(0) &= 1,
-    \\
-    \frac{\md V_M}{\md t} &=
-    \tau_V V_F - \sigma_V V_M,
-    & V_M(0) &= 0,
-    \\
-    \frac{\md V_G}{\md t} &=
-    \sigma_V V_M,
-    & V_G(0) &= 0,
-  \end{aligned}
-\end{equation}
-which is
-\begin{equation}
-  \begin{split}
-    V_F(t) &= \me^{-\tau_V t},
-    \\
-    V_M(t) &= \frac{\tau_V}{\tau_V - \sigma_V}
-    \me^{- \sigma_V t} \left(
-      1 - \me^{- (\tau_V -\sigma_V) t}
-    \right)
-    = \frac{\tau_V}{\sigma_V - \tau_V}
-    \me^{- \tau_V t} \left(
-      1 - \me^{- (\sigma_V - \tau_V) t}
-    \right),
-    \\
-    V_G(t) &= 1
-    - \frac{\tau_V}{\tau_V - \sigma_V} \me^{- \sigma_V t}
-    + \frac{\sigma_V}{\tau_V - \sigma_V} \me^{- \tau_V t},
-  \end{split}
-\end{equation}
-
-
-
-\subsection{Full model}
-
-Let $r$ be the level of interaction of the vector species with the
-other insect species, with $r = 0$ being no interaction.  Initially,
-we will consider just this implicit representation of the 2nd insect
-species, but later we will explicitly model this population as well.
-
-Let $V_{MS}(t)$ and $V_{FS}(t)$ be the number of moving and feeding
-susceptible vectors at time $t$ and $V_{MI}(t)$ and $V_{FI}(t)$ be the
-number of moving and feeding infectious vectors at time $t$.
-Likewise, let $P_S(t)$ and $P_I(t)$ be the number of susceptible and
-infective plants at time $t$.  The total number of vectors is
-$V(t) = V_{MS}(t) + V_{FS}(t) + V_{MI}(t) + V_{FI}(t)$ and the total
-number of plants is $P(t) = P_S(t) + P_I(t)$.  The model is
-\begin{equation}
-  \label{odesystemdimensional}
-  \begin{split}
-    \frac{\md V_{MS}}{\md t}(t)
+    \frac{\md V_{ms}}{\md t}
     &=
-    - \tau_V V_{MS}(t)
-    + \sigma_V V_{FS}(t)
-    + \gamma_V V_{MI}(t)
-    - \mu_V V_{MS}(t)
-    + b_V V(t) \left[1 - \frac{V(t)}{K_V}\right],
+    b_V V_f
+    - \sigma_V V_{ms}
+    + \tau_V V_{fs}
+    + \gamma_V V_{mi}
+    - \mu_{Vm} V_{ms}
     \\
-    \frac{\md V_{FS}}{\md t}(t)
-    &= - \beta_V \frac{P_I(t)}{P(t)} V_{FS}(t)
-    + \tau_V V_{MS}(t)
-    - \sigma_V V_{FS}(t)
-    + \gamma_V V_{FI}(t)
-    - \mu_V V_{FS}(t),
-    \\
-    \frac{\md V_{MI}}{\md t}(t)
+    \frac{\md V_{fs}}{\md t}
     &=
-    - \tau_V V_{MI}(t)
-    + \sigma_V V_{FI}(t)
-    - \gamma_V V_{MI}(t)
-    - \mu_V V_{MI}(t),
+    - \beta_V \frac{P_i}{P} V_{fs}
+    + \sigma_V V_{ms}
+    - \tau_V V_{fs}
+    + \gamma_V V_{fi}
+    - \mu_{Vf} V_{fs},
     \\
-    \frac{\md V_{FI}}{\md t}(t)
+    \frac{\md V_{mi}}{\md t}
     &=
-    \beta_V \frac{P_I(t)}{P(t)} V_{FS}(t)
-    + \tau_V V_{MI}(t)
-    - \sigma_V V_{FI}(t)
-    - \gamma_V V_{FI}(t)
-    - \mu_V V_{FI}(t),
+    \tau_V V_{fi}
+    - \sigma_V V_{mi}
+    - \gamma_V V_{mi}
+    - \mu_{Vm} V_{mi},
     \\
-    \frac{\md P_S}{\md t}(t)
-    &= - \beta_P V_{FI}(t) \frac{P_S(t)}{P(t)}
-    - \mu_P P_S(t)
-    + b_P P(t) \left[1 - \frac{P(t)}{K_P}\right],
+    \frac{\md V_{fi}}{\md t}
+    &=
+    \beta_V \frac{P_i}{P} V_{fs}
+    + \sigma_V V_{mi}
+    - \tau_V V_{fi}
+    - \gamma_V V_{fi}
+    - \mu_{Vf} V_{fi},
     \\
-    \frac{\md P_I}{\md t}(t)
-    &= \beta_P V_{FI}(t) \frac{P_S(t)}{P(t)}
-    - \mu_P P_I(t),
+    \frac{\md P_s}{\md t}
+    &=
+    - \beta_P V_{fi} \frac{P_s}{P} + \gamma_P P_i,
+    \\
+    \frac{\md P_i}{\md t}
+    &=
+    \beta_P V_{fi} \frac{P_s}{P} - \gamma_P P_i,
   \end{split}
 \end{equation}
 where $\beta_V$ is the infection rate from plants to vectors,
 $\beta_P$ is the infection rate from vectors to plants, $\gamma_V$ is
-the rate of pathogen clearance in vectors, $\mu_V$ is the death rate
-of vectors, $\mu_P$ is the death rate of vectors, $b_V$ is the birth
-rate of vectors in the absence of crowding, $b_P$ is the birth rate of
-vectors in the absence of crowding, $K_V$ is the carrying capacity of
-vectors and $K_P$ is the carrying capacity of vectors (n.b.~this is
-the population density at which birth rate is $0$, not where the birth
-rate is equal to the death rate).
+the rate of pathogen clearance in vectors, $\mu_{Vf}$ is the death rate
+of feeding vectors, $\mu_{Vm}$ is the death rate of moving vectors,
+and $b_V$ is the birth rate of vectors.
 
 \begin{figure}
   \centering
@@ -208,335 +150,196 @@ rate is equal to the death rate).
     ]
 
     \node at (0, 5)
-    [compartment, vector, name = V_MS] {$V_{MS}$};
+    [compartment, vector, name = V_ms] {$V_{ms}$};
     \node at (4, 5)
-    [compartment, vector, name = V_MI] {$V_{MI}$};
+    [compartment, vector, name = V_mi] {$V_{mi}$};
 
     \node at (0, 3)
-    [compartment, vector, name = V_FS] {$V_{FS}$};
+    [compartment, vector, name = V_fs] {$V_{fs}$};
     \node at (4, 3)
-    [compartment, vector, name = V_FI] {$V_{FI}$};
+    [compartment, vector, name = V_fi] {$V_{fi}$};
 
     \node at (0, 0)
-    [compartment, plant, name = P_S] {$P_S$};
+    [compartment, plant, name = P_s] {$P_s$};
     \node at (4, 0)
-    [compartment, plant, name = P_I] {$P_I$};
+    [compartment, plant, name = P_i] {$P_i$};
 
-    \draw [->] (P_S) to node [above]
-    {$\beta_P \frac{\textcolor{red}{V_{FI}}}{\textcolor{green}{P}}$}
-    (P_I);
+    \draw [->] (V_fs.20) to node [above]
+    {$\beta_V \frac{\textcolor{green}{P_i}}{\textcolor{green}{P}}$}
+    (V_fi.160);
 
-    \draw [->] (V_FS.20) to node [above]
-    {$\beta_V \frac{\textcolor{green}{P_I}}{\textcolor{green}{P}}$}
-    (V_FI.160);
+    \draw [->] (P_s.20) to node [above]
+    {$\beta_P \frac{\textcolor{red}{V_{fi}}}{\textcolor{green}{P}}$}
+    (P_i.160);
 
-    \draw [->] (V_FI.200) to node [below] {$\gamma_V$} (V_FS.340);
-    \draw [->] (V_MI) to node [below] {$\gamma_V$} (V_MS);
+    \draw [->] (V_mi) to node [below] {$\gamma_V$} (V_ms);
+    \draw [->] (V_fi.200) to node [below] {$\gamma_V$} (V_fs.340);
 
-    \draw [->] (V_MS.250) to node [left] {$\sigma_V$} (V_FS.110);
-    \draw [->] (V_MI.250) to node [left] {$\sigma_V$} (V_FI.110);
+    \draw [->] (P_i.200) to node [below] {$\gamma_P$} (P_s.340);
 
-    \draw [->] (V_FS.70) to node [right] {$\tau_V$} (V_MS.290);
-    \draw [->] (V_FI.70) to node [right] {$\tau_V$} (V_MI.290);
+    \draw [->] (V_ms.250) to node [left] {$\sigma_V$} (V_fs.110);
+    \draw [->] (V_mi.250) to node [left] {$\sigma_V$} (V_fi.110);
 
-    \draw [<-] (P_S.160) to node [above]
-    {$b_P \textcolor{green}{P} \left(1 - \frac{\textcolor{green}{P}}{K_P}\right)$}
+    \draw [->] (V_fs.70) to node [right] {$\tau_V$} (V_ms.290);
+    \draw [->] (V_fi.70) to node [right] {$\tau_V$} (V_mi.290);
+
+    \draw [<-] (V_ms.160) to node [above]
+    {$b_V \textcolor{red}{V_f}$}
     +(180: 3);
 
-    \draw [->] (P_S.200) to node [below] {$\mu_P$} +(180: 3);
-
-    \draw [->] (P_I) to node [above] {$\mu_P$} +(0: 3);
-
-    \draw [<-] (V_MS.160) to node [above]
-    {$b_V \textcolor{red}{V} \left(1 - \frac{\textcolor{red}{V}}{K_V}\right)$}
-    +(180: 3);
-
-    \draw [->] (V_FS.180) to node [below] {$\mu_V$} +(180: 3);
-    \draw [->] (V_MS.200) to node [below] {$\mu_V$} +(180: 3);
-
-    \draw [->] (V_FI) to node [above] {$\mu_V$} +(0: 3);
-    \draw [->] (V_MI) to node [above] {$\mu_V$} +(0: 3);
+    \draw [->] (V_fs.180) to node [below] {$\mu_{Vf}$} +(180: 3);
+    \draw [->] (V_fi) to node [above] {$\mu_{Vf}$} +(0: 3);
+    \draw [->] (V_ms.200) to node [below] {$\mu_{Vm}$} +(180: 3);
+    \draw [->] (V_mi) to node [above] {$\mu_{Vm}$} +(0: 3);
 
   \end{tikzpicture}
-  \caption{Model diagram.  $P_S$ and $P_I$ (green) are the numbers
-    of uninfected and plants.  $V_S$ and $V_I$ (red) are numbers of
-    uninfected and infected vectors.}
+  \caption{Model diagram.}
 \end{figure}
 
 
-\section{Nondimensionalization}
+Let $r$ be the level of interaction of the vector species with the
+other insect species, with $r = 0$ being no interaction.  Initially,
+we will consider just this implicit representation of the 2nd insect
+species, but later we will explicitly model this population as well.
 
-The disease-free steady state is
-\begin{align}
-  V^* &= K_V \left(1 - \frac{\mu_V}{b_V}\right),
-  &
-  V_{MS} &= \frac{\tau_V + \mu_V}{\sigma_V + \tau_V + \mu_V} V^*,
-  &
-  V_{FS} &= \frac{\sigma_V}{\sigma_V + \tau_V + \mu_V} V^*,
-  \\
-  P^* &= P_V \left(1 - \frac{\mu_P}{b_P}\right),
-  &
-  P_S &= P^*,
-  \\
-  V_{MI} &= 0,
-  &
-  V_{FI} &= 0,
-  &
-  P_I &= 0.
-\end{align}
-We will use $V^*$ for the scale of $V_{MS}$, $V_{FS}$, $V_{MI}$ and
-$V_{FI}$; $P^*$ for the scale of $P_S$ and $P_I$; and $\beta_V$ for
-the time scale:
-\begin{equation}
-  \begin{aligned}
-    \hat{V}_{MS} &= \frac{V_{MS}}{V^*},
-    &
-    \hat{V}_{FS} &= \frac{V_{FS}}{V^*},
-    &
-    \hat{V}_{MI} &= \frac{V_{MI}}{V^*},
-    &
-    \hat{V}_{FI} &= \frac{V_{FI}}{V^*},
-    \\
-    \hat{P}_S &= \frac{P_S}{P^*},
-    &
-    \hat{P}_I &= \frac{P_I}{P^*},
-    &
-    \hat{t} &= \beta_V t,
-    \\
-    \hat{\beta}_P &= \frac{\beta_P}{\beta_V},
-    &
-    \hat{\gamma}_V &= \frac{\gamma_V}{\beta_V},
-    &
-    \hat{b}_V &= \frac{b_V}{\beta_V},
-    &
-    \hat{\mu}_V &= \frac{\mu_V}{\beta_V},
-    \\
-    \hat{\sigma}_V &= \frac{\sigma_V}{\beta_V},
-    &
-    \hat{\tau}_V &= \frac{\tau_V}{\beta_V},
-    &
-    \hat{b}_P &= \frac{b_P}{\beta_V},
-    &
-    \hat{\mu}_P &= \frac{\mu_P}{\beta_V},
-  \end{aligned}
-\end{equation}
-Then
-\begin{equation}
-  \label{odesystem}
-  \begin{split}
-    \frac{\md \hat{V}_{MS}}{\md \hat{t}}
-    &=
-    - \hat{\tau}_V \hat{V}_{MS}
-    + \hat{\sigma}_V \hat{V}_{FS}
-    + \hat{\gamma}_V \hat{V}_{MI}
-    - \hat{\mu}_V \hat{V}_{MS}
-    + \hat{b}_V \hat{V} \left[
-      1 - \left(1 - \frac{\hat{\mu}_V}{\hat{b}_V}\right)
-      \hat{V}
-    \right],
-    \\
-    \frac{\md \hat{V}_{FS}}{\md \hat{t}}
-    &= - \frac{\hat{P}_I}{\hat{P}} \hat{V}_{FS}
-    + \hat{\tau}_V \hat{V}_{MS}
-    - \hat{\sigma}_V \hat{V}_{FS}
-    + \hat{\gamma}_V \hat{V}_{FI}
-    - \hat{\mu}_V \hat{V}_{FS},
-    \\
-    \frac{\md \hat{V}_{MI}}{\md \hat{t}}
-    &=
-    - \hat{\tau}_V \hat{V}_{MI}
-    + \hat{\sigma}_V \hat{V}_{FI}
-    - \hat{\gamma}_V \hat{V}_{MI}
-    - \hat{\mu}_V \hat{V}_{MI},
-    \\
-    \frac{\md \hat{V}_{FI}}{\md \hat{t}}
-    &=
-    \frac{\hat{P}_I}{\hat{P}} \hat{V}_{FS}
-    + \hat{\tau}_V \hat{V}_{MI}
-    - \hat{\sigma}_V \hat{V}_{FI}
-    - \hat{\gamma}_V \hat{V}_{FI}
-    - \hat{\mu}_V \hat{V}_{FI},
-    \\
-    \frac{\md \hat{P}_S}{\md \hat{t}}
-    &= - \hat{\beta}_P \hat{V}_{FI} \frac{\hat{P}_S}{\hat{P}}
-    - \hat{\mu}_P \hat{P}_S
-    + \hat{b}_P \hat{P}
-    \left[
-      1 - \left(1 - \frac{\hat{\mu}_V}{\hat{b}_V}\right) \hat{P}
-    \right],
-    \\
-    \frac{\md \hat{P}_I}{\md t}
-    &= \hat{\beta}_P \hat{V}_{FI} \frac{\hat{P}_S}{\hat{P}}
-    - \hat{\mu}_P \hat{P}_I.
-  \end{split}
-\end{equation}
-In what follows, we will drop the $\hat{}$, which hopefully won't
-cause too much confusion.
+% The total number of vectors is
+% \begin{equation}
+%   V = V_{ms} + V_{fs} + V_{mi} + V_{fi},
+% \end{equation}
+% and its derivative is
+% \begin{equation}
+%   \frac{\md V}{\md t} = \left(b_V - \mu_{Vf}\right) V_f - \mu_{Vm} V_m.
+% \end{equation}
+% Then the fractions of vectors and plants in the various states,
+% $v_{xy} = V_{xy} / V$ and $p_z = P_z / P$, are governed by the system
+% of equations
+% \begin{equation}
+%   \label{odesystem}
+%   \begin{split}
+%     \frac{\md v_{ms}}{\md t}
+%     &=
+%     b_V v_f
+%     - \sigma_V v_{ms}
+%     + \tau_V v_{fs}
+%     + \gamma_V v_{mi}
+%     - \mu_{Vm} v_{ms}
+%     - \left[\left(b_V - \mu_{Vf}\right) v_f - \mu_{Vm} v_m \right] v_{ms},
+%     \\
+%     \frac{\md v_{fs}}{\md t}
+%     &=
+%     - \beta_V p_i v_{fs}
+%     + \sigma_V v_{ms}
+%     - \tau_V v_{fs}
+%     + \gamma_V v_{fi}
+%     - \mu_{Vf} v_{fs}
+%     - \left[\left(b_V - \mu_{Vf}\right) v_f - \mu_{Vm} v_m \right] v_{fs},
+%     \\
+%     \frac{\md v_{mi}}{\md t}
+%     &=
+%     \tau_V v_{fi}
+%     - \sigma_V v_{mi}
+%     - \gamma_V v_{mi}
+%     - \mu_{Vm} v_{mi}
+%     - \left[\left(b_V - \mu_{Vf}\right) v_f - \mu_{Vm} v_m \right] v_{mi},
+%     \\
+%     \frac{\md v_{fi}}{\md t}
+%     &=
+%     \beta_V p_i v_{fs}
+%     + \sigma_V v_{mi}
+%     - \tau_V v_{fi}
+%     - \gamma_V v_{fi}
+%     - \mu_{Vf} v_{fi}
+%     - \left[\left(b_V - \mu_{Vf}\right) v_f - \mu_{Vm} v_m \right] v_{fi},
+%     \\
+%     \frac{\md V}{\md t}
+%     &=
+%     \left[\left(b_V - \mu_{Vf}\right) v_f - \mu_{Vm} v_m \right] V,
+%     \\
+%     \frac{\md p_s}{\md t}
+%     &= - \beta_P v_{fi} V p_s + \gamma_P p_i,
+%     \\
+%     \frac{\md p_I}{\md t}
+%     &= \beta_P v_{fi} V p_s - \gamma_P p_i.
+%   \end{split}
+% \end{equation}
 
-\section{$R_0$ analysis}
+
+\section{Pathogen growth rate}
 
 The infected states are
 \begin{equation}
   \vec{u} =
   \begin{pmatrix}
-    V_{MI} \\ V_{FI} \\ P_I
+    V_{mi} \\ V_{fi} \\ P_i
   \end{pmatrix}.
 \end{equation}
-System \eqref{odesystem} can be written as
-\begin{equation}
-  \frac{\md \vec{u}}{\md t} =
-  \mathcal{F}(\vec{u})
-  - \mathcal{V}(\vec{u}),
-\end{equation}
-with infection rates
+System \eqref{odesystemnumbers} can be written as
 \begin{equation}
   \label{scriptF}
-  \mathcal{F} =
+  \frac{\md \vec{u}}{\md t}
+  =
+  \mathcal{F}(\vec{u})
+  =
   \begin{pmatrix}
-    0
+    \tau_V V_{fi}
+    - (\sigma_V + \gamma_V + \mu_{Vm}) V_{mi}
     \\
-    \frac{P_I}{P} V_{FS}
+    \beta_V \frac{V_{fs}}{P} P_i
+    + \sigma_V V_{mi}
+    - (\tau_V + \gamma_V + \mu_{Vf}) V_{fi}
     \\
-    \beta_P V_{FI} \frac{P_S}{P}
-  \end{pmatrix}
-\end{equation}
-and the remaining rates
-\begin{equation}
-  \label{scriptV}
-  \mathcal{V} =
-  \begin{pmatrix}
-    \tau_V V_{MI} - \sigma_V V_{FI} + \gamma_V V_{MI} + \mu_V V_{MI}
-    \\
-    - \tau_V V_{MI} + \sigma_V V_{FI} + \gamma_V V_{FI} + \mu_V V_{FI}
-    \\
-    \mu_P P_I
+    \beta_P V_{fi} \frac{P_s}{P} - \gamma_P P_i
   \end{pmatrix}.
 \end{equation}
 
-The disease-free equilibrium has the susceptible vectors and plants at
-their carrying capacities and no infectious vectors or plants,
-\begin{align}
-  V_{MS} &= \frac{\sigma_V + \mu_V}{\tau_V + \sigma_V + \mu_V},
-  &
-  V_{FS} &= \frac{\tau_V}{\tau_V + \sigma_V + \mu_V},
-  &
-  V_{MI} &= 0,
-  &
-  V_{FI} &= 0,
-  \\
-  P_S &= 1,
-  &
-  P_I &= 0.
-\end{align}
-Linearizing
-\eqref{scriptF} and \eqref{scriptV} at the disease-free equilibrium
-gives
+The disease-free equilibrium is
+\begin{equation}
+  \begin{split}
+    V_{ms} &=
+    \\
+    V_{fs} &= 
+    \\
+    V_{me} &= 0,
+    \\
+    V_{mi} &= 0,
+    \\
+    V_{fi} &= 0,
+    \\
+    P_s &= P,
+    \\
+    P_i &= 0.
+  \end{split}
+\end{equation}
+Linearizing \eqref{scriptF} at the disease-free equilibrium gives
 \begin{equation}
   \begin{split}
     \mat{F} &=
     \begin{bmatrix}
-      0 & 0 & 0
-      \\
-      0 & 0 & \frac{\tau_V}{\tau_V + \sigma_V + \mu_V}
-      \\
-      0 & \beta_P & 0
-    \end{bmatrix},
+    - (\sigma_V + \gamma_V + \mu_{Vm}) & \tau_V & 0
     \\
-    \mat{V} &=
-    \begin{bmatrix}
-      \tau_V + \gamma_V + \mu_V & - \sigma_V & 0
-      \\
-      - \tau_V & \sigma_V + \gamma_V + \mu_V & 0
-      \\
-      0 & 0 & \mu_P
+    \sigma_V & - (\tau_V + \gamma_V + \mu_{Vf}) &  \beta_V
+    \frac{V_{fs}}{P}
+    \\
+    0 & \beta_P & - \gamma_P
     \end{bmatrix}.
   \end{split}
 \end{equation}
-The residence times are
+The leading eigenvalue of $\mathbf{F}$ is
 \begin{equation}
-  \mat{V}^{-1} =
-  \begin{bmatrix}
-    \frac{\sigma_V + \gamma_V + \mu_V}
-    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-    &  \frac{\sigma_V}
-    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-    & 0
-    \\
-    \frac{\tau_V}
-    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-    & \frac{\tau_V + \gamma_V + \mu_V}
-    {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-    & 0
-    \\
-    0 & 0 & \frac{1}{\mu_P}
-  \end{bmatrix}.
+  r_0 = 
 \end{equation}
-Then the next-generation matrix is
-\begin{equation}
-  \begin{split}
-    \mat{G} &= \mat{F} \mat{V}^{-1}
-    \\
-    &=
-    \begin{bmatrix}
-      0 & 0 & 0
-      \\
-      0 & 0 & \frac{\tau_V}{\mu_P (\tau_V + \sigma_V + \mu_V)}
-      \\
-      \frac{\beta_P \tau_V}
-      {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-      & \frac{\beta_P (\tau_V + \gamma_V + \mu_V)}
-      {(\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-      & 0
-    \end{bmatrix}.
-  \end{split}
-\end{equation}
-The leading eigenvalue of $G$ is
-\begin{equation}
-  R_0 = \sqrt{
-    \frac{\beta_P \tau_V}
-    {\mu_P (\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}
-  }
-\end{equation}
-or
-\begin{equation}
-  R_0^2 =
-  \frac{\beta_P \tau_V}
-  {\mu_P (\gamma_V + \mu_V) (\sigma_V + \tau_V + \mu_V + \gamma_V)}.
-\end{equation}
-
-In dimensional parameters, $R_0$ is
-\begin{equation}
-  R_0^2 =
-  \frac{\beta_P \beta_V \tau_V}
-  {\mu_P \left(\gamma_V + \mu_V\right)
-    \left(\sigma_V + \tau_V + \gamma_V + \mu_V\right)},
-\end{equation}
-or
-\begin{equation}
-  R_0^2 =
-  \beta_V \frac{1}{\mu_P}
-  \beta_P
-  \frac{1}{\gamma_V + \mu_V}
-  \frac{\tau_V}
-  {\sigma_V + \tau_V + \gamma_V + \mu_V},
-\end{equation}
-where $\beta_V$ is the transmission rate from infected plants to
-susceptible vectors, $\frac{1}{\mu_P}$ is the duration of
-infectiousness in plants, $\beta_P$ is the transmission rate from
-infected vectors to susceptible plants, $\frac{1}{\gamma_V + \mu_V}$
-is the duration of infectiousness in vectors, and
-$\frac{\tau_V}{\sigma_V + \tau_V + \gamma_V + \mu_V}$ is the
-proportion of the vectors' infectious period spent feeding.
 
 
 \section{Increasing $n$}
 
 We are initially thinking that the effects of the second insect
-species will only be on vector death rate and vector movement rate,
-and for now we will take these to have constant semi-elasticity for
-simplicity:
+species will be on vector birth rate, vector death rate, and vector
+movement rate.  We will take these to have constant semi-elasticity
+for simplicity for now:
 \begin{equation}
   \begin{split}
+    b_V(n) &= \overline{b_V} \me^{\epsilon_{b_V} n},
+    \\
     \mu_V(n) &= \overline{\mu_V} \me^{\epsilon_{\mu_V} n},
     \\
     \tau_V(n) &= \overline{\tau_V} \me^{\epsilon_{\tau_V} n}.
