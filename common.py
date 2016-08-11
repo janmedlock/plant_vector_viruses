@@ -14,16 +14,18 @@ import seaborn
 
 
 tmax = 150
-t = numpy.linspace(0, tmax, 201)
+t = numpy.linspace(0, tmax, 21)
 
 vi0 = 0.01
 
 sensitivity_parameters = (
-    ('bV', 'Vector fecundity, $b_V$ (d$^{-1}$)'),
-    ('muV', 'Vector mortality, $\\mu_V$ (d$^{-1}$)'),
-    ('tauV', 'Movement rate, $\\tau_V$ (d$^{-1}$)'))
+    ('bV', r'Vector fecundity, $b_V$ (d$^{-1}$)'),
+    ('muV', r'Vector mortality, $\mu_V$ (d$^{-1}$)'),
+    ('deltaV', r'Moving vector mortality, $\delta_V$'),
+    ('tauV', r'Movement rate, $\tau_V$ (d$^{-1}$)'),
+    ('sigmaV', r'Feeding rate, $\sigma_V$ (d$^{-1}$)'))
 
-sensitivity_max_abs_mult_change = 4
+sensitivity_max_abs_mult_change = 2
 
 sensitivity_dPs = numpy.logspace(
     - numpy.log10(sensitivity_max_abs_mult_change),

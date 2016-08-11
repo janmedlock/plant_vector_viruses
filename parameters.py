@@ -8,8 +8,8 @@ import numpy
 
 
 class Parameters:
-    sigmaV = 1 / 0.5 * 24
-    tauV = 1 / 0.5 * 24
+    sigmaV = 1 / 2 * 24
+    tauV = 1 / 2 * 24
     muV = 0.02
     deltaV = 1
     bV = 0.08
