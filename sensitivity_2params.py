@@ -48,43 +48,10 @@ def shifted_cmap(cmap, midpoint=0.5):
     return colors.LinearSegmentedColormap(name, cdict)
 
 
-def plot_sensitivity(p):
+def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
     nparams = len(common.sensitivity_parameters)
-    r00 = p.QSSA.r0(t)
-    r0 = numpy.ones((nparams - 1, nparams - 1,
-                     len(common.sensitivity_dPs),
-                     len(common.sensitivity_dPs)))
-    for i in range(nparams - 1):
-        for j in range(i + 1):
-            param0, param0_name = common.sensitivity_parameters[i + 1]
-            param1, param1_name = common.sensitivity_parameters[j]
-            param00 = getattr(p, param0)
-            param10 = getattr(p, param1)
-            for (m, dP0) in enumerate(common.sensitivity_dPs):
-                setattr(p, param0, param00 * dP0)
-                for (n, dP1) in enumerate(common.sensitivity_dPs):
-                    setattr(p, param1, param10 * dP1)
-                    r0[i, j, m, n] = p.QSSA.r0(t)
-            setattr(p, param0, param00)
-            setattr(p, param1, param10)
-    Z = r0 / r00
-
-    norm = colors.LogNorm()
-    norm(Z)  # Set limits.
-    # Put white at 1.
-    cmap = shifted_cmap(cmap_base, norm(1))
-
-    # Contour levels every log10.
-    T = numpy.log10(Z)
-    Tabsmax = numpy.max(numpy.abs(T))
-    TV = numpy.linspace(- numpy.ceil(Tabsmax),
-                        numpy.ceil(Tabsmax),
-                        2 * numpy.ceil(Tabsmax) + 1)
-    V = 10 ** TV
-
-    # Colorbar in a small extra column.
     nrows = nparams - 1
-    ncols = nparams
+    ncols = nparams - 1 + 1  # Colorbar in a small extra column.
     gs = gridspec.GridSpec(nrows, ncols,
                            width_ratios = ([1] * (ncols - 1)
                                            + [colorbar_width_ratio]))
@@ -118,11 +85,12 @@ def plot_sensitivity(p):
             #                   y[-1] + (y[-1] - y[-2]) / 2))
             # X_, Y_ = numpy.meshgrid(x_, y_)
 
-            pc = ax.pcolormesh(X, Y, Z[row, col],
+            pc = ax.pcolormesh(X, Y, rel_growth_rate[row, col],
                                cmap = cmap, norm = norm,
                                shading = 'gouraud')
 
-            cs = ax.contour(X, Y, Z[row, col], V,
+            cs = ax.contour(X, Y, rel_growth_rate[row, col],
+                            contour_levels,
                             colors = 'black',
                             linewidths = 1,
                             linestyles = 'solid')
@@ -159,7 +127,8 @@ def plot_sensitivity(p):
     ax = fig.add_subplot(gs[:, -1])
     cbar = colorbar.Colorbar(ax, pc,
                              label = 'Relative infection growth rate',
-                             orientation = 'vertical')
+                             orientation = 'vertical',
+                             format = '%g')
     cbar.ax.tick_params(labelsize = 10)
     # cbar.ax.axhline(norm(1), linestyle = 'dotted', color = 'black',
     #                 alpha = 0.5)
@@ -170,14 +139,50 @@ def plot_sensitivity(p):
 
 
 def main():
-    for (n, p) in parameters.parameter_sets.items():
-        fig = plot_sensitivity(p)
+    nparamsets = len(parameters.parameter_sets)
+    nparams = len(common.sensitivity_parameters)
+    rel_growth_rate = numpy.ones((nparamsets,
+                                  nparams - 1, nparams - 1,
+                                  len(common.sensitivity_dPs),
+                                  len(common.sensitivity_dPs)))
+    for (k, p) in enumerate(parameters.parameter_sets.values()):
+        # Baseline
+        r00 = p.QSSA.r0(t)
+        for i in range(nparams - 1):
+            for j in range(i + 1):
+                param0, param0_name = common.sensitivity_parameters[i + 1]
+                param1, param1_name = common.sensitivity_parameters[j]
+                param00 = getattr(p, param0)
+                param10 = getattr(p, param1)
+                for (m, dP0) in enumerate(common.sensitivity_dPs):
+                    setattr(p, param0, param00 * dP0)
+                    for (n, dP1) in enumerate(common.sensitivity_dPs):
+                        setattr(p, param1, param10 * dP1)
+                        rel_growth_rate[k, i, j, m, n] = p.QSSA.r0(t) / r00
+                setattr(p, param0, param00)
+                setattr(p, param1, param10)
+
+    norm = colors.LogNorm()
+    norm(rel_growth_rate)  # Set limits.
+    # Put white at 1.
+    cmap = shifted_cmap(cmap_base, norm(1))
+
+    # Contour levels every log10.
+    log_rgr = numpy.log10(rel_growth_rate)
+    log_rgr_absmax = numpy.max(numpy.abs(log_rgr))
+    log_rgr_levels = numpy.linspace(- numpy.ceil(log_rgr_absmax),
+                                    numpy.ceil(log_rgr_absmax),
+                                    2 * numpy.ceil(log_rgr_absmax) + 1)
+    contour_levels = 10 ** log_rgr_levels
+
+    for (k, x) in enumerate(parameters.parameter_sets.items()):
+        n, p = x
+        fig = plot_sensitivity(p, rel_growth_rate[k],
+                               contour_levels, cmap, norm)
         common.savefig(fig,
                        append = '_{}'.format(n.lower()))
 
 
 if __name__ == '__main__':
     main()
-    # pyplot.show()
-
-    # Make scale the same.
+    pyplot.show()
