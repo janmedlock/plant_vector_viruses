@@ -8,10 +8,10 @@ import numpy
 
 
 class Parameters:
-    sigmaV = 1 / 2 * 24
-    tauV = 1 / 2 * 24
-    muV = 0.02
-    deltaV = 1
+    fV = 6
+    phiV = 0.5
+    muVf = 0.02
+    muVm = 0.04
     bV = 0.08
     KV = 100
     gammaP = 0
@@ -20,6 +20,30 @@ class Parameters:
 
     def __init__(self):
         self.QSSA = QSSA(self)
+
+    @property
+    def muV(self):
+        return self.muVf
+
+    @property
+    def deltaV(self):
+        return self.muVm / self.muVf - 1
+
+    @property
+    def sigmaV(self):
+        if self.phiV == 1:
+            # Undefined.
+            return numpy.nan
+        else:
+            return self.fV / (1 - self.phiV)
+
+    @property
+    def tauV(self):
+        if self.phiV == 0:
+            # Undefined.
+            return numpy.nan
+        else:
+            return self.fV / self.phiV
 
     def __repr__(self):
         # Start with '<ClassName'

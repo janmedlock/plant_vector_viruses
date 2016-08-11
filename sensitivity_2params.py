@@ -14,6 +14,9 @@ import parameters
 pyplot.rcParams['mathtext.fontset'] = "stix"
 
 
+save = True
+
+
 t = 150
 cmap_base = 'RdBu'
 figsize = (8.5, 7.25)
@@ -48,6 +51,25 @@ def shifted_cmap(cmap, midpoint=0.5):
     return colors.LinearSegmentedColormap(name, cdict)
 
 
+def get_scale(param):
+    if param == 'phiV':
+        return 'linear'
+    else:
+        return 'log'
+
+
+def get_dPs(param, value_baseline):
+    scale = get_scale(param)
+    if scale == 'linear':
+        eps = 0.1
+        return numpy.linspace(eps, 1 - eps,
+                              len(common.sensitivity_dPs))
+    elif scale == 'log':
+        return value_baseline * common.sensitivity_dPs
+    else:
+        raise NotImplementedError('scale = {}'.format(scale))
+
+
 def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
     nparams = len(common.sensitivity_parameters)
     nrows = nparams - 1
@@ -61,16 +83,18 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
             param0, param0_name = common.sensitivity_parameters[row + 1]
             param1, param1_name = common.sensitivity_parameters[col]
 
+            yscale = get_scale(param0)
+            xscale = get_scale(param1)
             ax = fig.add_subplot(gs[row, col],
-                                 xscale = 'log',
-                                 yscale = 'log',
+                                 xscale = xscale,
+                                 yscale = yscale,
                                  axisbg = 'none')
 
-            param00 = getattr(p, param0)
-            param10 = getattr(p, param1)
+            param0baseline = getattr(p, param0)
+            param1baseline = getattr(p, param1)
 
-            y = param00 * common.sensitivity_dPs
-            x = param10 * common.sensitivity_dPs
+            y = get_dPs(param0, param0baseline)
+            x = get_dPs(param1, param1baseline)
             X, Y = numpy.meshgrid(x, y)
 
             # For pcolor: Z[j, k] is
@@ -96,9 +120,9 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
                             linestyles = 'solid')
             ax.clabel(cs, inline = 1, fmt = '%.4g', fontsize = 8)
 
-            ax.axvline(param10, linestyle = 'dotted', color = 'black',
+            ax.axvline(param1baseline, linestyle = 'dotted', color = 'black',
                        alpha = 0.5)
-            ax.axhline(param00, linestyle = 'dotted', color = 'black',
+            ax.axhline(param0baseline, linestyle = 'dotted', color = 'black',
                        alpha = 0.5)
 
             if ax.is_last_row():
@@ -115,7 +139,11 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
                 ax.yaxis.offsetText.set_visible(False)
 
             for axis in (ax.xaxis, ax.yaxis):
-                axis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
+                scale = axis.get_scale()
+                if scale == 'linear':
+                    axis.set_major_locator(ticker.MaxNLocator(nbins = 5))
+                elif scale == 'log':
+                    axis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
                 axis.set_major_formatter(ticker.ScalarFormatter())
                 ax.tick_params(labelsize = 9)
 
@@ -127,8 +155,7 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
     ax = fig.add_subplot(gs[:, -1])
     cbar = colorbar.Colorbar(ax, pc,
                              label = 'Relative infection growth rate',
-                             orientation = 'vertical',
-                             format = '%g')
+                             orientation = 'vertical')
     cbar.ax.tick_params(labelsize = 10)
     # cbar.ax.axhline(norm(1), linestyle = 'dotted', color = 'black',
     #                 alpha = 0.5)
@@ -138,7 +165,7 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
     return fig
 
 
-def main():
+def build():
     nparamsets = len(parameters.parameter_sets)
     nparams = len(common.sensitivity_parameters)
     rel_growth_rate = numpy.ones((nparamsets,
@@ -146,22 +173,27 @@ def main():
                                   len(common.sensitivity_dPs),
                                   len(common.sensitivity_dPs)))
     for (k, p) in enumerate(parameters.parameter_sets.values()):
-        # Baseline
-        r00 = p.QSSA.r0(t)
+        r0baseline = p.QSSA.r0(t)
         for i in range(nparams - 1):
             for j in range(i + 1):
                 param0, param0_name = common.sensitivity_parameters[i + 1]
                 param1, param1_name = common.sensitivity_parameters[j]
-                param00 = getattr(p, param0)
-                param10 = getattr(p, param1)
-                for (m, dP0) in enumerate(common.sensitivity_dPs):
-                    setattr(p, param0, param00 * dP0)
-                    for (n, dP1) in enumerate(common.sensitivity_dPs):
-                        setattr(p, param1, param10 * dP1)
-                        rel_growth_rate[k, i, j, m, n] = p.QSSA.r0(t) / r00
-                setattr(p, param0, param00)
-                setattr(p, param1, param10)
+                param0baseline = getattr(p, param0)
+                param1baseline = getattr(p, param1)
+                dPs0 = get_dPs(param0, param0baseline)
+                for (m, dP0) in enumerate(dPs0):
+                    setattr(p, param0, dP0)
+                    dPs1 = get_dPs(param1, param1baseline)
+                    for (n, dP1) in enumerate(dPs1):
+                        setattr(p, param1, dP1)
+                        rel_growth_rate[k, i, j, m, n] = (p.QSSA.r0(t)
+                                                          / r0baseline)
+                setattr(p, param0, param0baseline)
+                setattr(p, param1, param1baseline)
+    return rel_growth_rate
 
+
+def plot(rel_growth_rate):
     norm = colors.LogNorm()
     norm(rel_growth_rate)  # Set limits.
     # Put white at 1.
@@ -179,10 +211,12 @@ def main():
         n, p = x
         fig = plot_sensitivity(p, rel_growth_rate[k],
                                contour_levels, cmap, norm)
-        common.savefig(fig,
-                       append = '_{}'.format(n.lower()))
+        if save:
+            common.savefig(fig,
+                           append = '_{}'.format(n.lower()))
 
 
 if __name__ == '__main__':
-    main()
+    rel_growth_rate = build()
+    plot(rel_growth_rate)
     pyplot.show()

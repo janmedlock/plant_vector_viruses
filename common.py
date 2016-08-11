@@ -19,18 +19,18 @@ t = numpy.linspace(0, tmax, 21)
 vi0 = 0.01
 
 sensitivity_parameters = (
-    ('bV', r'Vector fecundity, $b_V$ (d$^{-1}$)'),
-    ('muV', r'Vector mortality, $\mu_V$ (d$^{-1}$)'),
-    ('deltaV', r'Moving vector mortality, $\delta_V$'),
-    ('tauV', r'Movement rate, $\tau_V$ (d$^{-1}$)'),
-    ('sigmaV', r'Feeding rate, $\sigma_V$ (d$^{-1}$)'))
+    ('bV', 'Vector fecundity\n$b_V$ (d$^{-1}$)'),
+    ('muVf', 'Feeding vector mortality\n$\\mu_{Vf}$ (d$^{-1}$)'),
+    ('muVm', 'Moving vector mortality\n$\\mu_{Vm}$ (d$^{-1}$)'),
+    ('phiV', 'Proportion of vectors feeding\n$\\phi_V$'),
+    ('fV', 'Feeding rate\n$f_V$ (d$^{-1}$)'))
 
 sensitivity_max_abs_mult_change = 2
-
+npoints = 21
 sensitivity_dPs = numpy.logspace(
     - numpy.log10(sensitivity_max_abs_mult_change),
     + numpy.log10(sensitivity_max_abs_mult_change),
-    201)
+    npoints)
 
 
 def style_axis(ax):
