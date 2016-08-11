@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-from matplotlib import colorbar
-from matplotlib import colors
 from matplotlib import gridspec
+from matplotlib import lines
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
@@ -11,85 +10,96 @@ import common
 import parameters
 
 
-cmap = 'viridis'
-figsize = (8, 4)
+save = True
 
+t = 150
+figsize = (8.5, 3)
 
-def plot_sensitivity(p):
-    nparams = len(common.sensitivity_parameters)
-    r00 = p.QSSA.r0(common.t)
-    r0 = numpy.empty((nparams,
-                      len(common.sensitivity_dPs),
-                      len(common.t)))
-    for (i, param) in enumerate(common.sensitivity_parameters):
-        param0, param0_name = param
-        param00 = getattr(p, param0)
-        for (j, dP0) in enumerate(common.sensitivity_dPs):
-            setattr(p, param0, param00 * dP0)
-            r0[i, j] = p.QSSA.r0(common.t)
-            setattr(p, param0, param00)
-
-    fig = pyplot.figure(figsize = figsize)
-    gs = gridspec.GridSpec(1, nparams + 1,
-                           width_ratios = (1, ) * nparams + (0.3, ))
-    norm = colors.LogNorm()
-    norm(r0)  # Set limits.
-    for (i, param) in enumerate(common.sensitivity_parameters):
-        param0, param0_name = param
-        param00 = getattr(p, param0)
-
-        x = common.t
-        y = param00 * common.sensitivity_dPs
-        X, Y = numpy.meshgrid(x, y)
-        Z = r0[i]
-
-        # Contour levels every log10.
-        T = numpy.log10(Z)
-        Tabsmax = numpy.max(numpy.abs(T))
-        TV = numpy.linspace(- numpy.ceil(Tabsmax),
-                            numpy.ceil(Tabsmax),
-                            2 * numpy.ceil(Tabsmax) + 1)
-        V = 10 ** TV
-
-        ax = fig.add_subplot(gs[0, i], yscale = 'log')
-        pc = ax.pcolormesh(X, Y, Z, cmap = cmap, norm = norm,
-                           shading = 'gouraud')
-        cs = ax.contour(X, Y, Z, V,
-                        colors = 'black',
-                        linewidths = 1,
-                        linestyles = 'solid')
-        ax.clabel(cs, inline = 1, fmt = '%.4g', fontsize = 8)
-
-        ax.set_xlabel('Time (d)', fontsize = 12)
-        ax.set_ylabel(param0_name, fontsize = 12)
-        ax.tick_params(labelsize = 7)
-        ax.set_xlim(min(x), max(x))
-        ax.set_ylim(min(y), max(y))
-
-        ax.yaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
-        ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
-
-        ax.axhline(param00, linestyle = 'dotted', color = 'black',
-                   alpha = 0.5)
-
-        common.style_axis(ax)
-
-    ax = fig.add_subplot(gs[0, -1])
-    cbar = colorbar.Colorbar(ax, pc,
-                             label = 'Infection growth rate (d$^{-1}$)',
-                             orientation = 'vertical')
-    cbar.ax.tick_params(labelsize = 10)
-
-    fig.tight_layout()
-    
-    return fig
+common.seaborn.set_palette('Dark2')
 
 
 def main():
-    for (n, p) in parameters.parameter_sets.items():
-        fig = plot_sensitivity(p)
-        common.savefig(fig,
-                       append = '_{}'.format(n.lower()))
+    nparams = len(common.sensitivity_parameters)
+    fig = pyplot.figure(figsize = figsize)
+    gs = gridspec.GridSpec(1, nparams)
+    sharey = None
+    ymin = ymax = None
+    for (i, param) in enumerate(common.sensitivity_parameters):
+        param0, param0_name = param
+
+        xscale = common.get_scale(param0)
+        ax = fig.add_subplot(gs[0, i],
+                             sharey = sharey,
+                             xscale = xscale, yscale = 'log')
+        if sharey is None:
+            sharey = ax
+
+        for (n, p) in parameters.parameter_sets.items():
+            r0baseline = p.QSSA.r0(t)
+
+            param0baseline = getattr(p, param0)
+
+            dPs = common.get_dPs(param0, param0baseline)
+            r0 = numpy.empty(len(dPs))
+            for (j, dP0) in enumerate(dPs):
+                setattr(p, param0, dP0)
+                r0[j] = p.QSSA.r0(t) / r0baseline
+            setattr(p, param0, param0baseline)
+
+            l = ax.plot(dPs, r0, label = n, alpha = 0.5)
+
+            if ymax is None:
+                ymax = max(r0)
+            else:
+                ymax = max(max(r0), ymax)
+            if ymin is None:
+                ymin = min(r0)
+            else:
+                ymin = min(min(r0), ymin)
+
+        ax.set_xlim(min(dPs), max(dPs))
+
+        ax.set_xlabel(param0_name, fontsize = 'x-small')
+        if ax.is_first_col():
+            ax.set_ylabel('Relative infection\ngrowth rate',
+                          fontsize = 'small')
+        else:
+            for l in ax.yaxis.get_ticklabels():
+                l.set_visible(False)
+            ax.yaxis.offsetText.set_visible(False)
+
+        ax.tick_params(labelsize = 'x-small')
+
+        if xscale == 'linear':
+            ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+        elif xscale == 'log':
+            ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
+            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+
+        ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
+                   alpha = 0.5)
+
+    # ymin = 10 ** numpy.floor(numpy.log10(ymin))
+    # ymax = 10 ** numpy.ceil(numpy.log10(ymax))
+    ax.set_ylim(ymin, ymax)
+
+    fig.tight_layout(rect = (0, 0.07, 1, 1))
+    
+    handles = (lines.Line2D([], [], color = c)
+               for c in common.seaborn.color_palette())
+    labels = parameters.parameter_sets.keys()
+    leg = fig.legend(handles, labels,
+                     loc = 'lower center',
+                     ncol = len(labels),
+                     columnspacing = 10,
+                     frameon = False,
+                     fontsize = 'small',
+                     numpoints = 1)
+
+    if save:
+        common.savefig(fig)
+
+    return fig
 
 
 if __name__ == '__main__':

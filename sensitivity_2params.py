@@ -11,8 +11,6 @@ import numpy
 import common
 import parameters
 
-pyplot.rcParams['mathtext.fontset'] = "stix"
-
 
 save = True
 
@@ -51,25 +49,6 @@ def shifted_cmap(cmap, midpoint=0.5):
     return colors.LinearSegmentedColormap(name, cdict)
 
 
-def get_scale(param):
-    if param == 'phiV':
-        return 'linear'
-    else:
-        return 'log'
-
-
-def get_dPs(param, value_baseline):
-    scale = get_scale(param)
-    if scale == 'linear':
-        eps = 0.1
-        return numpy.linspace(eps, 1 - eps,
-                              len(common.sensitivity_dPs))
-    elif scale == 'log':
-        return value_baseline * common.sensitivity_dPs
-    else:
-        raise NotImplementedError('scale = {}'.format(scale))
-
-
 def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
     nparams = len(common.sensitivity_parameters)
     nrows = nparams - 1
@@ -83,8 +62,8 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
             param0, param0_name = common.sensitivity_parameters[row + 1]
             param1, param1_name = common.sensitivity_parameters[col]
 
-            yscale = get_scale(param0)
-            xscale = get_scale(param1)
+            yscale = common.get_scale(param0)
+            xscale = common.get_scale(param1)
             ax = fig.add_subplot(gs[row, col],
                                  xscale = xscale,
                                  yscale = yscale,
@@ -93,8 +72,8 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
             param0baseline = getattr(p, param0)
             param1baseline = getattr(p, param1)
 
-            y = get_dPs(param0, param0baseline)
-            x = get_dPs(param1, param1baseline)
+            y = common.get_dPs(param0, param0baseline)
+            x = common.get_dPs(param1, param1baseline)
             X, Y = numpy.meshgrid(x, y)
 
             # For pcolor: Z[j, k] is
@@ -141,10 +120,10 @@ def plot_sensitivity(p, rel_growth_rate, contour_levels, cmap, norm):
             for axis in (ax.xaxis, ax.yaxis):
                 scale = axis.get_scale()
                 if scale == 'linear':
-                    axis.set_major_locator(ticker.MaxNLocator(nbins = 5))
+                    axis.set_major_locator(ticker.MaxNLocator(nbins = 4))
                 elif scale == 'log':
                     axis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
-                axis.set_major_formatter(ticker.ScalarFormatter())
+                axis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
                 ax.tick_params(labelsize = 9)
 
             # xlim = numpy.log(ax.get_xlim())
@@ -170,8 +149,8 @@ def build():
     nparams = len(common.sensitivity_parameters)
     rel_growth_rate = numpy.ones((nparamsets,
                                   nparams - 1, nparams - 1,
-                                  len(common.sensitivity_dPs),
-                                  len(common.sensitivity_dPs)))
+                                  common.npoints,
+                                  common.npoints))
     for (k, p) in enumerate(parameters.parameter_sets.values()):
         r0baseline = p.QSSA.r0(t)
         for i in range(nparams - 1):
@@ -180,10 +159,10 @@ def build():
                 param1, param1_name = common.sensitivity_parameters[j]
                 param0baseline = getattr(p, param0)
                 param1baseline = getattr(p, param1)
-                dPs0 = get_dPs(param0, param0baseline)
+                dPs0 = common.get_dPs(param0, param0baseline)
                 for (m, dP0) in enumerate(dPs0):
                     setattr(p, param0, dP0)
-                    dPs1 = get_dPs(param1, param1baseline)
+                    dPs1 = common.get_dPs(param1, param1baseline)
                     for (n, dP1) in enumerate(dPs1):
                         setattr(p, param1, dP1)
                         rel_growth_rate[k, i, j, m, n] = (p.QSSA.r0(t)

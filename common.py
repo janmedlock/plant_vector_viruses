@@ -2,6 +2,7 @@ import inspect
 import os.path
 import warnings
 
+from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
 warnings.filterwarnings(
@@ -11,6 +12,10 @@ warnings.filterwarnings(
                'and replaced with axes.prop_cycle; '
                'please use the latter.'))
 import seaborn
+
+
+# Weird bugfix.
+pyplot.rcParams['mathtext.fontset'] = "stix"
 
 
 tmax = 150
@@ -25,12 +30,30 @@ sensitivity_parameters = (
     ('phiV', 'Proportion of vectors feeding\n$\\phi_V$'),
     ('fV', 'Feeding rate\n$f_V$ (d$^{-1}$)'))
 
-sensitivity_max_abs_mult_change = 2
-npoints = 21
-sensitivity_dPs = numpy.logspace(
-    - numpy.log10(sensitivity_max_abs_mult_change),
-    + numpy.log10(sensitivity_max_abs_mult_change),
-    npoints)
+
+def get_scale(param):
+    if param == 'phiV':
+        return 'linear'
+    else:
+        return 'log'
+
+
+sensitivity_max_abs_mult_change = 3
+npoints = 201
+
+
+def get_dPs(param, value_baseline):
+    scale = get_scale(param)
+    if scale == 'linear':
+        eps = 0.2
+        return numpy.linspace(eps, 1 - eps, npoints)
+    elif scale == 'log':
+        return value_baseline * numpy.logspace(
+            - numpy.log10(sensitivity_max_abs_mult_change),
+            + numpy.log10(sensitivity_max_abs_mult_change),
+            npoints)
+    else:
+        raise NotImplementedError('scale = {}'.format(scale))
 
 
 def style_axis(ax):
