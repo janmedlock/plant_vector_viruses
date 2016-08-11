@@ -14,8 +14,8 @@ save = True
 
 t = 150
 figsize = (8.5, 3)
-
 common.seaborn.set_palette('Dark2')
+alpha = 0.7
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
                 r0[j] = p.QSSA.r0(t) / r0baseline
             setattr(p, param0, param0baseline)
 
-            l = ax.plot(dPs, r0, label = n, alpha = 0.5)
+            l = ax.plot(dPs, r0, label = n, alpha = alpha)
 
             if ymax is None:
                 ymax = max(r0)
@@ -77,7 +77,7 @@ def main():
             ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
         ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
-                   alpha = 0.5)
+                   alpha = alpha)
 
     # ymin = 10 ** numpy.floor(numpy.log10(ymin))
     # ymax = 10 ** numpy.ceil(numpy.log10(ymax))
@@ -85,7 +85,7 @@ def main():
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
     
-    handles = (lines.Line2D([], [], color = c)
+    handles = (lines.Line2D([], [], color = c, alpha = alpha)
                for c in common.seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
