@@ -10,7 +10,7 @@ import common
 import parameters
 
 
-save = False
+save = True
 
 t = 150
 figsize = (8.5, 8)
