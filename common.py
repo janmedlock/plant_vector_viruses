@@ -19,7 +19,7 @@ pyplot.rcParams['mathtext.fontset'] = "stix"
 
 
 tmax = 150
-t = numpy.linspace(0, tmax, 21)
+t = numpy.linspace(0, tmax, 101)
 
 vi0 = 0.01
 
@@ -57,7 +57,7 @@ def get_dPs(param, value_baseline):
 
 
 def style_axis(ax):
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(25))
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(50))
 
 
 def savefig(fig, append = '', format_ = 'pdf', *args, **kwargs):

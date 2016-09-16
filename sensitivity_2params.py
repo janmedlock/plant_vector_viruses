@@ -9,13 +9,13 @@ from matplotlib import ticker
 import numpy
 
 import common
+import growth_rates
 import parameters
 
 
 save = True
 
 
-t = 150
 cmap_base = 'RdBu'
 figsize = (8.5, 7.25)
 colorbar_width_ratio = 0.3
@@ -152,7 +152,7 @@ def build():
                                   common.npoints,
                                   common.npoints))
     for (k, p) in enumerate(parameters.parameter_sets.values()):
-        r0baseline = p.QSSA.r0(t)
+        r0baseline = growth_rates.get_growth_rate(p)
         for i in range(nparams - 1):
             for j in range(i + 1):
                 param0, param0_name = common.sensitivity_parameters[i + 1]
@@ -165,8 +165,8 @@ def build():
                     dPs1 = common.get_dPs(param1, param1baseline)
                     for (n, dP1) in enumerate(dPs1):
                         setattr(p, param1, dP1)
-                        rel_growth_rate[k, i, j, m, n] = (p.QSSA.r0(t)
-                                                          / r0baseline)
+                        rel_growth_rate[k, i, j, m, n] = (
+                            growth_rates.get_growth_rate(p) / r0baseline)
                 setattr(p, param0, param0baseline)
                 setattr(p, param1, param1baseline)
     return rel_growth_rate

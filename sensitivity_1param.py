@@ -7,12 +7,12 @@ from matplotlib import ticker
 import numpy
 
 import common
+import growth_rates
 import parameters
 
 
 save = True
 
-t = 150
 figsize = (8.5, 3)
 common.seaborn.set_palette('Dark2')
 alpha = 0.7
@@ -35,7 +35,7 @@ def main():
             sharey = ax
 
         for (n, p) in parameters.parameter_sets.items():
-            r0baseline = p.QSSA.r0(t)
+            r0baseline = growth_rates.get_growth_rate(p)
 
             param0baseline = getattr(p, param0)
 
@@ -43,7 +43,7 @@ def main():
             r0 = numpy.empty(len(dPs))
             for (j, dP0) in enumerate(dPs):
                 setattr(p, param0, dP0)
-                r0[j] = p.QSSA.r0(t) / r0baseline
+                r0[j] = growth_rates.get_growth_rate(p) / r0baseline
             setattr(p, param0, param0baseline)
 
             l = ax.plot(dPs, r0, label = n, alpha = alpha)

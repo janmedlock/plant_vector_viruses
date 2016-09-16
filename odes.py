@@ -64,21 +64,18 @@ def Jacobian(Y, t, p):
 
 
 def get_r_v_Jacobian(t, Y, p, use_sparse_solver = False):
-    r = numpy.empty(len(t), dtype = numpy.complex_)
-    v = numpy.empty(numpy.shape(Y), dtype = numpy.complex_)
-    for i in range(len(t)):
-        J = Jacobian(Y.values[i], t[i], p)
-        # Get the dominant eigenpair.
-        if use_sparse_solver:
-            W, V = sparse.linalg.eigs(numpy.asarray(J),
-                                      k = 1, which = 'LR',
-                                      maxiter = 10000)
-            j = 0
-        else:
-            W, V = numpy.linalg.eig(J)
-            j = numpy.argmax(numpy.real(W))
-        r[i] = W[j]
-        v[i] = V[:, j] / V[0, j]
+    J = Jacobian(Y, t, p)
+    # Get the dominant eigenpair.
+    if use_sparse_solver:
+        W, V = sparse.linalg.eigs(numpy.asarray(J),
+                                  k = 1, which = 'LR',
+                                  maxiter = 10000)
+        j = 0
+    else:
+        W, V = numpy.linalg.eig(J)
+        j = numpy.argmax(numpy.real(W))
+    r = W[j]
+    v = V[:, j] / V[0, j]
     return map(numpy.real_if_close, (r, v))
     
 
@@ -123,17 +120,19 @@ def plot_solution(ax, t, Y):
 
     colors = seaborn.color_palette('Set1', 3)
 
-    ax.plot(t, Y['Vms'], label = '$V_{ms}$', color = colors[0],
+    V = Y['Vms'] + Y['Vfs'] + Y['Vmi'] + Y['Vfi']
+    P = Y['Ps'] + Y['Pi']
+    ax.plot(t, Y['Vms'] / V, label = '$V_{ms}$', color = colors[0],
             **style_s)
-    ax.plot(t, Y['Vfs'], label = '$V_{fs}$', color = colors[1],
+    ax.plot(t, Y['Vfs'] / V, label = '$V_{fs}$', color = colors[1],
             **style_s)
-    ax.plot(t, Y['Ps'], label = '$P_s$', color = colors[2],
+    ax.plot(t, Y['Ps'] / P, label = '$P_s$', color = colors[2],
             **style_s)
-    ax.plot(t, Y['Vmi'], label = '$V_{mi}$', color = colors[0],
+    ax.plot(t, Y['Vmi'] / V, label = '$V_{mi}$', color = colors[0],
             **style_i)
-    ax.plot(t, Y['Vfi'], label = '$V_{fi}$', color = colors[1],
+    ax.plot(t, Y['Vfi'] / V, label = '$V_{fi}$', color = colors[1],
             **style_i)
-    ax.plot(t, Y['Pi'], label = '$P_i$', color = colors[2],
+    ax.plot(t, Y['Pi'] / P, label = '$P_i$', color = colors[2],
             **style_i)
 
 
@@ -150,12 +149,12 @@ if __name__ == '__main__':
     Y0 = get_initial_conditions(p, common.vi0)
     Y = solve(Y0, common.t, p)
 
-    fig, ax = pyplot.subplots(subplot_kw = dict(yscale = 'log'))
+    fig, ax = pyplot.subplots()
 
     plot_solution(ax, common.t, Y)
 
     ax.set_xlabel('Time (d)')
-    ax.set_ylabel('Number')
+    ax.set_ylabel('Proportion')
     ax.set_xlim(common.t[0], common.t[-1])
     ax.legend(loc = 'lower right', ncol = 2)
 

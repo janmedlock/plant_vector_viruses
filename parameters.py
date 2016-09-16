@@ -78,11 +78,11 @@ class QSSA:
 
     @property
     def vf(self):
-        return self.params.sigmaV / (self.params.sigmaV + self.params.tauV)
+        return self.params.phiV
 
     @property
     def vm(self):
-        return self.params.tauV / (self.params.sigmaV + self.params.tauV)
+        return 1 - self.params.phiV
 
     @property
     def muV(self):
