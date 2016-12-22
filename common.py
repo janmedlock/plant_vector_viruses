@@ -1,21 +1,11 @@
 import inspect
 import os.path
-import warnings
 
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
-warnings.filterwarnings(
-    'ignore',
-    module = 'matplotlib',
-    message = ('axes.color_cycle is deprecated '
-               'and replaced with axes.prop_cycle; '
-               'please use the latter.'))
-import seaborn
 
-
-# Weird bugfix.
-pyplot.rcParams['mathtext.fontset'] = "stix"
+import seaborn_quiet as seaborn
 
 
 tmax = 150

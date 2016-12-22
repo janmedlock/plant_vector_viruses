@@ -1,21 +1,13 @@
 #!/usr/bin/python3
 
-import warnings
-
 from matplotlib import pyplot
 import numpy
 import pandas
-warnings.filterwarnings(
-    'ignore',
-    module = 'matplotlib',
-    message = ('axes.color_cycle is deprecated '
-               'and replaced with axes.prop_cycle; '
-               'please use the latter.'))
-import seaborn
 
 import common
 import odes
 import parameters
+import seaborn_quiet as seaborn
 
 
 def main():

@@ -10,11 +10,13 @@ import common
 import growth_rates
 import parameters
 
+import seaborn_quiet as seaborn
+
 
 save = True
 
 figsize = (8.5, 8)
-common.seaborn.set_palette('Dark2')
+seaborn.set_palette('Dark2')
 alpha = 0.7
 
 
@@ -55,7 +57,7 @@ def plot(rel_growth_rate):
                                     2 * numpy.ceil(log_rgr_absmax) + 1)
     contour_levels = 10 ** log_rgr_levels
 
-    colors = common.seaborn.color_palette()
+    colors = seaborn.color_palette()
 
     nparams = len(common.sensitivity_parameters)
     nrows = nparams - 1
@@ -124,7 +126,7 @@ def plot(rel_growth_rate):
     fig.tight_layout()
 
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
-               for c in common.seaborn.color_palette())
+               for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
                      loc = 'upper right',

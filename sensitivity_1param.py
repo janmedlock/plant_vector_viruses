@@ -10,12 +10,14 @@ import common
 import growth_rates
 import parameters
 
+import seaborn_quiet as seaborn
+
 
 save = True
 
 figsize = (8.5, 3)
 figsize_fV = (8.5, 6)
-common.seaborn.set_palette('Dark2')
+seaborn.set_palette('Dark2')
 alpha = 0.7
 
 
@@ -87,7 +89,7 @@ def main():
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
-               for c in common.seaborn.color_palette())
+               for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
                      loc = 'lower center',
@@ -153,7 +155,7 @@ def sensitivity_fV_only(t = 150):
                alpha = alpha)
 
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
-               for c in common.seaborn.color_palette())
+               for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     fig.legend(handles, labels,
                loc = 'lower center',

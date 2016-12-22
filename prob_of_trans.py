@@ -1,19 +1,12 @@
 #!/usr/bin/python3
 
-import warnings
-
 import ad
 import numpy
 import pandas
 from scipy import integrate
 from scipy import sparse
-warnings.filterwarnings(
-    'ignore',
-    module = 'matplotlib',
-    message = ('axes.color_cycle is deprecated '
-               'and replaced with axes.prop_cycle; '
-               'please use the latter.'))
-import seaborn
+
+import seaborn_quiet as seaborn
 
 
 def ODEs(Y, t, p):
