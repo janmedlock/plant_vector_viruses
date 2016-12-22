@@ -14,6 +14,7 @@ import parameters
 save = True
 
 figsize = (8.5, 3)
+figsize_fV = (8.5, 6)
 common.seaborn.set_palette('Dark2')
 alpha = 0.7
 
@@ -41,8 +42,8 @@ def main():
 
             dPs = common.get_dPs(param0, param0baseline)
             r0 = numpy.empty(len(dPs))
-            for (j, dP0) in enumerate(dPs):
-                setattr(p, param0, dP0)
+            for (j, dP) in enumerate(dPs):
+                setattr(p, param0, dP)
                 r0[j] = growth_rates.get_growth_rate(p) / r0baseline
             setattr(p, param0, param0baseline)
 
@@ -84,7 +85,7 @@ def main():
     ax.set_ylim(ymin, ymax)
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
-    
+
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
                for c in common.seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
@@ -102,6 +103,75 @@ def main():
     return fig
 
 
+def sensitivity_fV_only(t = 150):
+    # Get long name.
+    for p, n in common.sensitivity_parameters:
+        if p == 'fV':
+            label = n
+            break
+    else:
+        label = 'fV'
+
+    xscale = common.get_scale('fV')
+    # xscale = 'linear'
+
+    fig, ax = pyplot.subplots(figsize = figsize_fV,
+                              subplot_kw = dict(xscale = xscale))
+
+    dPs = numpy.linspace(0.1, 18, 1001)
+    for (n, p) in parameters.parameter_sets.items():
+        r0baseline = growth_rates.get_growth_rate(p, t)
+
+        fV_baseline = p.fV
+
+        # dPs = common.get_dPs('fV', fV_baseline)
+        r0 = numpy.empty(len(dPs))
+        for (j, dP) in enumerate(dPs):
+            p.fV = dP
+            r0[j] = growth_rates.get_growth_rate(p, t) / r0baseline
+        p.fV = fV_baseline
+
+        l = ax.plot(dPs, r0, label = n, alpha = alpha)
+
+    ax.set_xlim(min(dPs), max(dPs))
+    ax.set_ylim(0.8, 1.20000001)
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(0.1))
+
+    ax.set_xlabel(label, fontsize = 'x-small')
+    ax.set_ylabel('Relative infection\ngrowth rate',
+                  fontsize = 'small')
+
+    ax.tick_params(labelsize = 'x-small')
+
+    if xscale == 'linear':
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+    elif xscale == 'log':
+        ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
+        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+
+    ax.axvline(fV_baseline, linestyle = 'dotted', color = 'black',
+               alpha = alpha)
+
+    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+               for c in common.seaborn.color_palette())
+    labels = parameters.parameter_sets.keys()
+    fig.legend(handles, labels,
+               loc = 'lower center',
+               ncol = len(parameters.parameter_sets),
+               columnspacing = 10,
+               frameon = False,
+               fontsize = 'small',
+               numpoints = 1)
+
+    fig.tight_layout(rect = (0, 0.04, 1, 1))
+
+    if save:
+        common.savefig(fig, append = '_fV')
+
+    return fig
+
+
 if __name__ == '__main__':
     main()
+    sensitivity_fV_only()
     pyplot.show()

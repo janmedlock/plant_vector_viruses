@@ -33,7 +33,8 @@ class Parameters:
     def sigmaV(self):
         if self.phiV == 1:
             # Undefined.
-            return numpy.nan
+            # return numpy.nan
+            return numpy.inf
         else:
             return self.fV / (1 - self.phiV)
 
@@ -41,7 +42,8 @@ class Parameters:
     def tauV(self):
         if self.phiV == 0:
             # Undefined.
-            return numpy.nan
+            # return numpy.nan
+            return numpy.inf
         else:
             return self.fV / self.phiV
 

@@ -59,12 +59,20 @@ def get_DFS0(p):
 
 
 def Jacobian(Y, t, p):
-    Y_ = ad.adnumber(Y)
-    return ad.jacobian(ODEs(Y_, t, p), Y_)
+    Y_ = ad.adnumber(numpy.asarray(Y))
+    return numpy.asarray(ad.jacobian(ODEs(Y_, t, p), Y_))
+
+
+def Jacobian_infected(Y, t, p):
+    ix_i = [2, 3, 5]
+    Y_ = ad.adnumber(numpy.asarray(Y))
+    J = ad.jacobian(ODEs(Y_, t, p), Y_)
+    J_i = [[J[r][c] for c in ix_i] for r in ix_i]
+    return numpy.asarray(J_i)
 
 
 def get_r_v_Jacobian(t, Y, p, use_sparse_solver = False):
-    J = Jacobian(Y, t, p)
+    J = Jacobian_infected(Y, t, p)
     # Get the dominant eigenpair.
     if use_sparse_solver:
         W, V = sparse.linalg.eigs(numpy.asarray(J),
@@ -75,7 +83,12 @@ def get_r_v_Jacobian(t, Y, p, use_sparse_solver = False):
         W, V = numpy.linalg.eig(J)
         j = numpy.argmax(numpy.real(W))
     r = W[j]
-    v = V[:, j] / V[0, j]
+    v = V[:, j]
+    # Normalize
+    for i in range(len(v)):
+        if not numpy.isclose(v[i], 0):
+            v /= v[i]
+            break
     return map(numpy.real_if_close, (r, v))
     
 

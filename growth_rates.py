@@ -10,10 +10,13 @@ import parameters
 
 
 def get_growth_rate(p, t = 150):
-    T = numpy.linspace(0, t, 101)
     DFS0 = odes.get_DFS0(p)
-    DFS = odes.solve(DFS0, T, p)
-    DFS1 = DFS.values[-1]
+    if t > 0:
+        T = numpy.linspace(0, t, 101)
+        DFS = odes.solve(DFS0, T, p)
+        DFS1 = DFS.iloc[-1]
+    else:
+        DFS1 = DFS0
     r, _ = odes.get_r_v_Jacobian(t, DFS1, p)
 
     # r_QSSA = p.QSSA.r0(t)
@@ -24,7 +27,7 @@ def get_growth_rate(p, t = 150):
 def plot_growth_rates(ax, p):
     DFS0 = odes.get_DFS0(p)
     DFS = odes.solve(DFS0, common.t, p)
-    r, _ = zip(*(odes.get_r_v_Jacobian(t, row[1].values, p)
+    r, _ = zip(*(odes.get_r_v_Jacobian(t, row[1], p)
                  for (t, row) in zip(common.t, DFS.iterrows())))
     ax.plot(common.t, r,
             label = ('Numerical solution of ODEs'))
