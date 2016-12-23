@@ -23,19 +23,22 @@ alpha = 0.7
 
 def main():
     nparams = len(common.sensitivity_parameters)
-    fig = pyplot.figure(figsize = figsize)
-    gs = gridspec.GridSpec(1, nparams)
-    sharey = None
-    ymin = ymax = None
+    fig, axes = pyplot.subplots(1, nparams, sharey = True)
     for (i, param) in enumerate(common.sensitivity_parameters):
         param0, param0_name = param
 
-        xscale = common.get_scale(param0)
-        ax = fig.add_subplot(gs[0, i],
-                             sharey = sharey,
-                             xscale = xscale, yscale = 'log')
-        if sharey is None:
-            sharey = ax
+        ax = axes[i]
+        # ax.autoscale(tight = True)  # Bug!
+        ax.set_xscale(common.get_scale(param0))
+        ax.set_yscale('log')
+
+        ax.tick_params(labelsize = 'x-small')
+
+        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+        if ax.get_xscale() == 'linear':
+            ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+        elif ax.get_xscale() == 'log':
+            ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
 
         for (n, p) in parameters.parameter_sets.items():
             r0baseline = growth_rates.get_growth_rate(p)
@@ -49,42 +52,15 @@ def main():
                 r0[j] = growth_rates.get_growth_rate(p) / r0baseline
             setattr(p, param0, param0baseline)
 
-            l = ax.plot(dPs, r0, label = n, alpha = alpha)
-
-            if ymax is None:
-                ymax = max(r0)
-            else:
-                ymax = max(max(r0), ymax)
-            if ymin is None:
-                ymin = min(r0)
-            else:
-                ymin = min(min(r0), ymin)
-
-        ax.set_xlim(min(dPs), max(dPs))
+            ax.plot(dPs, r0, label = n, alpha = alpha)
 
         ax.set_xlabel(param0_name, fontsize = 'x-small')
         if ax.is_first_col():
             ax.set_ylabel('Relative infection\ngrowth rate',
                           fontsize = 'small')
-        else:
-            for l in ax.yaxis.get_ticklabels():
-                l.set_visible(False)
-            ax.yaxis.offsetText.set_visible(False)
-
-        ax.tick_params(labelsize = 'x-small')
-
-        if xscale == 'linear':
-            ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-        elif xscale == 'log':
-            ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
-            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
         ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
                    alpha = alpha)
-
-    # ymin = 10 ** numpy.floor(numpy.log10(ymin))
-    # ymax = 10 ** numpy.ceil(numpy.log10(ymax))
-    ax.set_ylim(ymin, ymax)
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
@@ -136,7 +112,7 @@ def sensitivity_fV_only(t = 150):
         l = ax.plot(dPs, r0, label = n, alpha = alpha)
 
     ax.set_xlim(min(dPs), max(dPs))
-    ax.set_ylim(0.8, 1.20000001)
+    # ax.set_ylim(0.8, 1.20000001)
     ax.yaxis.set_major_locator(ticker.MultipleLocator(0.1))
 
     ax.set_xlabel(label, fontsize = 'x-small')
