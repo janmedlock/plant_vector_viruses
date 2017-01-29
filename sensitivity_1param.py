@@ -23,7 +23,9 @@ alpha = 0.7
 
 def main():
     nparams = len(common.sensitivity_parameters)
-    fig, axes = pyplot.subplots(1, nparams, sharey = True)
+    fig, axes = pyplot.subplots(1, nparams,
+                                sharey = True,
+                                figsize = figsize)
     for (i, param) in enumerate(common.sensitivity_parameters):
         param0, param0_name = param
 
