@@ -8,6 +8,15 @@ import common
 import odes
 import parameters
 
+import seaborn_quiet as seaborn
+
+
+save = True
+
+figsize = (8.5, 3)
+seaborn.set_palette('Dark2')
+alpha = 0.7
+
 
 def get_growth_rate(p, t = 150):
     DFS0 = odes.get_DFS0(p)
@@ -24,38 +33,36 @@ def get_growth_rate(p, t = 150):
     return r
 
 
-def plot_growth_rates(ax, p):
+def plot_growth_rates(ax, p, n):
     DFS0 = odes.get_DFS0(p)
     DFS = odes.solve(DFS0, common.t, p)
     r, _ = zip(*(odes.get_r_v_Jacobian(t, row[1], p)
                  for (t, row) in zip(common.t, DFS.iterrows())))
-    ax.plot(common.t, r,
-            label = ('Numerical solution of ODEs'))
-
-    r_QSSA = p.QSSA.r0(common.t)
-    ax.plot(common.t, r_QSSA, label = 'QSSA', linestyle = 'dashed')
+    ax.plot(common.t, r, label = n, alpha = alpha)
 
 
 def main():
-    fig, axes = pyplot.subplots(2, 1,
-                                sharex = True)
+    fig, axes = pyplot.subplots(1, 1,
+                                sharex = True,
+                                figsize = figsize)
 
-    for (ax, np) in zip(axes, parameters.parameter_sets.items()):
+    for np in parameters.parameter_sets.items():
         n, p = np
+        plot_growth_rates(axes, p, n)
 
-        plot_growth_rates(ax, p)
+    axes.set_xlabel('Time (d)')
+    axes.set_ylabel('Infection growth rate (d$^{-1}$)')
+    axes.set_xlim(common.t[0], common.t[-1])
+    axes.legend(loc = 'upper left')
 
-        ax.set_ylabel('Infection growth rate (d$^{-1}$)')
-        ax.set_xlim(common.t[0], common.t[-1])
-        ax.set_title(n)
-        if ax.is_first_row():
-            ax.legend(loc = 'upper left')
-        if ax.is_last_row():
-            ax.set_xlabel('Time (d)')
+    common.style_axis(axes)
 
-        common.style_axis(ax)
+    fig.tight_layout()
 
-    common.savefig(fig)
+    if save:
+        common.savefig(fig)
+
+    return fig
 
 
 if __name__ == '__main__':
