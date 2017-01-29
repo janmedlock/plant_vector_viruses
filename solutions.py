@@ -10,6 +10,10 @@ import parameters
 import seaborn_quiet as seaborn
 
 
+save = True
+alpha = 0.7
+
+
 def main():
     fig, axes = pyplot.subplots(2, 2, sharex = 'col', sharey = 'row')
     for (ax, np) in zip(axes.T, parameters.parameter_sets.items()):
@@ -28,7 +32,7 @@ def main():
         t = numpy.hstack((t0, t1))
         Z = pandas.concat([DFS, Y])
 
-        style = dict(alpha = 0.7)
+        style = dict(alpha = alpha)
         style_s = dict(linestyle = 'solid')
         style_s.update(style)
         style_i = dict(linestyle = 'dashed')
@@ -60,7 +64,10 @@ def main():
         common.style_axis(ax[0])
         common.style_axis(ax[1])
 
-    common.savefig(fig)
+    if save:
+        common.savefig(fig)
+
+    return fig
 
 
 if __name__ == '__main__':
