@@ -21,7 +21,7 @@ def main():
 
         t1 = t0[-1] + common.t
         Y0 = DFS.iloc[-1].copy()
-        Y0['Vmi'] = common.vi0 * Y0['Vms']
+        Y0['Vmi'] = 1
         Y0['Vms'] -= Y0['Vmi']
         Y = odes.solve(Y0, t1, p)
 
