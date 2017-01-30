@@ -18,9 +18,6 @@ class Parameters:
     V0 = 100
     P0 = 10000
 
-    def __init__(self):
-        self.QSSA = QSSA(self)
-
     @property
     def muV(self):
         return self.muVf
@@ -72,57 +69,6 @@ class Parameters:
         # Replace non-spaces with spaces.
         s_wrapped = s_nonspaced_wrapped.replace(nonspace, ' ')
         return s_wrapped
-
-
-class QSSA:
-    def __init__(self, params):
-        self.params = params
-
-    @property
-    def vf(self):
-        return self.params.phiV
-
-    @property
-    def vm(self):
-        return 1 - self.params.phiV
-
-    @property
-    def muV(self):
-        muV_ = self.params.muV * (1 + self.params.deltaV * self.vm)
-        return muV_
-
-    @property
-    def bV(self):
-        bV_ = self.vf * self.params.bV + self.vm * 0
-        return bV_
-
-    @property
-    def Vinf(self):
-        Vinf_ = ((self.bV - self.muV) / self.bV
-                 * self.params.KV * self.params.P0)
-        return Vinf_
-
-    def V(self, t):
-        if (self.bV != self.muV):
-            V_ = (self.params.V0 * numpy.exp((self.bV - self.muV) * t)
-                  / (1 + self.params.V0 / self.Vinf
-                     * (numpy.exp((self.bV - self.muV) * t) - 1)))
-        else:
-            V_ = (self.params.V0
-                  / (1
-                     + self.bV * self.params.V0 / self.params.KV
-                     / self.params.P0 * t))
-        return V_
-
-    def r0(self, t):
-        r0_ = (- (self.muV + self.params.gammaV + self.params.gammaP)
-               + numpy.sqrt(
-                   (self.muV + self.params.gammaV + self.params.gammaP) ** 2
-                   + 4 * (self.params.betaV * self.params.betaP * self.vf ** 2
-                          * self.V(t) / self.params.P0
-                          - self.params.gammaP
-                          * (self.muV + self.params.gammaV)))) / 2
-        return r0_
 
 
 class Persistent(Parameters):

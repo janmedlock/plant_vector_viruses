@@ -27,9 +27,6 @@ def get_growth_rate(p, t = 150):
     else:
         DFS1 = DFS0
     r, _ = odes.get_r_v_Jacobian(t, DFS1, p)
-
-    # r_QSSA = p.QSSA.r0(t)
-
     return r
 
 

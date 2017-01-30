@@ -29,26 +29,27 @@ def ODEs(Y, t, p):
     return (dVms, dVfs, dVmi, dVfi, dPs, dPi)
 
 
-def get_initial_conditions(p, vi0):
-    Vmi0 = vi0 * p.V0
-    Vfi0 = 0
-    Vms0 = p.QSSA.vm * p.V0 - Vmi0
-    Vfs0 = p.QSSA.vf * p.V0 - Vfi0
-    Pi0 = 0
-    Ps0 = p.P0 - Pi0
-    Y0 = (Vms0, Vfs0, Vmi0, Vfi0, Ps0, Pi0)
-    return Y0
-
-
 def get_DFS0(p):
     Vmi0 = 0
     Vfi0 = 0
-    Vms0 = p.QSSA.vm * p.V0
-    Vfs0 = p.QSSA.vf * p.V0
+    Vms0 = (1 - p.params.phiV) * p.V0
+    Vfs0 = p.params.phiV * p.V0
     Pi0 = 0
     Ps0 = p.P0
     DFS0 = (Vms0, Vfs0, Vmi0, Vfi0, Ps0, Pi0)
     return DFS0
+
+
+def get_initial_conditions(p, vi0):
+    Vmi0, Vfs0, _, _, Ps0, _ = get_DFS0(p)
+    Vmi0 = vi0 * p.V0
+    Vfi0 = 0
+    Pi0 = 0
+    Vms0 -= Vmi0
+    Vfs0 -= Vfi0
+    Ps0 -= Pi0
+    Y0 = (Vms0, Vfs0, Vmi0, Vfi0, Ps0, Pi0)
+    return Y0
 
 
 def Jacobian(Y, t, p):
