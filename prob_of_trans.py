@@ -15,21 +15,21 @@ def ODEs(Y, t, p):
     Vt = Y[-2]
     T = Y[-1]
 
-    dVm = (- p.sigmaV * Vm
-           + p.tauV * numpy.sum(Vf)
-           + p.tauV * Vt
+    dVm = (- p.fV / (1 - p.phiV) * Vm
+           + p.fV / p.phiV * numpy.sum(Vf)
+           + p.fV / p.phiV * Vt
            - p.gammaV * Vm
            - p.muV * (1 + p.deltaV) * Vm)
 
-    dVf = (- p.tauV * Vf
+    dVf = (- p.fV / p.phiV * Vf
            - p.gammaV * Vf
            - p.muV * Vf
            - psi * Vf)
-    dVf[0] += p.sigmaV * Vm
+    dVf[0] += p.fV / (1 - p.phiV) * Vm
     dVf[1 : ] += psi * Vf[ : -1]
 
     dVt = (psi * Vf[-1]
-           - p.tauV * Vt
+           - p.fV / p.phiV * Vt
            - p.gammaV * Vt
            - p.muV * Vt
            - p.betaP * Vt)

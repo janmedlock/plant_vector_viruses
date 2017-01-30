@@ -14,17 +14,29 @@ def ODEs(Y, t, p):
     V = Vms + Vfs + Vmi + Vfi
     P = Ps + Pi
 
-    dVms = (- p.sigmaV * Vms + p.tauV * Vfs + p.gammaV * Vmi
+    dVms = (- p.fV / (1 - p.phiV) * Vms
+            + p.fV / p.phiV * Vfs
+            + p.gammaV * Vmi
             - p.muV * (1 + p.deltaV) * Vms
             + p.bV * (Vfs + Vfi) * (1 - V / p.KV / P))
-    dVfs = (- p.betaV * Pi / P * Vfs + p.sigmaV * Vms - p.tauV * Vfs
-            + p.gammaV * Vfi - p.muV * Vfs)
-    dVmi = (- p.sigmaV * Vmi + p.tauV * Vfi - p.gammaV * Vmi
+    dVfs = (- p.betaV * Pi / P * Vfs
+            + p.fV / (1 - p.phiV) * Vms
+            - p.fV / p.phiV * Vfs
+            + p.gammaV * Vfi
+            - p.muV * Vfs)
+    dVmi = (- p.fV / (1 - p.phiV) * Vmi
+            + p.fV / p.phiV * Vfi
+            - p.gammaV * Vmi
             - p.muV * (1 + p.deltaV) * Vmi)
-    dVfi = (p.betaV * Pi / P * Vfs + p.sigmaV * Vmi - p.tauV * Vfi
-            - p.gammaV * Vfi - p.muV * Vfi)
-    dPs = - p.betaP * Vfi * Ps / P + p.gammaP * Pi
-    dPi = p.betaP * Vfi * Ps / P - p.gammaP * Pi
+    dVfi = (p.betaV * Pi / P * Vfs
+            + p.fV / (1 - p.phiV) * Vmi
+            - p.fV / p.phiV * Vfi
+            - p.gammaV * Vfi
+            - p.muV * Vfi)
+    dPs = (- p.betaP * Vfi * Ps / P
+           + p.gammaP * Pi)
+    dPi = (p.betaP * Vfi * Ps / P
+           - p.gammaP * Pi)
 
     return (dVms, dVfs, dVmi, dVfi, dPs, dPi)
 
@@ -32,8 +44,8 @@ def ODEs(Y, t, p):
 def get_DFS0(p):
     Vmi0 = 0
     Vfi0 = 0
-    Vms0 = (1 - p.params.phiV) * p.V0
-    Vfs0 = p.params.phiV * p.V0
+    Vms0 = (1 - p.phiV) * p.V0
+    Vfs0 = p.phiV * p.V0
     Pi0 = 0
     Ps0 = p.P0
     DFS0 = (Vms0, Vfs0, Vmi0, Vfi0, Ps0, Pi0)
