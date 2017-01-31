@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import collections
+
 import ad
 import numpy
 import pandas
@@ -10,57 +12,86 @@ import seaborn_quiet as seaborn
 
 
 def ODEs(Y, t, p):
-    Vms, Vfs, Vmi, Vfi, Ps, Pi = Y
-    V = Vms + Vfs + Vmi + Vfi
+    Vsm, Vim, Vsfs, Vifs, Vsfi, Vifi, Ps, Pi = Y
+    Vm = Vsm + Vim
+    Vsf = Vsfs + Vsfi
+    Vif = Vifs + Vifi
+    Vf = Vsf + Vif
+    V = Vm + Vf
     P = Ps + Pi
 
-    dVms = (- p.fV / (1 - p.phiV) * Vms
-            + p.fV / p.phiV * Vfs
-            + p.gammaV * Vmi
-            - p.muV * (1 + p.deltaV) * Vms
-            + p.bV * (Vfs + Vfi) * (1 - V / p.KV / P))
-    dVfs = (- p.betaV * Pi / P * Vfs
-            + p.fV / (1 - p.phiV) * Vms
-            - p.fV / p.phiV * Vfs
-            + p.gammaV * Vfi
-            - p.muV * Vfs)
-    dVmi = (- p.fV / (1 - p.phiV) * Vmi
-            + p.fV / p.phiV * Vfi
-            - p.gammaV * Vmi
-            - p.muV * (1 + p.deltaV) * Vmi)
-    dVfi = (p.betaV * Pi / P * Vfs
-            + p.fV / (1 - p.phiV) * Vmi
-            - p.fV / p.phiV * Vfi
-            - p.gammaV * Vfi
-            - p.muV * Vfi)
-    dPs = (- p.betaP * Vfi * Ps / P
-           + p.gammaP * Pi)
-    dPi = (p.betaP * Vfi * Ps / P
-           - p.gammaP * Pi)
+    dVsm = (p.bV * Vf * (1 - V / p.KV / P)
+            - p.muV * (1 + p.deltaV) * Vsm
+            - p.fV / (1 - p.phiV) * Vsm
+            + p.fV / p.phiV * Vsf
+            + p.gammaV * Vim)
 
-    return (dVms, dVfs, dVmi, dVfi, dPs, dPi)
+    dVim = (- p.muV * (1 + p.deltaV) * Vim
+            - p.fV / (1 - p.phiV) * Vim
+            + p.fV / p.phiV * Vif
+            - p.gammaV * Vim)
+
+    dVsfs = (- p.muV * Vsfs
+             + p.fV / (1 - p.phiV) * Vsm * Ps / P
+             - p.fV / p.phiV * Vsfs
+             + p.gammaV * Vifs
+             + p.gammaP * Vsfi
+             - p.betaP * Vifs / Ps * Vsfs)
+
+    dVsfi = (- p.muV * Vsfi
+             + p.fV / (1 - p.phiV) * Vsm * Pi / P
+             - p.fV / p.phiV * Vsfi
+             + p.gammaV * Vifi
+             - p.gammaP * Vsfi
+             + p.betaP * Vifs / Ps * Vsfs
+             - p.betaV * Vsfi)
+
+    dVifs = (- p.muV * Vifs
+             + p.fV / (1 - p.phiV) * Vim * Ps / P
+             - p.fV / p.phiV * Vifs
+             - p.gammaV * Vifs
+             + p.gammaP * Vifi
+             - p.betaP * Vifs / Ps * Vifs)
+
+    dVifi = (- p.muV * Vifi
+             + p.fV / (1 - p.phiV) * Vim * Pi / P
+             - p.fV / p.phiV * Vifi
+             - p.gammaV * Vifi
+             - p.gammaP * Vifi
+             + p.betaP * Vifs / Ps * Vifs
+             + p.betaV * Vsfi)
+
+    dPs = - p.betaP * Vifs + p.gammaP * Pi
+
+    dPi = p.betaP * Vifs - p.gammaP * Pi
+
+    return (dVsm, dVim, dVsfs, dVifs, dVsfi, dVifi, dPs, dPi)
 
 
 def get_DFS0(p):
-    Vmi0 = 0
-    Vfi0 = 0
-    Vms0 = (1 - p.phiV) * p.V0
-    Vfs0 = p.phiV * p.V0
-    Pi0 = 0
+    Vsm0 = (1 - p.phiV) * p.V0
+    Vim0 = 0
+    Vsfs0 = p.phiV * p.V0
+    Vifs0 = 0
+    Vsfi0 = 0
+    Vifi0 = 0
     Ps0 = p.P0
-    DFS0 = (Vms0, Vfs0, Vmi0, Vfi0, Ps0, Pi0)
+    Pi0 = 0
+    DFS0 = (Vsm0, Vim0, Vsfs0, Vifs0, Vsfi0, Vifi0, Ps0, Pi0)
     return DFS0
 
 
 def get_initial_conditions(p, vi0):
-    Vmi0, Vfs0, _, _, Ps0, _ = get_DFS0(p)
-    Vmi0 = vi0 * p.V0
-    Vfi0 = 0
+    Vsm0, _, Vsfs0, _, _, _, Ps0, _ = get_DFS0(p)
+    Vim0 = vi0 * p.V0
+    Vifs0 = 0
+    Vsfi0 = 0
+    Vifi0 = 0
     Pi0 = 0
-    Vms0 -= Vmi0
-    Vfs0 -= Vfi0
+    Vsm0 -= Vim0
+    Vsfs0 -= Vifs0
     Ps0 -= Pi0
-    Y0 = (Vms0, Vfs0, Vmi0, Vfi0, Ps0, Pi0)
+    Y0 = (Vsm0, Vim0, Vsfs0, Vifs0, Vsfi0, Vifi0, Ps0, Pi0)
     return Y0
 
 
@@ -70,7 +101,7 @@ def Jacobian(Y, t, p):
 
 
 def Jacobian_infected(Y, t, p):
-    ix_i = [2, 3, 5]
+    ix_i = [1, 3, 4, 5, 7]
     Y_ = ad.adnumber(numpy.asarray(Y))
     J = ad.jacobian(ODEs(Y_, t, p), Y_)
     J_i = [[J[r][c] for c in ix_i] for r in ix_i]
@@ -127,32 +158,23 @@ def get_r_empirical(t, x, n = 1):
 def solve(Y0, t, p):
     Y = integrate.odeint(ODEs, Y0, t, args = (p, ))
     return pandas.DataFrame(Y,
-                            columns = ('Vms', 'Vfs', 'Vmi', 'Vfi', 'Ps', 'Pi'))
+                            columns = ('Vsm', 'Vim', 'Vsfs', 'Vifs',
+                                       'Vsfi', 'Vifi', 'Ps', 'Pi'))
 
 
 def plot_solution(ax, t, Y):
-    style = dict(alpha = 0.7)
-    style_s = dict(linestyle = 'solid')
-    style_s.update(style)
-    style_i = dict(linestyle = 'dashed')
-    style_i.update(style)
+    # Population sizes.
+    N = collections.Counter()
+    for (k, v) in Y.items():
+        k0 = k[0]
+        N[k0] += v
 
-    colors = seaborn.color_palette('Set1', 3)
-
-    V = Y['Vms'] + Y['Vfs'] + Y['Vmi'] + Y['Vfi']
-    P = Y['Ps'] + Y['Pi']
-    ax.plot(t, Y['Vms'] / V, label = '$V_{ms}$', color = colors[0],
-            **style_s)
-    ax.plot(t, Y['Vfs'] / V, label = '$V_{fs}$', color = colors[1],
-            **style_s)
-    ax.plot(t, Y['Ps'] / P, label = '$P_s$', color = colors[2],
-            **style_s)
-    ax.plot(t, Y['Vmi'] / V, label = '$V_{mi}$', color = colors[0],
-            **style_i)
-    ax.plot(t, Y['Vfi'] / V, label = '$V_{fi}$', color = colors[1],
-            **style_i)
-    ax.plot(t, Y['Pi'] / P, label = '$P_i$', color = colors[2],
-            **style_i)
+    # Reorder to get legend right.
+    cols = list(Y.columns)
+    cols = cols[0 : : 2] + cols[1 : : 2]
+    for k in cols:
+        k0 = k[0]
+        ax.plot(t, Y[k] / N[k0], **common.style[k])
 
 
 if __name__ == '__main__':
@@ -173,6 +195,7 @@ if __name__ == '__main__':
     ax.set_xlabel('Time (d)')
     ax.set_ylabel('Proportion')
     ax.set_xlim(common.t[0], common.t[-1])
-    ax.legend(loc = 'lower right', ncol = 2)
+    ax.set_ylim(0, 1)
+    ax.legend(loc = 'upper right', ncol = 2)
 
     pyplot.show()
