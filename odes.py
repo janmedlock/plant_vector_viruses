@@ -12,8 +12,10 @@ import seaborn_quiet as seaborn
 
 
 def ODEs(Y, t, p):
-    Vsm, Vim, Vsfs, Vifs, Vsfi, Vifi, Ps, Pi = Y
+    Vsm, Vim, Vsfs, Vifsp, Vifst, Vsfip, Vsfit, Vifi, Ps, Pi = Y
     Vm = Vsm + Vim
+    Vsfi = Vsfip + Vsfit
+    Vifs = Vifsp + Vifst
     Vsf = Vsfs + Vsfi
     Vif = Vifs + Vifi
     Vf = Vsf + Vif
@@ -35,63 +37,75 @@ def ODEs(Y, t, p):
              + p.fV / (1 - p.phiV) * Vsm * Ps / P
              - p.fV / p.phiV * Vsfs
              + p.gammaV * Vifs
-             + p.gammaP * Vsfi
-             - p.betaP * Vifs / Ps * Vsfs)
+             - p.betaP * Vifst / Ps * Vsfs)
 
-    dVsfi = (- p.muV * Vsfi
-             + p.fV / (1 - p.phiV) * Vsm * Pi / P
-             - p.fV / p.phiV * Vsfi
-             + p.gammaV * Vifi
-             - p.gammaP * Vsfi
-             + p.betaP * Vifs / Ps * Vsfs
-             - p.betaV * Vsfi)
+    dVsfip = (- p.muV * Vsfip
+              + p.fV / (1 - p.phiV) * Vsm * Pi / P
+              - p.fV / p.phiV * Vsfip
+              + p.gammaV * Vifi
+              + p.betaP * Vifst / Ps * Vsfs
+              - p.alphaV * Vsfip)
 
-    dVifs = (- p.muV * Vifs
-             + p.fV / (1 - p.phiV) * Vim * Ps / P
-             - p.fV / p.phiV * Vifs
-             - p.gammaV * Vifs
-             + p.gammaP * Vifi
-             - p.betaP * Vifs / Ps * Vifs)
+    dVsfit = (- p.muV * Vsfit
+              - p.fV / p.phiV * Vsfit
+              + p.alphaV * Vsfip
+              - p.betaV * Vsfit)
+
+    dVifsp = (- p.muV * Vifsp
+              + p.fV / (1 - p.phiV) * Vim * Ps / P
+              - p.fV / p.phiV * Vifsp
+              - p.gammaV * Vifsp
+              - p.betaP * Vifst / Ps * Vifsp
+              - p.alphaV * Vifsp)
+
+    dVifst = (- p.muV * Vifst
+              - p.fV / p.phiV * Vifst
+              - p.gammaV * Vifst
+              - p.betaP * Vifst / Ps * Vifst
+              + p.alphaV * Vifsp)
 
     dVifi = (- p.muV * Vifi
              + p.fV / (1 - p.phiV) * Vim * Pi / P
              - p.fV / p.phiV * Vifi
              - p.gammaV * Vifi
-             - p.gammaP * Vifi
-             + p.betaP * Vifs / Ps * Vifs
-             + p.betaV * Vsfi)
+             + p.betaP * Vifst / Ps * Vifs
+             + p.betaV * Vsfit)
 
-    dPs = - p.betaP * Vifs + p.gammaP * Pi
+    dPs = - p.betaP * Vifst
 
-    dPi = p.betaP * Vifs - p.gammaP * Pi
+    dPi = p.betaP * Vifst
 
-    return (dVsm, dVim, dVsfs, dVifs, dVsfi, dVifi, dPs, dPi)
+    return (dVsm, dVim, dVsfs, dVifsp, dVifst, dVsfip, dVsfit, dVifi, dPs, dPi)
 
 
 def get_DFS0(p):
     Vsm0 = (1 - p.phiV) * p.V0
     Vim0 = 0
     Vsfs0 = p.phiV * p.V0
-    Vifs0 = 0
-    Vsfi0 = 0
+    Vifsp0 = 0
+    Vifst0 = 0
+    Vsfip0 = 0
+    Vsfit0 = 0
     Vifi0 = 0
     Ps0 = p.P0
     Pi0 = 0
-    DFS0 = (Vsm0, Vim0, Vsfs0, Vifs0, Vsfi0, Vifi0, Ps0, Pi0)
+    DFS0 = (Vsm0, Vim0, Vsfs0, Vifsp0, Vifst0, Vsfip0, Vsfit0, Vifi0, Ps0, Pi0)
     return DFS0
 
 
 def get_initial_conditions(p, vi0):
-    Vsm0, _, Vsfs0, _, _, _, Ps0, _ = get_DFS0(p)
+    Vsm0, _, Vsfs0, _, _, _, _, _, Ps0, _ = get_DFS0(p)
     Vim0 = vi0 * p.V0
-    Vifs0 = 0
-    Vsfi0 = 0
+    Vifsp0 = 0
+    Vifst0 = 0
+    Vsfip0 = 0
+    Vsfit0 = 0
     Vifi0 = 0
     Pi0 = 0
     Vsm0 -= Vim0
-    Vsfs0 -= Vifs0
+    Vsfs0 -= Vifsp0 + Vifst0 + Vsfip0 + Vsfit0 + Vifi0
     Ps0 -= Pi0
-    Y0 = (Vsm0, Vim0, Vsfs0, Vifs0, Vsfi0, Vifi0, Ps0, Pi0)
+    Y0 = (Vsm0, Vim0, Vsfs0, Vifsp0, Vifst0, Vsfip0, Vsfit0, Vifi0, Ps0, Pi0)
     return Y0
 
 
@@ -101,7 +115,7 @@ def Jacobian(Y, t, p):
 
 
 def Jacobian_infected(Y, t, p):
-    ix_i = [1, 3, 4, 5, 7]
+    ix_i = [1, 3, 4, 5, 6, 7, 9]
     Y_ = ad.adnumber(numpy.asarray(Y))
     J = ad.jacobian(ODEs(Y_, t, p), Y_)
     J_i = [[J[r][c] for c in ix_i] for r in ix_i]
@@ -158,8 +172,8 @@ def get_r_empirical(t, x, n = 1):
 def solve(Y0, t, p):
     Y = integrate.odeint(ODEs, Y0, t, args = (p, ))
     return pandas.DataFrame(Y,
-                            columns = ('Vsm', 'Vim', 'Vsfs', 'Vifs',
-                                       'Vsfi', 'Vifi', 'Ps', 'Pi'))
+                            columns = ('Vsm', 'Vim', 'Vsfs', 'Vifsp', 'Vifst',
+                                       'Vsfip', 'Vsfit', 'Vifi', 'Ps', 'Pi'))
 
 
 def plot_solution(ax, t, Y):
@@ -174,7 +188,7 @@ def plot_solution(ax, t, Y):
     cols = cols[0 : : 2] + cols[1 : : 2]
     for k in cols:
         k0 = k[0]
-        ax.plot(t, Y[k] / N[k0], **common.style[k])
+        ax.plot(t, Y[k] / N[k0], label = k)
 
 
 if __name__ == '__main__':
