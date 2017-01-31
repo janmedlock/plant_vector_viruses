@@ -53,9 +53,7 @@ def style_axis(ax):
 def savefig(fig, append = '', format_ = 'pdf', *args, **kwargs):
     stack = inspect.stack()
     caller = stack[1]
-    path, basename = os.path.split(caller.filename)
+    _, basename = os.path.split(caller.filename)
     filebase, _ = os.path.splitext(basename)
-    outfile = os.path.join(path,
-                           'Dropbox',
-                           '{}{}.{}'.format(filebase, append, format_))
+    outfile = '{}{}.{}'.format(filebase, append, format_)
     fig.savefig(outfile, *args, **kwargs)
