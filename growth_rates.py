@@ -18,7 +18,7 @@ seaborn.set_palette('Dark2')
 alpha = 0.7
 
 
-def get_growth_rate(p, t = 150):
+def get_growth_rate(p, t = 50):
     DFS0 = odes.get_DFS0(p)
     if t > 0:
         T = numpy.linspace(0, t, 101)
@@ -49,7 +49,6 @@ def main():
 
     axes.set_xlabel('Time (d)')
     axes.set_ylabel('Infection growth rate (d$^{-1}$)')
-    axes.set_xlim(common.t[0], common.t[-1])
     axes.legend(loc = 'upper left')
 
     common.style_axis(axes)

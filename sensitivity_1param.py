@@ -83,7 +83,7 @@ def main():
     return fig
 
 
-def sensitivity_fV_only(t = 150):
+def sensitivity_fV_only():
     # Get long name.
     for p, n in common.sensitivity_parameters:
         if p == 'fV':
@@ -100,7 +100,7 @@ def sensitivity_fV_only(t = 150):
 
     dPs = numpy.linspace(0.1, 18, 1001)
     for (n, p) in parameters.parameter_sets.items():
-        r0baseline = growth_rates.get_growth_rate(p, t)
+        r0baseline = growth_rates.get_growth_rate(p)
 
         fV_baseline = p.fV
 
@@ -108,14 +108,12 @@ def sensitivity_fV_only(t = 150):
         r0 = numpy.empty(len(dPs))
         for (j, dP) in enumerate(dPs):
             p.fV = dP
-            r0[j] = growth_rates.get_growth_rate(p, t) / r0baseline
+            r0[j] = growth_rates.get_growth_rate(p) / r0baseline
         p.fV = fV_baseline
 
         l = ax.plot(dPs, r0, label = n, alpha = alpha)
 
-    ax.set_xlim(min(dPs), max(dPs))
-    # ax.set_ylim(0.8, 1.20000001)
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(0.1))
+    ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
 
     ax.set_xlabel(label, fontsize = 'x-small')
     ax.set_ylabel('Relative infection\ngrowth rate',
