@@ -14,7 +14,6 @@ class Parameters:
     muVm = 0.04
     bV = 0.08
     KV = 100
-    gammaP = 0
     V0 = 100
     P0 = 10000
 
@@ -72,14 +71,16 @@ class Parameters:
 
 
 class Persistent(Parameters):
-    betaV = 0.02 * 24
-    betaP = 0.02 * 24
+    betaV = 8.3
+    betaP = 5.5
+    alphaV = 48
     gammaV = 0
 
 
 class Nonpersistent(Parameters):
-    betaV = 0.2 * 24
-    betaP = 0.2 * 24
+    betaV = 500
+    betaP = 1000
+    alphaV = 86400
     gammaV = 0.05 * 24
 
 
