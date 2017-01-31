@@ -57,15 +57,23 @@
 
 \section{Model}
 
-Let $V_{sm}(t)$ and $V_{im}(t)$ be the number of susceptible and
-infectious vectors moving at time $t$, $V_{sfs}(t)$ and $V_{ifs}(t)$
-be the number of susceptible and infectious vectors feeding on
-susceptible plants at time $t$, and $V_{sfi}(t)$ and $V_{ifi}(t)$ be
-the number of susceptible and infectious vectors feeding on infectious
-plants at time $t$.  Likewise, let $P_s(t)$ and $P_i(t)$ be the number
-of susceptible and infected plants at time $t$.  The total number of vectors is
+Let $P_s(t)$ and $P_i(t)$ be the number of susceptible and infected
+plants at time $t$.  Let $V_{sm}(t)$ be the number of susceptible
+vectors moving, $V_{sfs}(t)$ be the number of susceptible vectors
+feeding on susceptible plants, $V_{sfip}(t)$ be the number of
+susceptible vectors feeding on infectious plants prior to being able
+to acquire the pathogen, and $V_{sfit}(t)$ be the number of
+susceptible vectors that are able to acquire the virus.  Similarly,
+let $V_{im}(t)$ be the number of infectious vectors moving,
+$V_{ifsp}(t)$ be the number of infectious vectors feeding on
+susceptible plants prior to being able to transmit the pathogen,
+$V_{ifst}(t)$ be the number of infectious vectors feeding on
+susceptible plants that are able to transmit the virus, and
+$V_{ifi}(t)$ be the number of infectious vectors feeding on infectious
+plants.  The total number of vectors is
 \begin{equation}
-  V = V_{sm} + V_{im} + V_{sfs} + V_{ifs} + V_{sfi} + V_{ifi}
+  V = V_{sm} + V_{sfs} + V_{sfip} + V_{sfit} + V_{im} + V_{ifsp} +
+  V_{ifst} + V_{ifi}
 \end{equation}
 and the total number of plants is
 \begin{equation}
@@ -87,7 +95,7 @@ The model is
     \frac{\md V_{sm}}{\md t}
     &=
     - \underbrace{\frac{f_V}{1 - \phi_V} V_{sm}}_{\text{to feeding}}
-    + \underbrace{\frac{f_V}{\phi_V} (V_{sfs} + V_{sfi})}_{\text{from feeding}}
+    + \underbrace{\frac{f_V}{\phi_V} (V_{sfs} + V_{sfip} + V_{sfit})}_{\text{from feeding}}
     + \underbrace{\gamma_V V_{im}}_{\text{loses pathogen}}
     - \underbrace{(1 + \delta_V) \mu_V V_{sm}}_{\text{death}}
     \\ & \quad\quad {}
@@ -97,38 +105,50 @@ The model is
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{sm}}_{\text{from moving}}
     - \underbrace{\frac{f_V}{\phi_V} V_{sfs}}_{\text{to moving}}
-    + \underbrace{\gamma_V V_{ifs}}_{\text{loses pathogen}}
+    + \underbrace{\gamma_V (V_{ifsp} + V_{ifst})}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{sfs}}_{\text{death}}
-    - \underbrace{\beta_P \frac{V_{ifs}}{P_s} V_{sfs}}_{\text{plant
-        infected}}
-    + \underbrace{\gamma_P V_{sfi}}_{\text{plant clears pathogen}},
+    - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{sfs}}_{\text{plant
+        infected}},
     \\
-    \frac{\md V_{sfi}}{\md t}
+    \frac{\md V_{sfip}}{\md t}
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{sm}}_{\text{from moving}}
-    - \underbrace{\frac{f_V}{\phi_V} V_{sfi}}_{\text{to moving}}
+    - \underbrace{\frac{f_V}{\phi_V} V_{sfip}}_{\text{to moving}}
     + \underbrace{\gamma_V V_{ifi}}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{sfi}}_{\text{death}}
-    + \underbrace{\beta_P \frac{V_{ifs}}{P_s} V_{sfs}}_{\text{plant infected}}
-    - \underbrace{\gamma_P V_{sfi}}_{\text{plant clears pathogen}}
-    \\ & \quad\quad {}
-    - \underbrace{\beta_V V_{sfi}}_{\text{infection}},
+    - \underbrace{\mu_V V_{sfip}}_{\text{death}}
+    + \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{sfs}}_{\text{plant infected}}
+    - \underbrace{\alpha_V V_{sfip}}_{\text{acquiring}},
+    \\
+    \frac{\md V_{sfit}}{\md t}
+    &=
+    - \underbrace{\frac{f_V}{\phi_V} V_{sfit}}_{\text{to moving}}
+    - \underbrace{\mu_V V_{sfit}}_{\text{death}}
+    + \underbrace{\alpha_V V_{sfip}}_{\text{acquiring}}
+    - \underbrace{\beta_V V_{sfit}}_{\text{infection}},
     \\
     \frac{\md V_{im}}{\md t}
     &=
     - \underbrace{\frac{f_V}{1 - \phi_V} V_{im}}_{\text{to feeding}}
-    + \underbrace{\frac{f_V}{\phi_V} (V_{ifs} + V_{ifi})}_{\text{from feeding}}
+    + \underbrace{\frac{f_V}{\phi_V} (V_{ifsp} + V_{ifst} + V_{ifi})}_{\text{from feeding}}
     - \underbrace{\gamma_V V_{im}}_{\text{loses pathogen}}
     - \underbrace{(1 + \delta_V) \mu_V V_{im}}_{\text{death}},
     \\
-    \frac{\md V_{ifs}}{\md t}
+    \frac{\md V_{ifsp}}{\md t}
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{im}}_{\text{from moving}}
-    - \underbrace{\frac{f_V}{\phi_V} V_{ifs}}_{\text{to moving}}
-    - \underbrace{\gamma_V V_{ifs}}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{ifs}}_{\text{death}}
-    - \underbrace{\beta_P \frac{V_{ifs}}{P_s} V_{ifs}}_{\text{plant infected}}
-    + \underbrace{\gamma_P V_{ifi}}_{\text{plant clears pathogen}},
+    - \underbrace{\frac{f_V}{\phi_V} V_{ifsp}}_{\text{to moving}}
+    - \underbrace{\gamma_V V_{ifsp}}_{\text{loses pathogen}}
+    - \underbrace{\mu_V V_{ifsp}}_{\text{death}}
+    - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{ifsp}}_{\text{plant infected}}
+    - \underbrace{\alpha_V V_{ifsp}}_{\text{transmitting}},
+    \\
+    \frac{\md V_{ifst}}{\md t}
+    &=
+    - \underbrace{\frac{f_V}{\phi_V} V_{ifst}}_{\text{to moving}}
+    - \underbrace{\gamma_V V_{ifst}}_{\text{loses pathogen}}
+    - \underbrace{\mu_V V_{ifst}}_{\text{death}}
+    - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{ifst}}_{\text{plant infected}}
+    + \underbrace{\alpha_V V_{ifsp}}_{\text{transmitting}},
     \\
     \frac{\md V_{ifi}}{\md t}
     &=
@@ -136,30 +156,31 @@ The model is
     - \underbrace{\frac{f_V}{\phi_V} V_{ifi}}_{\text{to moving}}
     - \underbrace{\gamma_V V_{ifi}}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{ifi}}_{\text{death}}
-    + \underbrace{\beta_P \frac{V_{ifs}}{P_s} V_{ifs}}_{\text{plant infected}}
-    - \underbrace{\gamma_P V_{ifi}}_{\text{plant clears pathogen}}
+    + \underbrace{\beta_P \frac{V_{ifst}}{P_s} (V_{ifsp} + V_{ifst})}_{\text{plant infected}}
     \\ & \quad\quad {}
-    + \underbrace{\beta_V V_{sfi}}_{\text{infection}},
+    + \underbrace{\beta_V V_{sfit}}_{\text{infection}},
     \\
     \frac{\md P_s}{\md t}
     &=
-    - \underbrace{\beta_P V_{ifs}}_{\text{infection}}
-    + \underbrace{\gamma_P P_i}_{\text{clears pathogen}},
+    - \underbrace{\beta_P V_{ifst}}_{\text{infection}},
     \\
     \frac{\md P_i}{\md t}
     &=
-    \underbrace{\beta_P V_{ifs}}_{\text{infection}}
-    - \underbrace{\gamma_P P_i}_{\text{clears pathogen}},
+    \underbrace{\beta_P V_{ifst}}_{\text{infection}},
   \end{split}
 \end{equation}
 where the number of feeding vectors is
-$V_f = V_{sfs} + V_{sfi} + V_{ifs} + V_{ifi}$, $\beta_V$ is the
-infection rate from plants to vectors, $\beta_P$ is the infection rate
-from vectors to plants, $\gamma_V$ is the rate of pathogen clearance
-in vectors, $\mu_V$ is the death rate of the feeding vectors,
-$\delta_V$ is the proportional increase in the death rate for moving
-vectors, $b_V$ is the birth rate of vectors, and $K_V$ is the carrying
-capacity of vectors per plant (\autoref{fig:full_model_diagram}).
+\begin{equation}
+  V_f = V_{sfs} + V_{sfip} + V_{sfit} + V_{ifsp} + V_{ifst} + V_{ifi},
+\end{equation}
+$\beta_V$ is the infection rate from plants to vectors, $\beta_P$ is
+the infection rate from vectors to plants, $\alpha_V$ is the rate of
+vectors becoming able to acquire or transmit the pathogen, $\gamma_V$
+is the rate of pathogen clearance in vectors, $\mu_V$ is the death
+rate of the feeding vectors, $\delta_V$ is the proportional increase
+in the death rate for moving vectors, $b_V$ is the birth rate of
+vectors, and $K_V$ is the carrying capacity of vectors per plant
+(\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
@@ -167,112 +188,124 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
     thick,
     scale = 1,
     compartment/.style = {draw,
-      font = \large,
-      minimum size = {3em}},
-    plant/.style = {green},
-    vector/.style = {red},
+      font = \large},
+    plant/.style = {circle,
+      minimum size = {4em}},
+    susceptible/.style = {blue},
+    infected/.style = {red},
+    vector/.style = {rectangle,
+      minimum size = {3.5em}},
+    front/.style = {minimum size = {4em}},
+    back/.style = {minimum size = {3em}},
     ]
 
-    \node at (0, 8)
-    [compartment, vector, name = V_sm] {$V_{sm}$};
+    \node at (0, 10)
+    [compartment, vector, susceptible, name = V_sm] {$V_{sm}$};
+
+    \node at (5, 10)
+    [compartment, vector, susceptible, name = V_sfs] {$V_{sfs}$};
+
+    \node at (9, 11)
+    [compartment, vector, susceptible, back, name = V_sfip] {$V_{sfip}$};
+    \node at (11, 9)
+    [compartment, vector, susceptible, front, name = V_sfit] {$V_{sfit}$};
+
     \node at (0, 4)
-    [compartment, vector, name = V_im] {$V_{im}$};
+    [compartment, vector, infected, name = V_im] {$V_{im}$};
 
-    \node at (3, 8)
-    [compartment, vector, name = V_sfs] {$V_{sfs}$};
-    \node at (3, 4)
-    [compartment, vector, name = V_ifs] {$V_{ifs}$};
+    \node at (4, 5)
+    [compartment, vector, infected, back, name = V_ifsp] {$V_{ifsp}$};
+    \node at (6, 3)
+    [compartment, vector, infected, front, name = V_ifst] {$V_{ifst}$};
 
-    \node at (6, 8)
-    [compartment, vector, name = V_sfi] {$V_{sfi}$};
-    \node at (6, 4)
-    [compartment, vector, name = V_ifi] {$V_{ifi}$};
+    \node at (10, 4)
+    [compartment, vector, infected, name = V_ifi] {$V_{ifi}$};
 
-    \node at (3, 0)
-    [compartment, plant, name = P_s] {$P_s$};
-    \node at (6, 0)
-    [compartment, plant, name = P_i] {$P_i$};
+    \node at (5, 0)
+    [compartment, plant, susceptible, name = P_s] {$P_s$};
+    \node at (10, 0)
+    [compartment, plant, infected, name = P_i] {$P_i$};
 
-    \draw [->] (P_s.20) to node [above]
-    {$\beta_P \frac{\textcolor{red}{V_{ifs}}}{\textcolor{green}{P_s}}$}
-    (P_i.160);
+    \draw [->] (P_s) to node [above] {$\beta_P \frac{V_{ifst}}{P_s}$} (P_i);
 
-    \draw [->] (P_i.200) to node [below] {$\gamma_P$} (P_s.340);
+    \draw [->] (V_sfip) to node [right, pos = 0.35] {$\alpha_V$} (V_sfit);
+    \draw [->] (V_ifsp) to node [right, pos = 0.35] {$\alpha_V$} (V_ifst);
 
-    \draw [->] (V_sfi.250) to node [left] {$\beta_V$} (V_ifi.110);
+    \draw [->] (V_sfit.270) to node [right, pos = 0.4] {$\beta_V$} (V_ifi.45);
 
-    \draw [->] (V_im) to node [right] {$\gamma_V$} (V_sm);
-    \draw [->] (V_ifs) to node [right] {$\gamma_V$} (V_sfs);
-    \draw [->] (V_ifi.70) to node [right] {$\gamma_V$} (V_sfi.290);
+    \draw [->] (V_im) to node [left, pos = 0.58] {$\gamma_V$} (V_sm);
+    \draw [->] (V_ifsp.90) to node [left] {$\gamma_V$} (V_sfs.250);
+    \draw [->] (V_ifst.90) to node [right, pos = 0.66] {$\gamma_V$} (V_sfs.290);
+    \draw [->] (V_ifi.90) to node [left, pos = 0.48] {$\gamma_V$} (V_sfip.270);
 
-    \draw [->] (V_sm.20) to node [above, pos = 0.6]
-    {$\frac{f_V}{1 - \phi_V}
-      \frac{\textcolor{green}{P_s}}{\textcolor{green}{P}}$}
-    (V_sfs.160);
-    \draw [->] (V_sm.45) to [bend left = 30] node [above, pos = 0.8]
-    {$\frac{f_V}{1 - \phi_V}
-      \frac{\textcolor{green}{P_i}}{\textcolor{green}{P}}$}
-    (V_sfi.135);
+    \draw [->] (V_sm.20) to node [above, pos = 0.65]
+    {$\frac{f_V}{1 - \phi_V} \frac{P_s}{P}$} (V_sfs.160);
+    \draw [->] (V_sm.90) to [bend left = 40] node
+    [left, pos = 0.25, xshift = -8]
+    {$\frac{f_V}{1 - \phi_V} \frac{P_i}{P}$} (V_sfip.90);
 
-    \draw [->] (V_im.20) to node [above, pos = 0.6]
-    {$\frac{f_V}{1 - \phi_V}
-      \frac{\textcolor{green}{P_s}}{\textcolor{green}{P}}$}
-    (V_ifs.160);
-    \draw [->] (V_im.45) to [bend left = 30] node [above, pos = 0.8]
-    {$\frac{f_V}{1 - \phi_V}
-      \frac{\textcolor{green}{P_i}}{\textcolor{green}{P}}$}
-    (V_ifi.135);
+    \draw [->] (V_im.20) to node [above]
+    {$\frac{f_V}{1 - \phi_V} \frac{P_s}{P}$} (V_ifsp.160);
+    \draw [->] (V_im.45) to [bend left = 50] node
+    [left, pos = 0.2, xshift = -6]
+    {$\frac{f_V}{1 - \phi_V} \frac{P_i}{P}$} (V_ifi.135);
 
     \draw [->] (V_sfs.200) to node [below, pos = 0.35]
     {$\frac{f_V}{\phi_V}$} (V_sm.340);
-    \draw [->] (V_sfi.225) to [bend left = 30] node [below, pos = 0.25]
+    \draw [->] (V_sfip.180) to [bend right = 30] node [below, pos = 0.3]
+    {$\frac{f_V}{\phi_V}$} (V_sm.45);
+    \draw [->] (V_sfit.180) to [bend left = 15] node [below, pos = 0.3]
     {$\frac{f_V}{\phi_V}$} (V_sm.315);
 
-    \draw [->] (V_ifs.200) to node [below, pos = 0.35]
+    \draw [->] (V_ifsp.200) to node [below, pos = 0.35]
     {$\frac{f_V}{\phi_V}$} (V_im.340);
-    \draw [->] (V_ifi.225) to [bend left = 30] node [below, pos = 0.25]
+    \draw [->] (V_ifst.180) to node [below, pos = 0.35]
     {$\frac{f_V}{\phi_V}$} (V_im.315);
+    \draw [->] (V_ifi.270) to [bend left = 40] node [below, pos = 0.2]
+    {$\frac{f_V}{\phi_V}$} (V_im.270);
 
-    \draw [->] (V_sfs.20) to node [above, pos = 0.35]
-    {$\beta_P \frac{\textcolor{red}{V_{ifs}}}{\textcolor{green}{P_s}}$}
-    (V_sfi.160);
-    \draw [->] (V_ifs.20) to node [above, pos = 0.35]
-    {$\beta_P \frac{\textcolor{red}{V_{ifs}}}{\textcolor{green}{P_s}}$}
-    (V_ifi.160);
+    \draw [->] (V_sfs.0) to node [below, pos = 0.55]
+    {$\beta_P \frac{V_{ifst}}{P_s}$} (V_sfip.225);
+    \draw [->] (V_ifsp.0) to node [above, pos = 0.55]
+    {$\beta_P \frac{V_{ifst}}{P_s}$} (V_ifi.180);
+    \draw [->] (V_ifst.0) to node [above, pos = 0.35]
+    {$\beta_P \frac{V_{ifst}}{P_s}$} (V_ifi.225);
 
-    \draw [->] (V_sfi.200) to node [below, pos = 0.65]
-    {$\gamma_P$} (V_sfs.340);
-    \draw [->] (V_ifi.200) to node [below, pos = 0.65]
-    {$\gamma_P$} (V_ifs.340);
+    % \draw [<-] (V_sm.110) to node [left, pos = 0.8]
+    % {$b_V V_f \left(1 - \frac{V}{K_V P}\right)$} +(90: 1.5);
 
-    \draw [<-] (V_sm.110) to node [left, pos = 0.8]
-    {$b_V \textcolor{red}{V_f}
-      \left(1 - \frac{\textcolor{red}{V}}{K_V \textcolor{green}{P}}\right)$}
-    +(90: 1.5);
+    % \draw [->] (V_sm.70) to node [right, pos = 0.8]
+    % {$(1 + \delta_V) \mu_V$} +(90: 1.5);
+    % \draw [->] (V_im) to node [right, pos = 0.8]
+    % {$(1 + \delta_V) \mu_V$} +(270: 2);
 
-    \draw [->] (V_sm.70) to node [right, pos = 0.8]
-    {$(1 + \delta_V) \mu_V$} +(90: 1.5);
-    \draw [->] (V_im) to node [right, pos = 0.8]
-    {$(1 + \delta_V) \mu_V$} +(270: 2);
-
-    \draw [->] (V_sfs) to node [right, pos = 0.8]
-    {$\mu_V$} +(90: 2);
-    \draw [->] (V_ifs) to node [right, pos = 0.8]
-    {$\mu_V$} +(270: 2);
-
-    \draw [->] (V_sfi) to node [right, pos = 0.8]
-    {$\mu_V$} +(90: 2);
-    \draw [->] (V_ifi) to node [right, pos = 0.8]
-    {$\mu_V$} +(270: 2);
-
+    % \draw [->] (V_sfs) to node [right, pos = 0.8]
+    % {$\mu_V$} +(90: 2);
+    % \draw [->] (V_sfip) to node [right, pos = 0.8]
+    % {$\mu_V$} +(90: 2);
+    % \draw [->] (V_sfit) to node [right, pos = 0.8]
+    % {$\mu_V$} +(90: 2);
+    % \draw [->] (V_ifsp) to node [right, pos = 0.8]
+    % {$\mu_V$} +(270: 2);
+    % \draw [->] (V_ifst) to node [right, pos = 0.8]
+    % {$\mu_V$} +(270: 2);
+    % \draw [->] (V_ifi) to node [right, pos = 0.8]
+    % {$\mu_V$} +(270: 2);
   \end{tikzpicture}
-  \caption{Model diagram.  $P_s$ and $P_i$ (green) are the numbers
-    of uninfected and plants.  $V_{sm}$ and $V_{im}$ are the numbers
-    of susceptible and infectious vectors moving, $V_{sfs}$ and
-    $V_{ifs}$ are numbers of susceptible and infectious vectors
-    feeding on susceptible plants, and $V_{sfi}$ and $V_{ifi}$ are the
-    numbers of susceptible and infectious vectors feeding on
-    infectious plants.}
+  \caption{Model diagram.  $P_s$ and $P_i$ are the numbers
+    of susceptible and infectious plants.  $V_{sm}$ is the number of
+    susceptible vectors moving, $V_{sfs}$ is the number of susceptible
+    vectors feeding on susceptible plants, $V_{sfip}$ is the number of
+    susceptible vectors feeding on infectious plants prior to being
+    able to acquire the pathogen, and $V_{sfit}$ is the number of
+    susceptible vectors feeding on infectious plants that are able to
+    acquire the pathogen.  Similarly, $V_{im}$ is the number of
+    infectious vectors moving, $V_{ifsp}$ is the number of infectious
+    vectors feeding on susceptible plants prior to being able to
+    transmit the pathogen, $V_{ifst}$ is the number of infectious
+    vectors feeding on susceptible plants that are able to transmit the
+    pathogen, and $V_{ifi}$ is the number of infectious vectors
+    feeding on infectious plants.}
   \label{fig:full_model_diagram}
 \end{figure}
 
@@ -295,25 +328,27 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
     \\
     $K_V$ & Carrying capacity of vectors per plant & $100$
     \\
-    $\gamma_P$ & Rate of pathogen clearance in plants & $0\;\text{d}^{-1}$
-    \\
     $V(0)$ & Initial number of vectors & $100$
     \\
     $P(0)$ & Initial number of susceptible & $10\,000$
     \\
     \multicolumn{3}{c}{\textbf{Persistent}}
     \\
-    $\beta_V$ & Transmission rate from plants to vectors & $0.48\;\text{d}^{-1}$
+    $\beta_V$ & Transmission rate from plants to vectors & $8.3\;\text{d}^{-1}$
     \\
-    $\beta_P$ & Transmission rate from vectors to plants & $0.48\;\text{d}^{-1}$
+    $\beta_P$ & Transmission rate from vectors to plants & $5.5\;\text{d}^{-1}$
+    \\
+    $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $48\;\text{d}^{-1}$
     \\
     $\gamma_V$ & Rate of pathogen clearance in vectors & $0\;\text{d}^{-1}$
     \\
     \multicolumn{3}{c}{\textbf{Non-persistent}}
     \\
-    $\beta_V$ & Transmission rate from plants to vectors & $4.8\;\text{d}^{-1}$
+    $\beta_V$ & Transmission rate from plants to vectors & $500\;\text{d}^{-1}$
     \\
-    $\beta_P$ & Transmission rate from vectors to plants & $4.8\;\text{d}^{-1}$
+    $\beta_P$ & Transmission rate from vectors to plants & $1\,000\;\text{d}^{-1}$
+    \\
+    $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $86\,400\;\text{d}^{-1}$
     \\
     $\gamma_V$ & Rate of pathogen clearance in vectors & $0.12\;\text{d}^{-1}$
   \end{tabular}
@@ -339,7 +374,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
-  \includegraphics[width = \textwidth]{solutions_new}
+  \includegraphics[width = \textwidth]{solutions}
   \caption{Model solutions for persistent and non-persistent
     scenarios.  Parameter values are given in \autoref{params}.
     For initial conditions, we used the result from the quasi-steady
@@ -353,7 +388,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
-  \includegraphics[width = \textwidth]{growth_rates_new}
+  \includegraphics[width = \textwidth]{growth_rates}
   \caption{Intrinsic growth rate of the pathogen.  Model initial
     conditions were the disease-free state given by the parameters
     (\autoref{params}) and the result from the quasi-steady state
@@ -366,7 +401,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
-  \includegraphics[width = \textwidth]{sensitivity_1param_new}
+  \includegraphics[width = \textwidth]{sensitivity_1param}
   \caption{Intrinsic growth rate of the pathogen vs.~parameter values
     at $150~\text{d}$, relative to its value for the baseline
     parameter value.  The dotted horizontal lines show the baseline
@@ -377,7 +412,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
-  \includegraphics[width = \textwidth]{sensitivity_1param_new_fV}
+  \includegraphics[width = \textwidth]{sensitivity_1param_fV}
   \caption{Intrinsic growth rate of the pathogen vs.~the feeding rate
     ($f_V$) at $150~\text{d}$, relative to its value for the baseline
     parameter value.  The vertical axis has a linear scale, compared
@@ -391,7 +426,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
-  \includegraphics[width = \textwidth]{sensitivity_2params_new}
+  \includegraphics[width = \textwidth]{sensitivity_2params}
   \caption{Intrinsic growth rate of the pathogen vs.~parameter values
     at $150~\text{d}$, relative to its value for the baseline
     parameter value.  Parameter values and
@@ -411,15 +446,24 @@ all other parameters $\operatorname{O}(1)$.  Then terms in $f_V$ from
 the differential equations give
 \begin{equation}
   \begin{split}
-    \frac{1}{1 - \phi_V} V_{sm} &= \frac{1}{\phi_V} (V_{sfs} + V_{sfi}),
+    \frac{1}{1 - \phi_V} V_{sm} &=
+    \frac{1}{\phi_V} (V_{sfs} + V_{sfip} + V_{sfit}),
     \\
-    \frac{1}{1 - \phi_V} \frac{P_s}{P} V_{sm} &= \frac{1}{\phi_V} V_{sfs},
+    \frac{1}{1 - \phi_V} \frac{P_s}{P} V_{sm} &=
+    \frac{1}{\phi_V} V_{sfs},
     \\
-    \frac{1}{1 - \phi_V} \frac{P_i}{P} V_{sm} &= \frac{1}{\phi_V} V_{sfi},
+    \frac{1}{1 - \phi_V} \frac{P_i}{P} V_{sm} &=
+    \frac{1}{\phi_V} V_{sfip},
     \\
-    \frac{1}{1 - \phi_V} V_{im} &= \frac{1}{\phi_V} (V_{ifs} + V_{ifi}),
+    0 &=
+    \frac{1}{\phi_V} V_{sfit},
     \\
-    \frac{1}{1 - \phi_V} \frac{P_s}{P} V_{im} &= \frac{1}{\phi_V} V_{ifs},
+    \frac{1}{1 - \phi_V} V_{im} &=
+    \frac{1}{\phi_V} (V_{ifsp} + V_{ifst} + V_{ifi}),
+    \\
+    \frac{1}{1 - \phi_V} \frac{P_s}{P} V_{im} &= \frac{1}{\phi_V} V_{ifsp},
+    \\
+    0 &= \frac{1}{\phi_V} V_{ifst},
     \\
     \frac{1}{1 - \phi_V} \frac{P_i}{P} V_{im} &= \frac{f_V}{\phi_V} V_{ifi}.
   \end{split}
@@ -431,11 +475,15 @@ Thus, the QSSA is
     &
     V_{sfs} &= \phi_V \frac{P_s}{P} V_s,
     &
-    V_{sfi} &= \phi_V \frac{P_i}{P} V_s,
+    V_{sfip} &= \phi_V \frac{P_i}{P} V_s,
+    &
+    V_{sfit} &= 0,
     \\
     V_{im} &= (1 - \phi_V) V_i,
     &
-    V_{ifs} &= \phi_V \frac{P_s}{P} V_i,
+    V_{ifsp} &= \phi_V \frac{P_s}{P} V_i,
+    &
+    V_{ifst} &= 0,
     &
     V_{ifi} &= \phi_V \frac{P_i}{P} V_i,
   \end{aligned}
@@ -443,646 +491,10 @@ Thus, the QSSA is
 with
 \begin{equation}
   \begin{split}
-    V_s &= V_{sm} + V_{sfs} + V_{sfi}, \\
-    V_i &= V_{im} + V_{ifs} + V_{ifi}.
+    V_s &= V_{sm} + V_{sfs} + V_{sfip} + V_{sfit}, \\
+    V_i &= V_{im} + V_{ifsp} + V_{ifst} + V_{ifi}.
   \end{split}
 \end{equation}
-
-Then
-\begin{equation}
-  \begin{split}
-    \frac{\md V_s}{\md t}
-    &=
-    - \overline{\beta}_V \frac{P_i}{P} V_s
-    + \gamma_V V_i
-    - \overline{\mu}_V V_s
-    + \overline{b}_V V \left(1 - \frac{V}{K_V P}\right),
-    \\
-    \frac{\md V_i}{\md t}
-    &=
-    \overline{\beta}_V \frac{P_i}{P} V_s
-    - \gamma_V V_i
-    - \overline{\mu}_V V_i,
-    \\
-    \frac{\md P_s}{\md t}
-    &=
-    - \overline{\beta}_P V_i \frac{P_s}{P}
-    + \gamma_P P_i,
-    \\
-    \frac{\md P_i}{\md t}
-    &=
-    \overline{\beta}_P V_i \frac{P_s}{P}
-    - \gamma_P P_i,
-  \end{split}
-\end{equation}
-with the average transmission, birth, and mortality rates
-\begin{equation}
-  \begin{split}
-    \overline{\beta}_V &= \phi_V \beta_V,
-    \\
-    \overline{\beta}_P &= \phi_V \beta_P,
-    \\
-    \overline{b}_V &= \phi_V b_V,
-    \\
-    \overline{\mu}_V &= \big[1 + (1 - \phi_V) \delta_V\big] \mu_V.
-  \end{split}
-\end{equation}
-
-
-\section{No movement}
-
-Let $\gamma_P = 0$, as we assume in our parameter sets, and 
-let $f_V = 0$.  Then the differential equations for infected
-compartments become
-\begin{equation}
-  \label{ODE_infected}
-  \begin{split}
-    \frac{\md V_{sfi}}{\md t}
-    &=
-    - (\beta_V + \mu_V) V_{sfi}
-    + \beta_P \frac{V_{sfs}}{P - P_i} V_{ifs}
-    + \gamma_V V_{ifi}
-    \\
-    \frac{\md V_{im}}{\md t}
-    &=
-    - [\gamma_V + (1 + \delta_V) \mu_V] V_{im},
-    \\
-    \frac{\md V_{ifs}}{\md t}
-    &=
-    - (\gamma_V + \mu_V) V_{ifs}
-    - \frac{\beta_P}{P - P_i} V_{ifs}^2,
-    \\
-    \frac{\md V_{ifi}}{\md t}
-    &=
-    \beta_V V_{sfi}
-    - (\gamma_V + \mu_V) V_{ifi}
-    + \frac{\beta_P}{P - P_i} V_{ifs}^2,
-    \\
-    \frac{\md P_i}{\md t}
-    &=
-    \beta_P V_{ifs}.
-  \end{split}
-\end{equation}
-The Jacobian at the disease-free state
-($V_{sfi} = V_{im} = V_{ifs} = V_{ifi} = P_i = 0$, $P_s = P$) is
-\begin{equation}
-  \mat{J} = 
-  \begin{bmatrix}
-    - (\beta_V + \mu_V) & 0 & \beta_P \frac{V_{sfs}}{P}
-    & \gamma_V & 0
-    \\
-    0 & - [\gamma_V + (1 + \delta_V) \mu_V] & 0 & 0 & 0
-    \\
-    0 & 0 & - (\gamma_V + \mu_V) & 0 & 0
-    \\
-    \beta_V & 0 & 0 & - (\gamma_V + \mu_V) & 0
-    \\
-    0 & 0 & \beta_P & 0 & 0
-  \end{bmatrix}.
-\end{equation}
-The off-diagonal zeros mean that is has eigenvalues
-\begin{equation}
-  \sigma(\mat{J}) = \left\{
-    - [\gamma_V + (1 + \delta_V) \mu_V], - (\gamma_V + \mu_V), 0
-  \right\}
-  \cup \sigma(\mat{J}_1),
-\end{equation}
-where
-\begin{equation}
-  \mat{J}_1 = 
-  \begin{bmatrix}
-    - (\beta_V + \mu_V) & \gamma_V
-    \\
-    \beta_V & - (\gamma_V + \mu_V)
-  \end{bmatrix}.
-\end{equation}
-The eigenvalues of $\mat{J}_1$ are
-$\{- \mu_V, - (\beta_V + \gamma_V + \mu_V)\}$.  Thus, $\mat{J}$ has 4
-negative eigenvalues and a $0$ eigenvalue.
-
-\subsection{Center-manifold analysis}
-
-Let
-\begin{equation}
-  \vec{x} =
-  \begin{pmatrix}
-    x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5
-  \end{pmatrix}
-  = 
-  \begin{pmatrix}
-    V_{sfi} \\ V_{im} \\ V_{ifs} \\ V_{ifi} \\ P_i
-  \end{pmatrix}.
-\end{equation}
-Then \eqref{ODE_infected} can be written as
-\begin{equation}
-  \frac{\md \vec{x}}{\md t} = \mat{J} \vec{x} + \vec{f}(\vec{x}),
-\end{equation}
-where
-\begin{equation}
-  \vec{f}(\vec{x}) =
-  \begin{pmatrix}
-    \frac{\beta_P V_{sfs}}{P} \frac{V_{ifs} P_i}{P - P_i}
-    \\
-    0
-    \\
-    - \beta_P \frac{V_{ifs}^2}{P - P_i}
-    \\
-    \beta_P \frac{V_{ifs}^2}{P - P_i}
-    \\
-    0
-  \end{pmatrix}
-  =
-  \begin{pmatrix}
-    \frac{\beta_P V_{sfs}}{P} \frac{x_3 x_5}{P - x_5}
-    \\
-    0
-    \\
-    - \beta_P \frac{x_3^2}{P - x_5}
-    \\
-    \beta_P \frac{x_3^2}{P - x_5}
-    \\
-    0
-  \end{pmatrix}.
-\end{equation}
-Let $\mat{P}$ be the matrix whose columns are the eigenvectors of
-$\mat{J}$, i.e.
-\begin{equation}
-  \mat{P} =
-  \begin{bmatrix}
-    0 & 0 & \gamma_V & 1 & 0 \\
-    1 & 0 & 0 & 0 & 0 \\
-    0 & 1 & 0 & 0 & 0 \\
-    0 & - \frac{\beta_P}{\gamma_V} \frac{V_{sfs}}{P} & \beta_V & -1 & 0 \\
-    0 & - \frac{\beta_P}{\gamma_V + \mu_V} & 0 & 0 & 1
-  \end{bmatrix}.
-\end{equation}
-Then
-\begin{equation}
-  \mat{P}^{-1} =
-  \begin{bmatrix}
-    0 & 1 & 0 & 0 & 0 \\
-    0 & 0 & 1 & 0 & 0 \\
-    \frac{1}{\beta_V + \gamma_V} & 0 &
-    \frac{\beta_P}{\gamma_V (\beta_V + \gamma_V)} \frac{V_{sfs}}{P} &
-    \frac{1}{\beta_V + \gamma_V} & 0 \\
-    \frac{\beta_V}{\beta_V + \gamma_V} & 0 &
-    - \frac{\beta_P}{\beta_V + \gamma_V} \frac{V_{sfs}}{P} &
-    - \frac{\gamma_V}{\beta_V + \gamma_V} & 0 \\
-    0 & 0 & \frac{\beta_P}{\gamma_V + \mu_V} & 0 & 1
-  \end{bmatrix}.
-\end{equation}
-Let $\vec{y} = \mat{P}^{-1} \vec{x}$.  Then
-\begin{equation}
-  \label{diagonal}
-  \frac{\md \vec{y}}{\md t} = \mat{\Lambda} \vec{y} + \vec{g}(\vec{y}),
-\end{equation}
-where $\mat{\Lambda}$ is the diagonal matrix with the eigenvalues of
-$\mat{J}$ on the diagonal, i.e.
-\begin{equation}
-  \mat{\Lambda} =
-  \begin{bmatrix}
-    - [\gamma_V + (1 + \delta_V) \mu_V] & 0 & 0 & 0 & 0 \\
-    0 & - (\gamma_V + \mu_V) & 0 & 0 & 0 \\
-    0 & 0 & - \mu_V & 0 & 0 \\
-    0 & 0 & 0 & - (\beta_V + \gamma_V + \mu_V) & 0 \\
-    0 & 0 & 0 & 0 & 0
-  \end{bmatrix},
-\end{equation}
-and
-\begin{equation}
-  \begin{split}
-    \vec{g}(\vec{y}) &= \mat{P}^{-1} \vec{f}(\mat{P} \vec{y})
-    = \mat{P}^{-1} \vec{f}(\vec{x})
-    \\
-    &=
-    \mat{P}^{-1}
-    \begin{pmatrix}
-      \frac{\beta_P V_{sfs}}{P} \frac{x_3 x_5}{P - x_5}
-      \\
-      0
-      \\
-      - \beta_P \frac{x_3^2}{P - x_5}
-      \\
-      \beta_P \frac{x_3^2}{P - x_5}
-      \\
-      0
-    \end{pmatrix}
-    =
-    \frac{\beta_P y_2}{\beta_P y_2 + (\gamma_V + \mu_V) (P - y_5)}
-    \mat{P}^{-1}
-    \begin{pmatrix}
-      - \frac{V_{sfs}}{P} \left[\beta_P y_2 - (\gamma_V + \mu_V) y_5\right]
-      \\
-      0
-      \\
-      - y_2
-      \\
-      y_2
-      \\
-      0
-    \end{pmatrix}
-    \\
-    &=
-    \frac{\beta_P y_2}{\beta_P y_2 + (\gamma_V + \mu_V) (P - y_5)}
-    \begin{pmatrix}
-      0
-      \\
-      - y_2
-      \\
-      \frac{1}{\beta_V + \gamma_V} \left[
-        \left(
-          1 - \beta_P \frac{1 + \gamma_V}{\gamma_V} \frac{V_{sfs}}{P}
-        \right) y_2
-        + (\gamma_V + \mu_V) \frac{V_{sfs}}{P} y_5
-      \right]
-      \\
-      \frac{1}{\beta_V + \gamma_V}
-      \left\{
-        \left[
-          \beta_P (1 - \beta_V) \frac{V_{sfs}}{P}
-          - \gamma_V
-        \right] y_2
-        + \beta_V (\gamma_V + \mu_V) \frac{V_{sfs}}{P} y_5
-      \right\}
-      \\
-      - \frac{\beta_P}{\gamma_V + \mu_V} y_2
-    \end{pmatrix}.
-  \end{split}
-\end{equation}
-
-The center manifold is
-\begin{equation}
-  W^c(0) = \big\{y_i = h_i(y_5), h_i(0) = 0, h_i'(0) = 0
-  \text{ for $i \in \{1, 2, 3, 4\}$}\big\}.
-\end{equation}
-Differentiating $y_i = h_i(y_5)$ gives
-\begin{equation}
-  \frac{\md y_i}{\md t} = h_i'(y_5) \frac{\md y_5}{\md t},
-\end{equation}
-so then, using \eqref{diagonal},
-\begin{equation}
-  \lambda_i h_i(y_5) + g_i(\vec{h}(y_5), y_5)
-  = h_i'(y_5) \big[\lambda_5 y_5 + g_5(\vec{h}(y_5), y_5)\big]
-\end{equation}
-for $i \in \{1, 2, 3, 4\}$.  In particular,
-\begin{equation}
-  (\gamma_V + \mu_V) h_2
-  + \frac{\beta_P h_2^2}
-  {\beta_P h_2 + (\gamma_V + \mu_V) (P - y_5)}
-  = h_2'
-  \frac{\beta_P^2 h_2^2}
-  {(\gamma_V + \mu_V) [\beta_P h_2 + (\gamma_V + \mu_V) (P - y_5)]},
-\end{equation}
-so
-\begin{equation}
-  \begin{split}
-    h_2(y_5) &= 0 \\
-    &\text{or} \\
-    \frac{\beta_P^2}{\gamma_V + \mu_V} h_2
-    h_2'
-    &=
-    (\gamma_V + \mu_V) (P - y_5)
-    + \beta_P (1 + \gamma_V + \mu_V) h_2.
-  \end{split}
-\end{equation}
-The latter, at $y_5 = 0$ gives
-\begin{equation}
-  (\gamma_V + \mu_V) P = 0,
-\end{equation}
-showing that it does not satisfy the conditions
-$h_2(0) = h_2'(0) = 0$.  Thus, $h_2(y_5) = 0$, i.e.~the center
-manifold lies along the $y_2$ axis.
-
-Using $h_2(y_5) = 0$ gives
-\begin{equation}
-  \frac{\md y_5}{\md t} = 0
-  \quad\implies\quad
-  y_5(t) = y_5(0),
-\end{equation}
-or
-\begin{equation}
-  \frac{\beta_P}{\gamma_V + \mu_V} x_3(t) + x_5(t)
-  = \frac{\beta_P}{\gamma_V + \mu_V} x_3(0) + x_5(0).
-\end{equation}
-Thus
-\begin{equation}
-  x_5(t)
-  = x_5(0) + \frac{\beta_P}{\gamma_V + \mu_V} \big[x_3(0) - x_3(t)\big]
-\end{equation}
-or
-\begin{equation}
-  P_i(t) =
-  P_i(0) +
-  \frac{\beta_P}{\gamma_V + \mu_V} \big[V_{ifs}(0) - V_{ifs}(t)\big].
-\end{equation}
-From \eqref{ODE_infected},
-\begin{equation}
-  \frac{\md V_{ifs}}{\md t}
-  = - (\gamma_V + \mu_V) V_{ifs} - \frac{\beta_P}{P - P_i} V_{ifs}^2  
-  \approx - (\gamma_V + \mu_V) V_{ifs},
-\end{equation}
-so
-\begin{equation}
-  V_{ifs}(t) \approx V_{ifs}(0) \me^{- (\gamma_V + \mu_V) t}.
-\end{equation}
-Thus
-\begin{equation}
-  P_i(t) \approx
-  P_i(0) +
-  \frac{\beta_P}{\gamma_V + \mu_V}
-  V_{ifs}(0) \big[1 - \me^{- (\gamma_V + \mu_V) t}\big].
-\end{equation}
-
-Therefore, the disease-free state is unstable.  E.g.~perturbing by
-adding $V_{ifs}(0) = \epsilon > 0$ gives
-$P_i \to \frac{\beta_P}{\gamma_V + \mu_V} \epsilon > 0$.  That is,
-with no movement, adding a few infectious vectors feeding on
-susceptible plants causes transmission to a few plants and then that
-is the end of the outbreak.  This seems to fit with what we want with
-no movement.
-
-\section{Basic reproduction number ($R_0$)}
-
-\subsection{Full model}
-
-The infected states are
-\begin{equation}
-  \vec{x} =
-  \begin{pmatrix}
-    V_{sfi}
-    \\
-    V_{im}
-    \\
-    V_{ifs}
-    \\
-    V_{ifi}
-    \\
-    P_i
-  \end{pmatrix}.
-\end{equation}
-The flow of new infections and the remaining transition flows are
-\begin{equation}
-  \begin{split}
-    \mathcal{F}
-    &=
-    \begin{pmatrix}
-      0
-      \\
-      0
-      \\
-      0
-      \\
-      0
-      \\
-      \beta_P V_{ifs}
-    \end{pmatrix},
-    \\
-    \mathcal{V}
-    &=
-    \begin{pmatrix}
-      - \frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{sm}
-      + \frac{f_V}{\phi_V} V_{sfi}
-      - \gamma_V V_{ifi}
-      + \mu_V V_{sfi}
-      - \beta_P \frac{V_{ifs}}{P_s} V_{sfs}
-      + \gamma_P V_{sfi}
-      + \beta_V V_{sfi}
-      \\
-      \frac{f_V}{1 - \phi_V} V_{im}
-      - \frac{f_V}{\phi_V} (V_{ifs} + V_{ifi})
-      + \gamma_V V_{im}
-      + (1 + \delta_V) \mu_V V_{im}
-      \\
-      - \frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{im}
-      + \frac{f_V}{\phi_V} V_{ifs}
-      + \gamma_V V_{ifs}
-      + \mu_V V_{ifs}
-      + \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
-      - \gamma_P V_{ifi}
-      \\
-      - \frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{im}
-      + \frac{f_V}{\phi_V} V_{ifi}
-      + \gamma_V V_{ifi}
-      + \mu_V V_{ifi}
-      - \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
-      + \gamma_P V_{ifi}
-      - \beta_V V_{sfi}
-      \\
-      \gamma_P P_i
-    \end{pmatrix}.
-  \end{split}
-\end{equation}
-Linearizing at the disease-free state,
-\begin{equation}
-  \begin{split}
-    \mat{F} &=
-    \begin{bmatrix}
-      0 & 0 & 0 & 0 & 0 \\
-      0 & 0 & 0 & 0 & 0 \\
-      0 & 0 & 0 & 0 & 0 \\
-      0 & 0 & 0 & 0 & 0 \\
-      0 & 0 & \beta_P & 0 & 0
-    \end{bmatrix},
-    \\
-    \mat{V} &=
-    \begin{bmatrix}
-    \frac{f_V}{\phi_V}
-    + \mu_V
-    + \gamma_P
-    + \beta_V
-    &
-    0
-    &
-    - \beta_P \frac{V_{sfs}}{P}
-    &
-    - \gamma_V
-    &
-    - \frac{f_V}{1 - \phi_V} \frac{V_{sm}}{P}
-    \\
-    0
-    &
-    \frac{f_V}{1 - \phi_V}
-    + \gamma_V
-    + (1 + \delta_V) \mu_V
-    &
-    - \frac{f_V}{\phi_V}
-    &
-    - \frac{f_V}{\phi_V}
-    &
-    0
-    \\
-    0
-    &
-    - \frac{f_V}{1 - \phi_V}
-    &
-    \frac{f_V}{\phi_V}
-    + \gamma_V
-    + \mu_V
-    &
-    - \gamma_P
-    &
-    0
-    \\
-    - \beta_V
-    &
-    0
-    &
-    0
-    &
-    \frac{f_V}{\phi_V}
-    + \gamma_V
-    + \mu_V
-    + \gamma_P
-    &
-    0
-    \\
-    0
-    &
-    0
-    &
-    0
-    &
-    0
-    &
-    \gamma_P
-    \end{bmatrix}.
-  \end{split}
-\end{equation}
-
-
-\section{Intrinsic growth rate ($r_0$)}
-
-\subsection{Full model}
-
-The infected states are
-\begin{equation}
-  \vec{x} =
-  \begin{pmatrix}
-    V_{sfi}
-    \\
-    V_{im}
-    \\
-    V_{ifs}
-    \\
-    V_{ifi}
-    \\
-    P_i
-  \end{pmatrix}.
-\end{equation}
-The flows for the infected states are
-\begin{equation}
-  \frac{\md}{\md t}
-  \begin{pmatrix}
-    V_{sfi}
-    \\
-    V_{im}
-    \\
-    V_{ifs}
-    \\
-    V_{ifi}
-    \\
-    P_i
-  \end{pmatrix}
-  =
-  \begin{pmatrix}
-    \frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{sm}
-    - \frac{f_V}{\phi_V} V_{sfi}
-    + \gamma_V V_{ifi}
-    - \mu_V V_{sfi}
-    + \beta_P \frac{V_{ifs}}{P_s} V_{sfs}
-    - \gamma_P V_{sfi}
-    - \beta_V V_{sfi}
-    \\
-    - \frac{f_V}{1 - \phi_V} V_{im}
-    + \frac{f_V}{\phi_V} (V_{ifs} + V_{ifi})
-    - \gamma_V V_{im}
-    - (1 + \delta_V) \mu_V V_{im}
-    \\
-    \frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{im}
-    - \frac{f_V}{\phi_V} V_{ifs}
-    - \gamma_V V_{ifs}
-    - \mu_V V_{ifs}
-    - \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
-    + \gamma_P V_{ifi}
-    \\
-    \frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{im}
-    - \frac{f_V}{\phi_V} V_{ifi}
-    - \gamma_V V_{ifi}
-    - \mu_V V_{ifi}
-    + \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
-    - \gamma_P V_{ifi}
-    + \beta_V V_{sfi}
-    \\
-    \beta_P V_{ifs}
-    - \gamma_P P_i
-  \end{pmatrix}.
-\end{equation}
-The Jacobian at the disease-free state is
-\begin{equation}
-  \mat{J} =
-  \begin{bmatrix}
-    - \frac{f_V}{\phi_V}
-    - \mu_V
-    - \gamma_P
-    - \beta_V
-    &
-    0
-    &
-    \beta_P \frac{V_{sfs}}{P}
-    &
-    \gamma_V
-    &
-    \frac{f_V}{1 - \phi_V} \frac{V_{sm}}{P}
-    \\
-    0
-    &
-    - \frac{f_V}{1 - \phi_V}
-    - \gamma_V
-    - (1 + \delta_V) \mu_V
-    &
-    \frac{f_V}{\phi_V}
-    &
-    \frac{f_V}{\phi_V}
-    &
-    0
-    \\
-    0
-    &
-    \frac{f_V}{1 - \phi_V}
-    &
-    - \frac{f_V}{\phi_V}
-    - \gamma_V
-    - \mu_V
-    &
-    \gamma_P
-    &
-    0
-    \\
-    \beta_V
-    &
-    0
-    &
-    0
-    &
-    - \frac{f_V}{\phi_V}
-    - \gamma_V
-    - \mu_V
-    - \gamma_P
-    &
-    0
-    \\
-    0
-    &
-    0
-    &
-    \beta_P
-    &
-    0
-    &
-    - \gamma_P
-  \end{bmatrix}.
-\end{equation}
-I do not see any simplifications.
 
 
 \end{document}
