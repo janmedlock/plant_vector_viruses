@@ -18,14 +18,6 @@ class Parameters:
     P0 = 10000
 
     @property
-    def muV(self):
-        return self.muVf
-
-    @property
-    def deltaV(self):
-        return self.muVm / self.muVf - 1
-
-    @property
     def sigmaV(self):
         if self.phiV == 1:
             # Undefined.

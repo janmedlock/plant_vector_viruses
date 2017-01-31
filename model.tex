@@ -86,7 +86,7 @@ rate is proportional to the number of the feeding vectors, with a
 logistic term dependent on the total number of vectors; and the
 newborns join the moving group.  Moving and feeding vectors die but at
 different rates, with moving vectors assumed to die more quickly than
-feeding vectors (i.e.~$\delta_V > 0$).
+feeding vectors (i.e.~$\mu_{Vm} > \mu_{Vf}$).
 
 The model is
 \begin{equation}
@@ -97,7 +97,7 @@ The model is
     - \underbrace{\frac{f_V}{1 - \phi_V} V_{sm}}_{\text{to feeding}}
     + \underbrace{\frac{f_V}{\phi_V} (V_{sfs} + V_{sfip} + V_{sfit})}_{\text{from feeding}}
     + \underbrace{\gamma_V V_{im}}_{\text{loses pathogen}}
-    - \underbrace{(1 + \delta_V) \mu_V V_{sm}}_{\text{death}}
+    - \underbrace{\mu_{Vm} V_{sm}}_{\text{death}}
     \\ & \quad\quad {}
     + \underbrace{b_V V_f \left(1 - \frac{V}{K_V P}\right)}_{\text{birth}},
     \\
@@ -131,7 +131,7 @@ The model is
     - \underbrace{\frac{f_V}{1 - \phi_V} V_{im}}_{\text{to feeding}}
     + \underbrace{\frac{f_V}{\phi_V} (V_{ifsp} + V_{ifst} + V_{ifi})}_{\text{from feeding}}
     - \underbrace{\gamma_V V_{im}}_{\text{loses pathogen}}
-    - \underbrace{(1 + \delta_V) \mu_V V_{im}}_{\text{death}},
+    - \underbrace{\mu_{Vm} V_{im}}_{\text{death}},
     \\
     \frac{\md V_{ifsp}}{\md t}
     &=
@@ -176,11 +176,10 @@ where the number of feeding vectors is
 $\beta_V$ is the infection rate from plants to vectors, $\beta_P$ is
 the infection rate from vectors to plants, $\alpha_V$ is the rate of
 vectors becoming able to acquire or transmit the pathogen, $\gamma_V$
-is the rate of pathogen clearance in vectors, $\mu_V$ is the death
-rate of the feeding vectors, $\delta_V$ is the proportional increase
-in the death rate for moving vectors, $b_V$ is the birth rate of
-vectors, and $K_V$ is the carrying capacity of vectors per plant
-(\autoref{fig:full_model_diagram}).
+is the rate of pathogen clearance in vectors, $\mu_{Vm}$ is the death
+rate of moving vectors, $\mu_{Vf}$ is the death rate of feeding
+vectors, $b_V$ is the birth rate of vectors, and $K_V$ is the carrying
+capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
@@ -275,22 +274,22 @@ vectors, and $K_V$ is the carrying capacity of vectors per plant
     % {$b_V V_f \left(1 - \frac{V}{K_V P}\right)$} +(90: 1.5);
 
     % \draw [->] (V_sm.70) to node [right, pos = 0.8]
-    % {$(1 + \delta_V) \mu_V$} +(90: 1.5);
+    % {$\mu_{Vm}$} +(90: 1.5);
     % \draw [->] (V_im) to node [right, pos = 0.8]
-    % {$(1 + \delta_V) \mu_V$} +(270: 2);
+    % {$\mu_{Vm}$} +(270: 2);
 
     % \draw [->] (V_sfs) to node [right, pos = 0.8]
-    % {$\mu_V$} +(90: 2);
+    % {$\mu_{Vf}$} +(90: 2);
     % \draw [->] (V_sfip) to node [right, pos = 0.8]
-    % {$\mu_V$} +(90: 2);
+    % {$\mu_{Vf}$} +(90: 2);
     % \draw [->] (V_sfit) to node [right, pos = 0.8]
-    % {$\mu_V$} +(90: 2);
+    % {$\mu_{Vf}$} +(90: 2);
     % \draw [->] (V_ifsp) to node [right, pos = 0.8]
-    % {$\mu_V$} +(270: 2);
+    % {$\mu_{Vf}$} +(270: 2);
     % \draw [->] (V_ifst) to node [right, pos = 0.8]
-    % {$\mu_V$} +(270: 2);
+    % {$\mu_{Vf}$} +(270: 2);
     % \draw [->] (V_ifi) to node [right, pos = 0.8]
-    % {$\mu_V$} +(270: 2);
+    % {$\mu_{Vf}$} +(270: 2);
   \end{tikzpicture}
   \caption{Model diagram.  $P_s$ and $P_i$ are the numbers
     of susceptible and infectious plants.  $V_{sm}$ is the number of
@@ -320,9 +319,9 @@ vectors, and $K_V$ is the carrying capacity of vectors per plant
     \\
     $\phi_V$ & Fraction of time vectors spend feeding & $0.5$
     \\
-    $\mu_V$ & Mortality rate for feeding vectors & $0.02\;\text{d}^{-1}$
+    $\mu_{Vf}$ & Mortality rate for feeding vectors & $0.02\;\text{d}^{-1}$
     \\
-    $\delta_V$ & Relative mortality increase for moving vectors & $1$
+    $\mu_{Vm}$ & Mortality rate for moving vectors & $0.04\;\text{d}^{-1}$
     \\
     $b_V$ & Fecundity of feeding vectors & $0.08\;\text{d}^{-1}$
     \\

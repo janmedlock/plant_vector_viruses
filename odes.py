@@ -23,48 +23,48 @@ def ODEs(Y, t, p):
     P = Ps + Pi
 
     dVsm = (p.bV * Vf * (1 - V / p.KV / P)
-            - p.muV * (1 + p.deltaV) * Vsm
+            - p.muVm * Vsm
             - p.fV / (1 - p.phiV) * Vsm
             + p.fV / p.phiV * Vsf
             + p.gammaV * Vim)
 
-    dVim = (- p.muV * (1 + p.deltaV) * Vim
+    dVim = (- p.muVm * Vim
             - p.fV / (1 - p.phiV) * Vim
             + p.fV / p.phiV * Vif
             - p.gammaV * Vim)
 
-    dVsfs = (- p.muV * Vsfs
+    dVsfs = (- p.muVf * Vsfs
              + p.fV / (1 - p.phiV) * Vsm * Ps / P
              - p.fV / p.phiV * Vsfs
              + p.gammaV * Vifs
              - p.betaP * Vifst / Ps * Vsfs)
 
-    dVsfip = (- p.muV * Vsfip
+    dVsfip = (- p.muVf * Vsfip
               + p.fV / (1 - p.phiV) * Vsm * Pi / P
               - p.fV / p.phiV * Vsfip
               + p.gammaV * Vifi
               + p.betaP * Vifst / Ps * Vsfs
               - p.alphaV * Vsfip)
 
-    dVsfit = (- p.muV * Vsfit
+    dVsfit = (- p.muVf * Vsfit
               - p.fV / p.phiV * Vsfit
               + p.alphaV * Vsfip
               - p.betaV * Vsfit)
 
-    dVifsp = (- p.muV * Vifsp
+    dVifsp = (- p.muVf * Vifsp
               + p.fV / (1 - p.phiV) * Vim * Ps / P
               - p.fV / p.phiV * Vifsp
               - p.gammaV * Vifsp
               - p.betaP * Vifst / Ps * Vifsp
               - p.alphaV * Vifsp)
 
-    dVifst = (- p.muV * Vifst
+    dVifst = (- p.muVf * Vifst
               - p.fV / p.phiV * Vifst
               - p.gammaV * Vifst
               - p.betaP * Vifst / Ps * Vifst
               + p.alphaV * Vifsp)
 
-    dVifi = (- p.muV * Vifi
+    dVifi = (- p.muVf * Vifi
              + p.fV / (1 - p.phiV) * Vim * Pi / P
              - p.fV / p.phiV * Vifi
              - p.gammaV * Vifi
