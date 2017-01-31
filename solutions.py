@@ -63,6 +63,8 @@ def main():
         common.style_axis(ax[0])
         common.style_axis(ax[1])
 
+    fig.tight_layout()
+
     if save:
         common.savefig(fig)
 

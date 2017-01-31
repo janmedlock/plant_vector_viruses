@@ -64,6 +64,13 @@ def main():
         ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
                    alpha = alpha)
 
+    (ymin, ymax) = ax.get_ylim()
+    if ymin > 0.1:
+        ymin = 0.1
+    if ymax < 10:
+        ymax = 10
+    ax.set_ylim(ymin, ymax)
+
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
