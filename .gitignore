@@ -11,4 +11,5 @@
 *.pdf
 *.run.xml
 *.synctex.gz
+*.npy
 /Dropbox

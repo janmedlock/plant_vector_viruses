@@ -140,5 +140,5 @@ if __name__ == '__main__':
     rel_growth_rate = build()
     numpy.save('sensitivity_2params.npy', rel_growth_rate)
     # rel_growth_rate = numpy.load('sensitivity_2params.npy')
-    plot(rel_growth_rate)
-    pyplot.show()
+    # plot(rel_growth_rate)
+    # pyplot.show()

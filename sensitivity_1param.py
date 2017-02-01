@@ -40,7 +40,7 @@ def main():
         if ax.get_xscale() == 'linear':
             ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
         elif ax.get_xscale() == 'log':
-            ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
+            ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
 
         for (n, p) in parameters.parameter_sets.items():
             r0baseline = growth_rates.get_growth_rate(p)
@@ -70,6 +70,8 @@ def main():
     if ymax < 10:
         ymax = 10
     ax.set_ylim(ymin, ymax)
+    ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+    ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
@@ -99,13 +101,12 @@ def sensitivity_fV_only():
     else:
         label = 'fV'
 
-    xscale = common.get_scale('fV')
-    # xscale = 'linear'
+    xscale = 'linear'
 
     fig, ax = pyplot.subplots(figsize = figsize_fV,
                               subplot_kw = dict(xscale = xscale))
 
-    dPs = numpy.linspace(0.1, 18, 1001)
+    dPs = numpy.linspace(0, 10, 1001)
     for (n, p) in parameters.parameter_sets.items():
         r0baseline = growth_rates.get_growth_rate(p)
 
@@ -129,7 +130,7 @@ def sensitivity_fV_only():
     ax.tick_params(labelsize = 'x-small')
 
     if xscale == 'linear':
-        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 6))
     elif xscale == 'log':
         ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
         ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))

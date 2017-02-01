@@ -22,27 +22,27 @@ def ODEs(Y, t, p):
     V = Vm + Vf
     P = Ps + Pi
 
-    dVsm = (p.bV * Vf * (1 - V / p.KV / P)
+    dVsm = (p.bV * Vf * (1 - Vf / p.KV / P)
             - p.muVm * Vsm
             - p.fV / (1 - p.phiV) * Vsm
             + p.fV / p.phiV * Vsf
-            + p.gammaV * Vim)
+            + p.gammaVm * Vim)
 
     dVim = (- p.muVm * Vim
             - p.fV / (1 - p.phiV) * Vim
             + p.fV / p.phiV * Vif
-            - p.gammaV * Vim)
+            - p.gammaVm * Vim)
 
     dVsfs = (- p.muVf * Vsfs
              + p.fV / (1 - p.phiV) * Vsm * Ps / P
              - p.fV / p.phiV * Vsfs
-             + p.gammaV * Vifs
+             + p.gammaVf * Vifs
              - p.betaP * Vifst / Ps * Vsfs)
 
     dVsfip = (- p.muVf * Vsfip
               + p.fV / (1 - p.phiV) * Vsm * Pi / P
               - p.fV / p.phiV * Vsfip
-              + p.gammaV * Vifi
+              + p.gammaVf * Vifi
               + p.betaP * Vifst / Ps * Vsfs
               - p.alphaV * Vsfip)
 
@@ -54,20 +54,20 @@ def ODEs(Y, t, p):
     dVifsp = (- p.muVf * Vifsp
               + p.fV / (1 - p.phiV) * Vim * Ps / P
               - p.fV / p.phiV * Vifsp
-              - p.gammaV * Vifsp
+              - p.gammaVf * Vifsp
               - p.betaP * Vifst / Ps * Vifsp
               - p.alphaV * Vifsp)
 
     dVifst = (- p.muVf * Vifst
               - p.fV / p.phiV * Vifst
-              - p.gammaV * Vifst
+              - p.gammaVf * Vifst
               - p.betaP * Vifst / Ps * Vifst
               + p.alphaV * Vifsp)
 
     dVifi = (- p.muVf * Vifi
              + p.fV / (1 - p.phiV) * Vim * Pi / P
              - p.fV / p.phiV * Vifi
-             - p.gammaV * Vifi
+             - p.gammaVf * Vifi
              + p.betaP * Vifst / Ps * Vifs
              + p.betaV * Vsfit)
 
@@ -80,14 +80,14 @@ def ODEs(Y, t, p):
 
 def get_DFS0(p):
     Vsm0 = (1 - p.phiV) * p.V0
-    Vim0 = 0
     Vsfs0 = p.phiV * p.V0
+    Ps0 = p.P0
+    Vim0 = 0
     Vifsp0 = 0
     Vifst0 = 0
     Vsfip0 = 0
     Vsfit0 = 0
     Vifi0 = 0
-    Ps0 = p.P0
     Pi0 = 0
     DFS0 = (Vsm0, Vim0, Vsfs0, Vifsp0, Vifst0, Vsfip0, Vsfit0, Vifi0, Ps0, Pi0)
     return DFS0

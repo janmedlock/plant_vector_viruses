@@ -8,8 +8,8 @@ import numpy
 import seaborn_quiet as seaborn
 
 
-tmax = 50
-t = numpy.linspace(0, tmax, 101)
+tmax = 100
+t = numpy.linspace(0, tmax, 1001)
 
 vi0 = 0.01
 
@@ -18,7 +18,7 @@ sensitivity_parameters = (
     ('muVf', 'Feeding vector mortality\n$\\mu_{Vf}$ (d$^{-1}$)'),
     ('muVm', 'Moving vector mortality\n$\\mu_{Vm}$ (d$^{-1}$)'),
     ('phiV', 'Proportion of time feeding\n$\\phi_V$'),
-    ('fV', 'Feeding rate\n$f_V$ (d$^{-1}$)'))
+    ('fV', 'Encounter rate\n$f_V$ (d$^{-1}$)'))
 
 
 def get_scale(param):
@@ -47,7 +47,7 @@ def get_dPs(param, value_baseline):
 
 
 def style_axis(ax):
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(20))
 
 
 def savefig(fig, append = '', format_ = 'pdf', *args, **kwargs):

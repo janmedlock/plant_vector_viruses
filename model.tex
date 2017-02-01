@@ -79,7 +79,7 @@ and the total number of plants is
 \begin{equation}
   P = P_s + P_i.
 \end{equation}
-The vectors feed on new plants at the rate $f_V$ and spend the
+The vectors feed on new plants at the encounter rate $f_V$ and spend the
 proportion $\phi_V$ of their time feeding and $1 - \phi_V$ moving.  We
 assume that vectors only reproduce when they are feeding; the birth
 rate is proportional to the number of the feeding vectors, with a
@@ -96,16 +96,16 @@ The model is
     &=
     - \underbrace{\frac{f_V}{1 - \phi_V} V_{sm}}_{\text{to feeding}}
     + \underbrace{\frac{f_V}{\phi_V} (V_{sfs} + V_{sfip} + V_{sfit})}_{\text{from feeding}}
-    + \underbrace{\gamma_V V_{im}}_{\text{loses pathogen}}
+    + \underbrace{\gamma_{Vm} V_{im}}_{\text{loses pathogen}}
     - \underbrace{\mu_{Vm} V_{sm}}_{\text{death}}
     \\ & \quad\quad {}
-    + \underbrace{b_V V_f \left(1 - \frac{V}{K_V P}\right)}_{\text{birth}},
+    + \underbrace{b_V V_f \left(1 - \frac{V_f}{K_V P}\right)}_{\text{birth}},
     \\
     \frac{\md V_{sfs}}{\md t}
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{sm}}_{\text{from moving}}
     - \underbrace{\frac{f_V}{\phi_V} V_{sfs}}_{\text{to moving}}
-    + \underbrace{\gamma_V (V_{ifsp} + V_{ifst})}_{\text{loses pathogen}}
+    + \underbrace{\gamma_{Vf} (V_{ifsp} + V_{ifst})}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{sfs}}_{\text{death}}
     - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{sfs}}_{\text{plant
         infected}},
@@ -114,7 +114,7 @@ The model is
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{sm}}_{\text{from moving}}
     - \underbrace{\frac{f_V}{\phi_V} V_{sfip}}_{\text{to moving}}
-    + \underbrace{\gamma_V V_{ifi}}_{\text{loses pathogen}}
+    + \underbrace{\gamma_{Vf} V_{ifi}}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{sfip}}_{\text{death}}
     + \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{sfs}}_{\text{plant infected}}
     - \underbrace{\alpha_V V_{sfip}}_{\text{acquiring}},
@@ -130,14 +130,14 @@ The model is
     &=
     - \underbrace{\frac{f_V}{1 - \phi_V} V_{im}}_{\text{to feeding}}
     + \underbrace{\frac{f_V}{\phi_V} (V_{ifsp} + V_{ifst} + V_{ifi})}_{\text{from feeding}}
-    - \underbrace{\gamma_V V_{im}}_{\text{loses pathogen}}
+    - \underbrace{\gamma_{Vm} V_{im}}_{\text{loses pathogen}}
     - \underbrace{\mu_{Vm} V_{im}}_{\text{death}},
     \\
     \frac{\md V_{ifsp}}{\md t}
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{im}}_{\text{from moving}}
     - \underbrace{\frac{f_V}{\phi_V} V_{ifsp}}_{\text{to moving}}
-    - \underbrace{\gamma_V V_{ifsp}}_{\text{loses pathogen}}
+    - \underbrace{\gamma_{Vf} V_{ifsp}}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{ifsp}}_{\text{death}}
     - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{ifsp}}_{\text{plant infected}}
     - \underbrace{\alpha_V V_{ifsp}}_{\text{transmitting}},
@@ -145,7 +145,7 @@ The model is
     \frac{\md V_{ifst}}{\md t}
     &=
     - \underbrace{\frac{f_V}{\phi_V} V_{ifst}}_{\text{to moving}}
-    - \underbrace{\gamma_V V_{ifst}}_{\text{loses pathogen}}
+    - \underbrace{\gamma_{Vf} V_{ifst}}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{ifst}}_{\text{death}}
     - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{ifst}}_{\text{plant infected}}
     + \underbrace{\alpha_V V_{ifsp}}_{\text{transmitting}},
@@ -154,7 +154,7 @@ The model is
     &=
     \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{im}}_{\text{from moving}}
     - \underbrace{\frac{f_V}{\phi_V} V_{ifi}}_{\text{to moving}}
-    - \underbrace{\gamma_V V_{ifi}}_{\text{loses pathogen}}
+    - \underbrace{\gamma_{Vf} V_{ifi}}_{\text{loses pathogen}}
     - \underbrace{\mu_V V_{ifi}}_{\text{death}}
     + \underbrace{\beta_P \frac{V_{ifst}}{P_s} (V_{ifsp} + V_{ifst})}_{\text{plant infected}}
     \\ & \quad\quad {}
@@ -175,11 +175,13 @@ where the number of feeding vectors is
 \end{equation}
 $\beta_V$ is the infection rate from plants to vectors, $\beta_P$ is
 the infection rate from vectors to plants, $\alpha_V$ is the rate of
-vectors becoming able to acquire or transmit the pathogen, $\gamma_V$
-is the rate of pathogen clearance in vectors, $\mu_{Vm}$ is the death
-rate of moving vectors, $\mu_{Vf}$ is the death rate of feeding
-vectors, $b_V$ is the birth rate of vectors, and $K_V$ is the carrying
-capacity of vectors per plant (\autoref{fig:full_model_diagram}).
+vectors becoming able to acquire or transmit the pathogen,
+$\gamma_{Vf}$ is the rate of pathogen clearance in feeding vectors,
+$\gamma_{Vm}$ is the rate of pathogen clearance in moving vectors,
+$\mu_{Vm}$ is the death rate of moving vectors, $\mu_{Vf}$ is the
+death rate of feeding vectors, $b_V$ is the birth rate of vectors, and
+$K_V$ is the carrying capacity of vectors per plant
+(\autoref{fig:full_model_diagram}).
 
 \begin{figure}
   \centering
@@ -232,10 +234,10 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 
     \draw [->] (V_sfit.270) to node [right, pos = 0.4] {$\beta_V$} (V_ifi.45);
 
-    \draw [->] (V_im) to node [left, pos = 0.58] {$\gamma_V$} (V_sm);
-    \draw [->] (V_ifsp.90) to node [left] {$\gamma_V$} (V_sfs.250);
-    \draw [->] (V_ifst.90) to node [right, pos = 0.66] {$\gamma_V$} (V_sfs.290);
-    \draw [->] (V_ifi.90) to node [left, pos = 0.48] {$\gamma_V$} (V_sfip.270);
+    \draw [->] (V_im) to node [left, pos = 0.58] {$\gamma_{Vm}$} (V_sm);
+    \draw [->] (V_ifsp.90) to node [left] {$\gamma_{Vf}$} (V_sfs.250);
+    \draw [->] (V_ifst.90) to node [right, pos = 0.66] {$\gamma_{Vf}$} (V_sfs.290);
+    \draw [->] (V_ifi.90) to node [left, pos = 0.48] {$\gamma_{Vf}$} (V_sfip.270);
 
     \draw [->] (V_sm.20) to node [above, pos = 0.65]
     {$\frac{f_V}{1 - \phi_V} \frac{P_s}{P}$} (V_sfs.160);
@@ -271,7 +273,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
     {$\beta_P \frac{V_{ifst}}{P_s}$} (V_ifi.225);
 
     % \draw [<-] (V_sm.110) to node [left, pos = 0.8]
-    % {$b_V V_f \left(1 - \frac{V}{K_V P}\right)$} +(90: 1.5);
+    % {$b_V V_f \left(1 - \frac{V_f}{K_V P}\right)$} +(90: 1.5);
 
     % \draw [->] (V_sm.70) to node [right, pos = 0.8]
     % {$\mu_{Vm}$} +(90: 1.5);
@@ -315,7 +317,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
     \multicolumn{2}{l}{\textbf{Parameter}}
     & \multicolumn{1}{r}{\textbf{Value}}
     \\
-    $f_V$ & Plants fed on per unit time & $6\;\text{d}^{-1}$
+    $f_V$ & Vector rate of encountering new plants & $6\;\text{d}^{-1}$
     \\
     $\phi_V$ & Fraction of time vectors spend feeding & $0.5$
     \\
@@ -339,7 +341,9 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
     \\
     $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $48\;\text{d}^{-1}$
     \\
-    $\gamma_V$ & Rate of pathogen clearance in vectors & $0\;\text{d}^{-1}$
+    $\gamma_{Vf}$ & Rate of pathogen clearance in feeding vectors & $0\;\text{d}^{-1}$
+    \\
+    $\gamma_{Vm}$ & Rate of pathogen clearance in moving vectors & $0\;\text{d}^{-1}$
     \\
     \multicolumn{3}{c}{\textbf{Non-persistent}}
     \\
@@ -349,7 +353,8 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
     \\
     $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $86\,400\;\text{d}^{-1}$
     \\
-    $\gamma_V$ & Rate of pathogen clearance in vectors & $0.12\;\text{d}^{-1}$
+    $\gamma_{Vf}$ & Rate of pathogen clearance in feeding vectors & $0.12\;\text{d}^{-1}$ \\
+    $\gamma_{Vm}$ & Rate of pathogen clearance in moving vectors & $0.12\;\text{d}^{-1}$
   \end{tabular}
   \caption{Model parameters and initial conditions.}
   \label{params}
@@ -365,7 +370,7 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 \item The pathogen growth rate increases as the vector population
   grows (\autoref{fig:growth_rates}).
 
-\item The growth rate is insensitive to the feeding rate
+\item The growth rate is insensitive to the encounter rate
   (\hyperref[fig:sensitivity_1param]{Figures
     \ref*{fig:sensitivity_1param}}--\ref{fig:sensitivity_2params}).
 \end{itemize}
@@ -414,13 +419,13 @@ capacity of vectors per plant (\autoref{fig:full_model_diagram}).
 \begin{figure}
   \centering
   \includegraphics[width = \textwidth]{sensitivity_1param_fV}
-  \caption{Intrinsic growth rate of the pathogen vs.~the feeding rate
-    ($f_V$) at $50~\text{d}$, relative to its value for the baseline
-    parameter value.  The vertical axis has a linear scale, compared
-    to a log scale in \autoref{fig:growth_rates}, to show the smaller
-    differences in growth rate as feeding rate varies.  The dotted
-    horizontal lines show the baseline parameter values.  Parameter
-    values and initial conditions are as in
+  \caption{Intrinsic growth rate of the pathogen vs.~the encounter
+    rate ($f_V$) at $50~\text{d}$, relative to its value for the
+    baseline parameter value.  The vertical axis has a linear scale,
+    compared to a log scale in \autoref{fig:growth_rates}, to show the
+    smaller differences in growth rate as feeding rate varies.  The
+    dotted horizontal lines show the baseline parameter values.
+    Parameter values and initial conditions are as in
     \autoref{fig:growth_rates}.}
   \label{fig:sensitivity_1param_fV}
 \end{figure}
