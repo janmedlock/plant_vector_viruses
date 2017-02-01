@@ -58,7 +58,7 @@ def main():
             ax[0].set_ylabel('Vectors')
             ax[1].set_ylabel('Plants')
             ax[0].legend(loc = 'upper left', ncol = 2)
-            ax[1].legend(loc = 'upper left', ncol = 2)
+            ax[1].legend(loc = 'upper left', ncol = 1)
 
         common.style_axis(ax[0])
         common.style_axis(ax[1])
