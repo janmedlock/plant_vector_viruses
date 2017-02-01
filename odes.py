@@ -170,7 +170,7 @@ def get_r_empirical(t, x, n = 1):
 
 
 def solve(Y0, t, p):
-    Y = integrate.odeint(ODEs, Y0, t, args = (p, ))
+    Y = integrate.odeint(ODEs, numpy.copy(Y0), t, args = (p, ))
     return pandas.DataFrame(Y,
                             columns = ('Vsm', 'Vim', 'Vsfs', 'Vifsp', 'Vifst',
                                        'Vsfip', 'Vsfit', 'Vifi', 'Ps', 'Pi'))
