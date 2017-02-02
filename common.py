@@ -14,10 +14,10 @@ t = numpy.linspace(0, tmax, 1001)
 vi0 = 0.01
 
 sensitivity_parameters = (
-    ('bV', 'Vector fecundity\n$b_V$ (d$^{-1}$)'),
-    ('muVf', 'Feeding vector mortality\n$\\mu_{Vf}$ (d$^{-1}$)'),
-    ('muVm', 'Moving vector mortality\n$\\mu_{Vm}$ (d$^{-1}$)'),
-    ('phiV', 'Proportion of time feeding\n$\\phi_V$'),
+    ('bV', 'Vector birth rate\n$b_V$ (d$^{-1}$)'),
+    ('muVf', 'Feeding death rate\n$\\mu_{Vf}$ (d$^{-1}$)'),
+    ('muVm', 'Moving death rate\n$\\mu_{Vm}$ (d$^{-1}$)'),
+    ('phiV', 'Time feeding\n$\\phi_V$'),
     ('fV', 'Encounter rate\n$f_V$ (d$^{-1}$)'))
 
 
@@ -35,7 +35,7 @@ npoints = 201
 def get_dPs(param, value_baseline):
     scale = get_scale(param)
     if scale == 'linear':
-        eps = 0.2
+        eps = 0.1
         return numpy.linspace(eps, 1 - eps, npoints)
     elif scale == 'log':
         return value_baseline * numpy.logspace(

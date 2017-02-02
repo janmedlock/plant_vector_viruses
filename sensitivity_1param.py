@@ -36,6 +36,7 @@ def main():
                                 sharey = True,
                                 figsize = figsize)
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
+        ymin, ymax = (numpy.inf, - numpy.inf)
         for (i, param) in enumerate(common.sensitivity_parameters):
             param0, param0_name = param
 
@@ -59,6 +60,8 @@ def main():
                 r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
                               for dP in dPs)
                 rel_growth_rate = numpy.asarray(r0) / r0baseline
+                ymin = min(rel_growth_rate.min(), ymin)
+                ymax = max(rel_growth_rate.max(), ymax)
                 ax.plot(dPs, rel_growth_rate, label = n, alpha = alpha)
 
             ax.set_xlabel(param0_name, fontsize = 'x-small')
@@ -69,14 +72,12 @@ def main():
             ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
                        alpha = alpha)
 
-            (ymin, ymax) = ax.get_ylim()
-            if ymin > 0.1:
-                ymin = 0.1
-            if ymax < 10:
-                ymax = 10
-            ax.set_ylim(ymin, ymax)
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+
+    ymin = 10 ** numpy.floor(numpy.log10(ymin))
+    ymax = 10 ** numpy.ceil(numpy.log10(ymax))
+    ax.set_ylim(ymin, ymax)
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
@@ -129,7 +130,7 @@ def sensitivity_fV_only():
     ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
 
     ax.set_xlabel(label, fontsize = 'x-small')
-    ax.set_ylabel('Relative infection\ngrowth rate',
+    ax.set_ylabel('Relative pathogen\nintrinsic growth rate',
                   fontsize = 'small')
 
     ax.tick_params(labelsize = 'x-small')

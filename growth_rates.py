@@ -50,8 +50,8 @@ def main():
     for (n, p) in parameters.parameter_sets.items():
         pop, r = get_pop_and_growth_rates(p)
         axes.plot(pop, r, label = n, alpha = alpha)
-    axes.set_xlabel('Vector population size')
-    axes.set_ylabel('Infection growth rate (d$^{-1}$)')
+    axes.set_xlabel('Initial vector population size')
+    axes.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)')
     axes.legend(loc = 'upper left')
 
     fig.tight_layout()

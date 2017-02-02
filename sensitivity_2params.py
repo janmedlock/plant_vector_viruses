@@ -63,7 +63,8 @@ def _hide_ticklabels(ax):
     ax.offsetText.set_visible(False)
 
 
-def _format_axis(ax, xlabel, ylabel):
+def _format_axis(ax, param0_name, param1_name, left, right, top, bottom,
+                 fontsize):
     for axis in (ax.xaxis, ax.yaxis):
         axis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
         scale = axis.get_scale()
@@ -73,20 +74,32 @@ def _format_axis(ax, xlabel, ylabel):
             axis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
             axis.set_minor_locator(ticker.NullLocator())
 
-    ax.tick_params(labelsize = 9)
+    ax.tick_params(labelsize = fontsize)
 
-    if ax.is_last_row():
-        ax.set_xlabel(xlabel, fontsize = 9)
-    else:
+    if top:
+        ax.tick_params(axis = 'x', top = True, labeltop = True,
+                       bottom = False, labelbottom = False)
+        ax.xaxis.set_label_position('top')
+        ax.set_xlabel(param1_name, fontsize = fontsize)
+    if bottom:
+        ax.set_xlabel(param1_name, fontsize = fontsize)
+    if not (top or bottom):
         _hide_ticklabels(ax.xaxis)
 
-    if ax.is_first_col():
-        ax.set_ylabel(ylabel, fontsize = 9)
-    else:
+    if left:
+        ax.set_ylabel(param0_name, fontsize = fontsize)
+    if right:
+        ax.tick_params(axis = 'y', right = True, labelright = True,
+                       left = False, labelleft = False)
+        ax.yaxis.set_label_position('right')
+        ax.set_ylabel(param0_name, fontsize = fontsize)
+    if not (left or right):
         _hide_ticklabels(ax.yaxis)
 
 
 def plot(rel_growth_rate):
+    fontsize = 8
+
     # Contour levels every log10.
     log_rgr = numpy.log10(rel_growth_rate)
     log_rgr_absmax = numpy.max(numpy.abs(log_rgr))
@@ -98,54 +111,73 @@ def plot(rel_growth_rate):
     colors = seaborn.color_palette()
 
     nparams = len(common.sensitivity_parameters)
-    nrows = nparams - 1
-    ncols = nparams - 1
+    nrows = ncols = nparams
     gs = gridspec.GridSpec(nrows, ncols)
     fig = pyplot.figure(figsize = figsize)
     for row in range(nrows):
-        for col in range(row + 1):
-            param0, param0_name = common.sensitivity_parameters[row + 1]
-            param1, param1_name = common.sensitivity_parameters[col]
+        for col in range(ncols):
+            if row != col:
+                param0, param0_name = common.sensitivity_parameters[row]
+                param1, param1_name = common.sensitivity_parameters[col]
 
-            yscale = common.get_scale(param0)
-            xscale = common.get_scale(param1)
+                yscale = common.get_scale(param0)
+                xscale = common.get_scale(param1)
 
-            ax = fig.add_subplot(gs[row, col],
-                                 xscale = xscale,
-                                 yscale = yscale)
+                ax = fig.add_subplot(gs[row, col],
+                                     xscale = xscale,
+                                     yscale = yscale)
 
-            _format_axis(ax, param0_name, param1_name)
+                left = (col == 0)
+                # left = (col == 0) or (row == 0 and col == 1)
+                right = (col == ncols - 1)
+                top = (row == 0)
+                bottom = (row == nrows - 1)
+                _format_axis(ax, param0_name, param1_name, left, right,
+                             top, bottom, fontsize)
 
-            for (k, x) in enumerate(parameters.parameter_sets.items()):
-                n, p = x
+                for (k, x) in enumerate(parameters.parameter_sets.items()):
+                    n, p = x
 
-                param0baseline = getattr(p, param0)
-                param1baseline = getattr(p, param1)
+                    param0baseline = getattr(p, param0)
+                    param1baseline = getattr(p, param1)
 
-                y = common.get_dPs(param0, param0baseline)
-                x = common.get_dPs(param1, param1baseline)
-                X, Y = numpy.meshgrid(x, y)
+                    y = common.get_dPs(param0, param0baseline)
+                    x = common.get_dPs(param1, param1baseline)
+                    X, Y = numpy.meshgrid(x, y)
 
-                cs = ax.contour(X, Y, rel_growth_rate[k, row, col],
-                                contour_levels,
-                                colors = [colors[k]],
-                                alpha = alpha,
-                                linestyles = 'solid')
-                ax.clabel(cs, inline = 1, fmt = '%.4g', fontsize = 8,
-                          colors = [colors[k]], alpha = alpha)
+                    if row > col:
+                        i = row - 1
+                        j = col
+                        Z = rel_growth_rate[k, i, j]
+                    elif row < col:
+                        i = col - 1
+                        j = row
+                        Z = rel_growth_rate[k, i, j].T
+                    else:
+                        raise RuntimeError
 
-                ax.axvline(param1baseline, linestyle = 'dotted',
-                           color = 'black', alpha = alpha)
-                ax.axhline(param0baseline, linestyle = 'dotted',
-                           color = 'black', alpha = alpha)
+                    cs = ax.contour(X, Y, Z,
+                                    contour_levels,
+                                    colors = [colors[k]],
+                                    alpha = alpha,
+                                    linestyles = 'solid')
+                    ax.clabel(cs, inline = 1, fmt = '%.4g',
+                              fontsize = fontsize,
+                              colors = [colors[k]],
+                              alpha = alpha)
+
+                    ax.axvline(param1baseline, linestyle = 'dotted',
+                               color = 'black', alpha = alpha)
+                    ax.axhline(param0baseline, linestyle = 'dotted',
+                               color = 'black', alpha = alpha)
 
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
-                     loc = 'upper right',
+                     loc = (0.76, 0.115),
                      frameon = False,
-                     fontsize = 'medium')
+                     fontsize = fontsize + 2)
 
     fig.tight_layout()
 
