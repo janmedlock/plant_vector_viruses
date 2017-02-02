@@ -33,13 +33,11 @@ def _run_one(p, param0, param1, dP0, dP1):
 def build():
     nparamsets = len(parameters.parameter_sets)
     nparams = len(common.sensitivity_parameters)
-    rel_growth_rate = numpy.ones((nparamsets,
-                                  nparams - 1, nparams - 1,
-                                  common.npoints,
-                                  common.npoints))
+    r0 = numpy.ones((nparamsets,
+                     nparams - 1, nparams - 1,
+                     common.npoints, common.npoints))
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
         for (k, p) in enumerate(parameters.parameter_sets.values()):
-            r0baseline = growth_rates.get_growth_rate(p)
             for i in range(nparams - 1):
                 for j in range(i + 1):
                     param0, param0_name = common.sensitivity_parameters[i + 1]
@@ -48,13 +46,12 @@ def build():
                     param1baseline = getattr(p, param1)
                     dPs0 = common.get_dPs(param0, param0baseline)
                     dPs1 = common.get_dPs(param1, param1baseline)
-                    r0 = parallel(joblib.delayed(_run_one)(p, param0, param1,
-                                                           dP0, dP1)
-                                 for dP0 in dPs0
-                                 for dP1 in dPs1)
-                    r0 = numpy.asarray(r0).reshape((len(dPs0), -1))
-                    rel_growth_rate[k, i, j] = r0 / r0baseline
-    return rel_growth_rate
+                    r0_ = parallel(joblib.delayed(_run_one)(p, param0, param1,
+                                                            dP0, dP1)
+                                   for dP0 in dPs0
+                                   for dP1 in dPs1)
+                    r0[k, i, j] = numpy.asarray(r0_).reshape((len(dPs0), -1))
+    return r0
 
 
 def _hide_ticklabels(ax):
@@ -97,11 +94,11 @@ def _format_axis(ax, param0_name, param1_name, left, right, top, bottom,
         _hide_ticklabels(ax.yaxis)
 
 
-def plot(rel_growth_rate):
+def plot(r0):
     fontsize = 8
 
     # Contour levels every log10.
-    log_rgr = numpy.log10(rel_growth_rate)
+    log_rgr = numpy.log10(r0)
     log_rgr_absmax = numpy.max(numpy.abs(log_rgr))
     log_rgr_levels = numpy.linspace(- numpy.ceil(log_rgr_absmax),
                                     numpy.ceil(log_rgr_absmax),
@@ -148,11 +145,11 @@ def plot(rel_growth_rate):
                     if row > col:
                         i = row - 1
                         j = col
-                        Z = rel_growth_rate[k, i, j]
+                        Z = r0[k, i, j]
                     elif row < col:
                         i = col - 1
                         j = row
-                        Z = rel_growth_rate[k, i, j].T
+                        Z = r0[k, i, j].T
                     else:
                         raise RuntimeError
 
@@ -161,7 +158,7 @@ def plot(rel_growth_rate):
                                     colors = [colors[k]],
                                     alpha = alpha,
                                     linestyles = 'solid')
-                    ax.clabel(cs, inline = 1, fmt = '%.4g',
+                    ax.clabel(cs, inline = 1, fmt = '%.4g d$^{-1}$',
                               fontsize = fontsize,
                               colors = [colors[k]],
                               alpha = alpha)
@@ -186,8 +183,8 @@ def plot(rel_growth_rate):
 
 
 if __name__ == '__main__':
-    # rel_growth_rate = build()
-    # numpy.save('sensitivity_2params.npy', rel_growth_rate)
-    rel_growth_rate = numpy.load('sensitivity_2params.npy')
-    plot(rel_growth_rate)
-    pyplot.show()
+    r0 = build()
+    numpy.save('sensitivity_2params.npy', r0)
+    # r0 = numpy.load('sensitivity_2params.npy')
+    # plot(r0)
+    # pyplot.show()

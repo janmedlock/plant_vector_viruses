@@ -79,14 +79,14 @@ and the total number of plants is
 \begin{equation}
   P = P_s + P_i.
 \end{equation}
-The vectors feed on new plants at the encounter rate $f_V$ and spend the
-proportion $\phi_V$ of their time feeding and $1 - \phi_V$ moving.  We
-assume that vectors only reproduce when they are feeding; the birth
-rate is proportional to the number of the feeding vectors, with a
-logistic term dependent on the total number of vectors; and the
-newborns join the moving group.  Moving and feeding vectors die but at
-different rates, with moving vectors assumed to die more quickly than
-feeding vectors (i.e.~$\mu_{Vm} > \mu_{Vf}$).
+The vectors encounter new plants at rate $f_V$ and spend proportion
+$\phi_V$ of their time feeding and $1 - \phi_V$ moving.  We assume
+that vectors only reproduce when they are feeding; the birth rate is
+proportional to the number of the feeding vectors, with a logistic
+term dependent on the total number of vectors; and the newborns join
+the moving group.  Moving and feeding vectors die but at different
+rates, with moving vectors assumed to die more quickly than feeding
+vectors (i.e.~$\mu_{Vm} > \mu_{Vf}$).
 
 The model is
 \begin{equation}
@@ -192,7 +192,7 @@ $K_V$ is the carrying capacity of vectors per plant
       font = \large},
     plant/.style = {circle,
       minimum size = {4em}},
-    susceptible/.style = {blue},
+    susceptible/.style = {green!60!black},
     infected/.style = {red},
     vector/.style = {rectangle,
       minimum size = {3.5em}},
@@ -317,7 +317,7 @@ $K_V$ is the carrying capacity of vectors per plant
     \multicolumn{2}{l}{\textbf{Parameter}}
     & \multicolumn{1}{r}{\textbf{Value}}
     \\
-    $f_V$ & Vector rate of encountering new plants & $6\;\text{d}^{-1}$
+    $f_V$ & Rate of vectors encountering new plants & $3\;\text{d}^{-1}$
     \\
     $\phi_V$ & Fraction of time vectors spend feeding & $0.5$
     \\
@@ -325,7 +325,7 @@ $K_V$ is the carrying capacity of vectors per plant
     \\
     $\mu_{Vm}$ & Mortality rate for moving vectors & $0.04\;\text{d}^{-1}$
     \\
-    $b_V$ & Fecundity of feeding vectors & $0.08\;\text{d}^{-1}$
+    $b_V$ & Birth rate for feeding vectors & $0.08\;\text{d}^{-1}$
     \\
     $K_V$ & Carrying capacity of vectors per plant & $100$
     \\
@@ -349,12 +349,12 @@ $K_V$ is the carrying capacity of vectors per plant
     \\
     $\beta_V$ & Transmission rate from plants to vectors & $500\;\text{d}^{-1}$
     \\
-    $\beta_P$ & Transmission rate from vectors to plants & $1\,000\;\text{d}^{-1}$
+    $\beta_P$ & Transmission rate from vectors to plants & $10\,000\;\text{d}^{-1}$
     \\
     $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $86\,400\;\text{d}^{-1}$
     \\
-    $\gamma_{Vf}$ & Rate of pathogen clearance in feeding vectors & $0.12\;\text{d}^{-1}$ \\
-    $\gamma_{Vm}$ & Rate of pathogen clearance in moving vectors & $0.12\;\text{d}^{-1}$
+    $\gamma_{Vf}$ & Rate of pathogen clearance in feeding vectors & $288\;\text{d}^{-1}$ \\
+    $\gamma_{Vm}$ & Rate of pathogen clearance in moving vectors & $24\;\text{d}^{-1}$
   \end{tabular}
   \caption{Model parameters and initial conditions.}
   \label{params}
@@ -409,10 +409,10 @@ $K_V$ is the carrying capacity of vectors per plant
   \centering
   \includegraphics[width = \textwidth]{sensitivity_1param}
   \caption{Intrinsic growth rate of the pathogen vs.~parameter values
-    at $50~\text{d}$, relative to its value for the baseline
-    parameter value.  The dotted horizontal lines show the baseline
+    at $50~\text{d}$.  The dotted horizontal lines show the baseline
     parameter values.  Parameter values and initial conditions are as
-    in \autoref{fig:growth_rates}.  \comment{As $\phi_V \to 1$, the
+    in \autoref{fig:growth_rates}.
+    \comment{As $\phi_V \to 1$, the
       growth rate does not go to $0$.  This limit is a bit odd: the
       encounter rate $f_V$ is fixed, so there is still movement, just
       the amount of time spent moving goes to $0$.  I.e.~all the time
@@ -425,13 +425,14 @@ $K_V$ is the carrying capacity of vectors per plant
   \centering
   \includegraphics[width = \textwidth]{sensitivity_1param_fV}
   \caption{Intrinsic growth rate of the pathogen vs.~the encounter
-    rate ($f_V$) at $50~\text{d}$, relative to its value for the
-    baseline parameter value.  The vertical axis has a linear scale,
+    rate ($f_V$) at $50~\text{d}$.  The vertical axis has a linear scale,
     compared to a log scale in \autoref{fig:growth_rates}, to show the
     smaller differences in growth rate as feeding rate varies.  The
     dotted horizontal lines show the baseline parameter values.
     Parameter values and initial conditions are as in
-    \autoref{fig:growth_rates}.}
+    \autoref{fig:growth_rates}.  \comment{We probably don't need this
+      figure anymore since the lines are not flat in the log-log
+      version (leftmost panel in \autoref{fig:growth_rates}).}}
   \label{fig:sensitivity_1param_fV}
 \end{figure}
 
