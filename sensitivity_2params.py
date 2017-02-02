@@ -37,7 +37,7 @@ def build():
                                   nparams - 1, nparams - 1,
                                   common.npoints,
                                   common.npoints))
-    with joblib.parallel.Parallel(n_jobs = -1, verbose = 11) as parallel:
+    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
         for (k, p) in enumerate(parameters.parameter_sets.values()):
             r0baseline = growth_rates.get_growth_rate(p)
             for i in range(nparams - 1):
@@ -154,8 +154,8 @@ def plot(rel_growth_rate):
 
 
 if __name__ == '__main__':
-    rel_growth_rate = build()
+    # rel_growth_rate = build()
     # numpy.save('sensitivity_2params.npy', rel_growth_rate)
-    # rel_growth_rate = numpy.load('sensitivity_2params.npy')
-    # plot(rel_growth_rate)
-    # pyplot.show()
+    rel_growth_rate = numpy.load('sensitivity_2params.npy')
+    plot(rel_growth_rate)
+    pyplot.show()
