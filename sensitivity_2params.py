@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import copy
+
+import joblib
 from matplotlib import gridspec
 from matplotlib import lines
 from matplotlib import pyplot
@@ -20,6 +23,13 @@ seaborn.set_palette('Dark2')
 alpha = 0.7
 
 
+def _run_one(p, param0, param1, dP0, dP1):
+    p = copy.copy(p)
+    setattr(p, param0, dP0)
+    setattr(p, param1, dP1)
+    return growth_rates.get_growth_rate(p)
+
+
 def build():
     nparamsets = len(parameters.parameter_sets)
     nparams = len(common.sensitivity_parameters)
@@ -27,24 +37,25 @@ def build():
                                   nparams - 1, nparams - 1,
                                   common.npoints,
                                   common.npoints))
-    for (k, p) in enumerate(parameters.parameter_sets.values()):
-        r0baseline = growth_rates.get_growth_rate(p)
-        for i in range(nparams - 1):
-            for j in range(i + 1):
-                param0, param0_name = common.sensitivity_parameters[i + 1]
-                param1, param1_name = common.sensitivity_parameters[j]
-                param0baseline = getattr(p, param0)
-                param1baseline = getattr(p, param1)
-                dPs0 = common.get_dPs(param0, param0baseline)
-                for (m, dP0) in enumerate(dPs0):
-                    setattr(p, param0, dP0)
+    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
+        for (k, p) in enumerate(parameters.parameter_sets.values()):
+            r0baseline = growth_rates.get_growth_rate(p)
+            for i in range(nparams - 1):
+                for j in range(i + 1):
+                    param0, param0_name = common.sensitivity_parameters[i + 1]
+                    param1, param1_name = common.sensitivity_parameters[j]
+                    param0baseline = getattr(p, param0)
+                    param1baseline = getattr(p, param1)
+                    dPs0 = common.get_dPs(param0, param0baseline)
                     dPs1 = common.get_dPs(param1, param1baseline)
-                    for (n, dP1) in enumerate(dPs1):
-                        setattr(p, param1, dP1)
-                        rel_growth_rate[k, i, j, m, n] = (
-                            growth_rates.get_growth_rate(p) / r0baseline)
-                setattr(p, param0, param0baseline)
-                setattr(p, param1, param1baseline)
+                    r0 = []
+                    for dP0 in dPs0:
+                        r0_ = parallel(
+                            joblib.delayed(_run_one)(p, param0, param1,
+                                                     dP0, dP1)
+                            for dP1 in dPs1))
+                        r0.append(r0_)
+                    rel_growth_rate[k, i, j] = numpy.asarray(r0) / r0baseline
     return rel_growth_rate
 
 

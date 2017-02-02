@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import copy
+
+import joblib
 from matplotlib import gridspec
 from matplotlib import lines
 from matplotlib import pyplot
@@ -21,57 +24,59 @@ seaborn.set_palette('Dark2')
 alpha = 0.7
 
 
+def _run_one(p, param0, dP):
+    p = copy.copy(p)
+    setattr(p, param0, dP)
+    return growth_rates.get_growth_rate(p)
+
+
 def main():
     nparams = len(common.sensitivity_parameters)
     fig, axes = pyplot.subplots(1, nparams,
                                 sharey = True,
                                 figsize = figsize)
-    for (i, param) in enumerate(common.sensitivity_parameters):
-        param0, param0_name = param
+    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
+        for (i, param) in enumerate(common.sensitivity_parameters):
+            param0, param0_name = param
 
-        ax = axes[i]
-        # ax.autoscale(tight = True)  # Bug!
-        ax.set_xscale(common.get_scale(param0))
-        ax.set_yscale('log')
+            ax = axes[i]
+            # ax.autoscale(tight = True)  # Bug!
+            ax.set_xscale(common.get_scale(param0))
+            ax.set_yscale('log')
 
-        ax.tick_params(labelsize = 'x-small')
+            ax.tick_params(labelsize = 'x-small')
 
-        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-        if ax.get_xscale() == 'linear':
-            ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-        elif ax.get_xscale() == 'log':
-            ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
+            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+            if ax.get_xscale() == 'linear':
+                ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+            elif ax.get_xscale() == 'log':
+                ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
 
-        for (n, p) in parameters.parameter_sets.items():
-            r0baseline = growth_rates.get_growth_rate(p)
+            for (n, p) in parameters.parameter_sets.items():
+                r0baseline = growth_rates.get_growth_rate(p)
+                param0baseline = getattr(p, param0)
+                dPs = common.get_dPs(param0, param0baseline)
+                r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
+                              for dP in dPs)
+                rel_growth_rate = numpy.asarray(r0) / r0baseline
+                ax.plot(dPs, rel_growth_rate, label = n, alpha = alpha)
 
-            param0baseline = getattr(p, param0)
+            ax.set_xlabel(param0_name, fontsize = 'x-small')
+            if ax.is_first_col():
+                ax.set_ylabel('Relative infection\ngrowth rate',
+                              fontsize = 'small')
 
-            dPs = common.get_dPs(param0, param0baseline)
-            r0 = numpy.empty(len(dPs))
-            for (j, dP) in enumerate(dPs):
-                setattr(p, param0, dP)
-                r0[j] = growth_rates.get_growth_rate(p) / r0baseline
-            setattr(p, param0, param0baseline)
+            ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
+                       alpha = alpha)
 
-            ax.plot(dPs, r0, label = n, alpha = alpha)
-
-        ax.set_xlabel(param0_name, fontsize = 'x-small')
-        if ax.is_first_col():
-            ax.set_ylabel('Relative infection\ngrowth rate',
-                          fontsize = 'small')
-
-        ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
-                   alpha = alpha)
-
-    (ymin, ymax) = ax.get_ylim()
-    if ymin > 0.1:
-        ymin = 0.1
-    if ymax < 10:
-        ymax = 10
-    ax.set_ylim(ymin, ymax)
-    ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
-    ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+            (ymin, ymax) = ax.get_ylim()
+            if ymin > 0.1:
+                ymin = 0.1
+            if ymax < 10:
+                ymax = 10
+            ax.set_ylim(ymin, ymax)
+            ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+            ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
