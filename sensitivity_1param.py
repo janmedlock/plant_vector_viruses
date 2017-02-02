@@ -97,7 +97,166 @@ def main():
     return fig
 
 
-def sensitivity_fV_only():
+def sensitivity_mortality():
+    nparams = len(common.sensitivity_parameters)
+    linestyles = ('solid', 'dashed')
+    fig, ax = pyplot.subplots()
+    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
+        ymin, ymax = (numpy.inf, - numpy.inf)
+        for (i, param) in enumerate(common.sensitivity_parameters[1 : 3]):
+            param0, param0_name = param
+
+            ax.set_xscale(common.get_scale(param0))
+            ax.set_yscale('log')
+
+            ax.tick_params(labelsize = 'x-small')
+
+            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+            if ax.get_xscale() == 'linear':
+                ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+            elif ax.get_xscale() == 'log':
+                ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
+                ax.xaxis.set_minor_locator(ticker.NullLocator())
+
+            colors = iter(seaborn.color_palette())
+            for (n, p) in parameters.parameter_sets.items():
+                param0baseline = getattr(p, param0)
+                dPs = common.get_dPs(param0, param0baseline)
+                r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
+                              for dP in dPs)
+                r0 = numpy.asarray(r0)
+                ymin = min(r0.min(), ymin)
+                ymax = max(r0.max(), ymax)
+                if param0 == 'muVf':
+                    muVf = dPs
+                    muVm = p.muVm
+                else:
+                    muVm = dPs
+                    muVf = p.muVf
+                muV = p.phiV * muVf + (1 - p.phiV) * muVm
+                ax.plot(muV, r0, label = n, alpha = alpha,
+                        color = next(colors), linestyle = linestyles[i])
+
+            ax.set_xlabel('Death rate ($\mu_V$)', fontsize = 'x-small')
+            if ax.is_first_col():
+                ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
+                              fontsize = 'small')
+
+            muV0 = p.phiV * p.muVf + (1 - p.phiV) * p.muVm
+            ax.axvline(muV0, linestyle = 'dotted', color = 'black',
+                       alpha = alpha)
+
+            ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+            ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+
+    ymin = 10 ** numpy.floor(numpy.log10(ymin))
+    ymax = 10 ** numpy.ceil(numpy.log10(ymax))
+    ax.set_ylim(ymin, ymax)
+
+    fig.tight_layout(rect = (0, 0.07, 1, 1))
+
+    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+               for c in seaborn.color_palette())
+    labels = parameters.parameter_sets.keys()
+    leg = fig.legend(handles, labels,
+                     loc = 'lower center',
+                     ncol = len(labels),
+                     columnspacing = 10,
+                     frameon = False,
+                     fontsize = 'small',
+                     numpoints = 1)
+
+    if save:
+        common.savefig(fig, append = '_R0')
+
+    return fig
+
+
+def sensitivity_R0():
+    nparams = len(common.sensitivity_parameters)
+    linestyles = ('solid', 'dashed', 'dotted')
+    fig, ax = pyplot.subplots()
+    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
+        ymin, ymax = (numpy.inf, - numpy.inf)
+        for (i, param) in enumerate(common.sensitivity_parameters[0 : 3]):
+            param0, param0_name = param
+
+            ax.set_xscale(common.get_scale(param0))
+            ax.set_yscale('log')
+
+            ax.tick_params(labelsize = 'x-small')
+
+            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+            if ax.get_xscale() == 'linear':
+                ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+            elif ax.get_xscale() == 'log':
+                ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
+                ax.xaxis.set_minor_locator(ticker.NullLocator())
+
+            colors = iter(seaborn.color_palette())
+            for (n, p) in parameters.parameter_sets.items():
+                param0baseline = getattr(p, param0)
+                dPs = common.get_dPs(param0, param0baseline)
+                r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
+                              for dP in dPs)
+                r0 = numpy.asarray(r0)
+                ymin = min(r0.min(), ymin)
+                ymax = max(r0.max(), ymax)
+                if param0 == 'muVf':
+                    bV = p.bV
+                    muVf = dPs
+                    muVm = p.muVm
+                elif param0 == 'muVm':
+                    bV = p.bV
+                    muVf = p.muVf
+                    muVm = dPs
+                else:
+                    bV = dPs
+                    muVf = p.muVf
+                    muVm = p.muVm
+                muV = p.phiV * muVf + (1 - p.phiV) * muVm
+                R0 = bV * p.phiV / muV
+                ax.plot(R0, r0, label = n, alpha = alpha,
+                        color = next(colors), linestyle = linestyles[i])
+
+            ax.set_xlabel('Lifetime reproductive output ($R_0$)',
+                          fontsize = 'x-small')
+            if ax.is_first_col():
+                ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
+                              fontsize = 'small')
+
+            muV0 = p.phiV * p.muVf + (1 - p.phiV) * p.muVm
+            R00 = p.bV * p.phiV / muV0
+            ax.axvline(R00, linestyle = 'dotted', color = 'black',
+                       alpha = alpha)
+
+            ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+            ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+
+    ymin = 10 ** numpy.floor(numpy.log10(ymin))
+    ymax = 10 ** numpy.ceil(numpy.log10(ymax))
+    ax.set_ylim(ymin, ymax)
+
+    fig.tight_layout(rect = (0, 0.07, 1, 1))
+
+    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+               for c in seaborn.color_palette())
+    labels = parameters.parameter_sets.keys()
+    leg = fig.legend(handles, labels,
+                     loc = 'lower center',
+                     ncol = len(labels),
+                     columnspacing = 10,
+                     frameon = False,
+                     fontsize = 'small',
+                     numpoints = 1)
+
+    if save:
+        common.savefig(fig, append = '_R0')
+
+    return fig
+
+
+def sensitivity_fV():
     # Get long name.
     for p_, n in common.sensitivity_parameters:
         if p_ == 'fV':
@@ -163,5 +322,7 @@ def sensitivity_fV_only():
 
 if __name__ == '__main__':
     main()
-    sensitivity_fV_only()
+    sensitivity_fV()
+    sensitivity_muV()
+    sensitivity_R0()
     pyplot.show()

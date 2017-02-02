@@ -79,14 +79,14 @@ and the total number of plants is
 \begin{equation}
   P = P_s + P_i.
 \end{equation}
-The vectors encounter new plants at rate $f_V$ and spend proportion
-$\phi_V$ of their time feeding and $1 - \phi_V$ moving.  We assume
+The vectors encounter new plants at rate $f$ and spend proportion
+$\phi$ of their time feeding and $1 - \phi$ moving.  We assume
 that vectors only reproduce when they are feeding; the birth rate is
 proportional to the number of the feeding vectors, with a logistic
 term dependent on the total number of vectors; and the newborns join
 the moving group.  Moving and feeding vectors die but at different
 rates, with moving vectors assumed to die more quickly than feeding
-vectors (i.e.~$\mu_{Vm} > \mu_{Vf}$).
+vectors (i.e.~$\mu_m > \mu_f$).
 
 The model is
 \begin{equation}
@@ -94,68 +94,68 @@ The model is
   \begin{split}
     \frac{\md V_{sm}}{\md t}
     &=
-    - \underbrace{\frac{f_V}{1 - \phi_V} V_{sm}}_{\text{to feeding}}
-    + \underbrace{\frac{f_V}{\phi_V} (V_{sfs} + V_{sfip} + V_{sfit})}_{\text{from feeding}}
-    + \underbrace{\gamma_{Vm} V_{im}}_{\text{loses pathogen}}
-    - \underbrace{\mu_{Vm} V_{sm}}_{\text{death}}
+    - \underbrace{\frac{f}{1 - \phi} V_{sm}}_{\text{to feeding}}
+    + \underbrace{\frac{f}{\phi} (V_{sfs} + V_{sfip} + V_{sfit})}_{\text{from feeding}}
+    + \underbrace{\gamma_m V_{im}}_{\text{loses pathogen}}
+    - \underbrace{\mu_m V_{sm}}_{\text{death}}
     \\ & \quad\quad {}
-    + \underbrace{b_V V_f \left(1 - \frac{V_f}{K_V P}\right)}_{\text{birth}},
+    + \underbrace{b V_f \left(1 - \frac{V_f}{K P}\right)}_{\text{birth}},
     \\
     \frac{\md V_{sfs}}{\md t}
     &=
-    \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{sm}}_{\text{from moving}}
-    - \underbrace{\frac{f_V}{\phi_V} V_{sfs}}_{\text{to moving}}
-    + \underbrace{\gamma_{Vf} (V_{ifsp} + V_{ifst})}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{sfs}}_{\text{death}}
+    \underbrace{\frac{f}{1 - \phi} \frac{P_s}{P} V_{sm}}_{\text{from moving}}
+    - \underbrace{\frac{f}{\phi} V_{sfs}}_{\text{to moving}}
+    + \underbrace{\gamma_f (V_{ifsp} + V_{ifst})}_{\text{loses pathogen}}
+    - \underbrace{\mu_f V_{sfs}}_{\text{death}}
     - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{sfs}}_{\text{plant
         infected}},
     \\
     \frac{\md V_{sfip}}{\md t}
     &=
-    \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{sm}}_{\text{from moving}}
-    - \underbrace{\frac{f_V}{\phi_V} V_{sfip}}_{\text{to moving}}
-    + \underbrace{\gamma_{Vf} V_{ifi}}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{sfip}}_{\text{death}}
+    \underbrace{\frac{f}{1 - \phi} \frac{P_i}{P} V_{sm}}_{\text{from moving}}
+    - \underbrace{\frac{f}{\phi} V_{sfip}}_{\text{to moving}}
+    + \underbrace{\gamma_f V_{ifi}}_{\text{loses pathogen}}
+    - \underbrace{\mu_f V_{sfip}}_{\text{death}}
     + \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{sfs}}_{\text{plant infected}}
-    - \underbrace{\alpha_V V_{sfip}}_{\text{acquiring}},
+    - \underbrace{\alpha V_{sfip}}_{\text{acquiring}},
     \\
     \frac{\md V_{sfit}}{\md t}
     &=
-    - \underbrace{\frac{f_V}{\phi_V} V_{sfit}}_{\text{to moving}}
-    - \underbrace{\mu_V V_{sfit}}_{\text{death}}
-    + \underbrace{\alpha_V V_{sfip}}_{\text{acquiring}}
+    - \underbrace{\frac{f}{\phi} V_{sfit}}_{\text{to moving}}
+    - \underbrace{\mu_f V_{sfit}}_{\text{death}}
+    + \underbrace{\alpha V_{sfip}}_{\text{acquiring}}
     - \underbrace{\beta_V V_{sfit}}_{\text{infection}},
     \\
     \frac{\md V_{im}}{\md t}
     &=
-    - \underbrace{\frac{f_V}{1 - \phi_V} V_{im}}_{\text{to feeding}}
-    + \underbrace{\frac{f_V}{\phi_V} (V_{ifsp} + V_{ifst} + V_{ifi})}_{\text{from feeding}}
-    - \underbrace{\gamma_{Vm} V_{im}}_{\text{loses pathogen}}
-    - \underbrace{\mu_{Vm} V_{im}}_{\text{death}},
+    - \underbrace{\frac{f}{1 - \phi} V_{im}}_{\text{to feeding}}
+    + \underbrace{\frac{f}{\phi} (V_{ifsp} + V_{ifst} + V_{ifi})}_{\text{from feeding}}
+    - \underbrace{\gamma_m V_{im}}_{\text{loses pathogen}}
+    - \underbrace{\mu_m V_{im}}_{\text{death}},
     \\
     \frac{\md V_{ifsp}}{\md t}
     &=
-    \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_s}{P} V_{im}}_{\text{from moving}}
-    - \underbrace{\frac{f_V}{\phi_V} V_{ifsp}}_{\text{to moving}}
-    - \underbrace{\gamma_{Vf} V_{ifsp}}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{ifsp}}_{\text{death}}
+    \underbrace{\frac{f}{1 - \phi} \frac{P_s}{P} V_{im}}_{\text{from moving}}
+    - \underbrace{\frac{f}{\phi} V_{ifsp}}_{\text{to moving}}
+    - \underbrace{\gamma_f V_{ifsp}}_{\text{loses pathogen}}
+    - \underbrace{\mu_f V_{ifsp}}_{\text{death}}
     - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{ifsp}}_{\text{plant infected}}
-    - \underbrace{\alpha_V V_{ifsp}}_{\text{transmitting}},
+    - \underbrace{\alpha V_{ifsp}}_{\text{transmitting}},
     \\
     \frac{\md V_{ifst}}{\md t}
     &=
-    - \underbrace{\frac{f_V}{\phi_V} V_{ifst}}_{\text{to moving}}
-    - \underbrace{\gamma_{Vf} V_{ifst}}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{ifst}}_{\text{death}}
+    - \underbrace{\frac{f}{\phi} V_{ifst}}_{\text{to moving}}
+    - \underbrace{\gamma_f V_{ifst}}_{\text{loses pathogen}}
+    - \underbrace{\mu_f V_{ifst}}_{\text{death}}
     - \underbrace{\beta_P \frac{V_{ifst}}{P_s} V_{ifst}}_{\text{plant infected}}
-    + \underbrace{\alpha_V V_{ifsp}}_{\text{transmitting}},
+    + \underbrace{\alpha V_{ifsp}}_{\text{transmitting}},
     \\
     \frac{\md V_{ifi}}{\md t}
     &=
-    \underbrace{\frac{f_V}{1 - \phi_V} \frac{P_i}{P} V_{im}}_{\text{from moving}}
-    - \underbrace{\frac{f_V}{\phi_V} V_{ifi}}_{\text{to moving}}
-    - \underbrace{\gamma_{Vf} V_{ifi}}_{\text{loses pathogen}}
-    - \underbrace{\mu_V V_{ifi}}_{\text{death}}
+    \underbrace{\frac{f}{1 - \phi} \frac{P_i}{P} V_{im}}_{\text{from moving}}
+    - \underbrace{\frac{f}{\phi} V_{ifi}}_{\text{to moving}}
+    - \underbrace{\gamma_f V_{ifi}}_{\text{loses pathogen}}
+    - \underbrace{\mu_f V_{ifi}}_{\text{death}}
     + \underbrace{\beta_P \frac{V_{ifst}}{P_s} (V_{ifsp} + V_{ifst})}_{\text{plant infected}}
     \\ & \quad\quad {}
     + \underbrace{\beta_V V_{sfit}}_{\text{infection}},
@@ -174,13 +174,13 @@ where the number of feeding vectors is
   V_f = V_{sfs} + V_{sfip} + V_{sfit} + V_{ifsp} + V_{ifst} + V_{ifi},
 \end{equation}
 $\beta_V$ is the infection rate from plants to vectors, $\beta_P$ is
-the infection rate from vectors to plants, $\alpha_V$ is the rate of
+the infection rate from vectors to plants, $\alpha$ is the rate of
 vectors becoming able to acquire or transmit the pathogen,
-$\gamma_{Vf}$ is the rate of pathogen clearance in feeding vectors,
-$\gamma_{Vm}$ is the rate of pathogen clearance in moving vectors,
-$\mu_{Vm}$ is the death rate of moving vectors, $\mu_{Vf}$ is the
-death rate of feeding vectors, $b_V$ is the birth rate of vectors, and
-$K_V$ is the carrying capacity of vectors per plant
+$\gamma_f$ is the rate of pathogen clearance in feeding vectors,
+$\gamma_m$ is the rate of pathogen clearance in moving vectors,
+$\mu_m$ is the death rate of moving vectors, $\mu_f$ is the
+death rate of feeding vectors, $b$ is the birth rate of vectors, and
+$K$ is the carrying capacity of vectors per plant
 (\autoref{fig:full_model_diagram}).
 
 \begin{figure}
@@ -229,41 +229,41 @@ $K_V$ is the carrying capacity of vectors per plant
 
     \draw [->] (P_s) to node [above] {$\beta_P \frac{V_{ifst}}{P_s}$} (P_i);
 
-    \draw [->] (V_sfip) to node [right, pos = 0.35] {$\alpha_V$} (V_sfit);
-    \draw [->] (V_ifsp) to node [right, pos = 0.35] {$\alpha_V$} (V_ifst);
+    \draw [->] (V_sfip) to node [right, pos = 0.35] {$\alpha$} (V_sfit);
+    \draw [->] (V_ifsp) to node [right, pos = 0.35] {$\alpha$} (V_ifst);
 
     \draw [->] (V_sfit.270) to node [right, pos = 0.4] {$\beta_V$} (V_ifi.45);
 
-    \draw [->] (V_im) to node [left, pos = 0.58] {$\gamma_{Vm}$} (V_sm);
-    \draw [->] (V_ifsp.90) to node [left] {$\gamma_{Vf}$} (V_sfs.250);
-    \draw [->] (V_ifst.90) to node [right, pos = 0.66] {$\gamma_{Vf}$} (V_sfs.290);
-    \draw [->] (V_ifi.90) to node [left, pos = 0.48] {$\gamma_{Vf}$} (V_sfip.270);
+    \draw [->] (V_im) to node [left, pos = 0.58] {$\gamma_m$} (V_sm);
+    \draw [->] (V_ifsp.90) to node [left] {$\gamma_f$} (V_sfs.250);
+    \draw [->] (V_ifst.90) to node [right, pos = 0.66] {$\gamma_f$} (V_sfs.290);
+    \draw [->] (V_ifi.90) to node [left, pos = 0.48] {$\gamma_f$} (V_sfip.270);
 
     \draw [->] (V_sm.20) to node [above, pos = 0.65]
-    {$\frac{f_V}{1 - \phi_V} \frac{P_s}{P}$} (V_sfs.160);
+    {$\frac{f}{1 - \phi} \frac{P_s}{P}$} (V_sfs.160);
     \draw [->] (V_sm.90) to [bend left = 40] node
     [left, pos = 0.25, xshift = -8]
-    {$\frac{f_V}{1 - \phi_V} \frac{P_i}{P}$} (V_sfip.90);
+    {$\frac{f}{1 - \phi} \frac{P_i}{P}$} (V_sfip.90);
 
     \draw [->] (V_im.20) to node [above]
-    {$\frac{f_V}{1 - \phi_V} \frac{P_s}{P}$} (V_ifsp.160);
+    {$\frac{f}{1 - \phi} \frac{P_s}{P}$} (V_ifsp.160);
     \draw [->] (V_im.45) to [bend left = 50] node
     [left, pos = 0.2, xshift = -6]
-    {$\frac{f_V}{1 - \phi_V} \frac{P_i}{P}$} (V_ifi.135);
+    {$\frac{f}{1 - \phi} \frac{P_i}{P}$} (V_ifi.135);
 
     \draw [->] (V_sfs.200) to node [below, pos = 0.35]
-    {$\frac{f_V}{\phi_V}$} (V_sm.340);
+    {$\frac{f}{\phi}$} (V_sm.340);
     \draw [->] (V_sfip.180) to [bend right = 30] node [below, pos = 0.3]
-    {$\frac{f_V}{\phi_V}$} (V_sm.45);
+    {$\frac{f}{\phi}$} (V_sm.45);
     \draw [->] (V_sfit.180) to [bend left = 15] node [below, pos = 0.3]
-    {$\frac{f_V}{\phi_V}$} (V_sm.315);
+    {$\frac{f}{\phi}$} (V_sm.315);
 
     \draw [->] (V_ifsp.200) to node [below, pos = 0.35]
-    {$\frac{f_V}{\phi_V}$} (V_im.340);
+    {$\frac{f}{\phi}$} (V_im.340);
     \draw [->] (V_ifst.180) to node [below, pos = 0.35]
-    {$\frac{f_V}{\phi_V}$} (V_im.315);
+    {$\frac{f}{\phi}$} (V_im.315);
     \draw [->] (V_ifi.270) to [bend left = 40] node [below, pos = 0.2]
-    {$\frac{f_V}{\phi_V}$} (V_im.270);
+    {$\frac{f}{\phi}$} (V_im.270);
 
     \draw [->] (V_sfs.0) to node [below, pos = 0.55]
     {$\beta_P \frac{V_{ifst}}{P_s}$} (V_sfip.225);
@@ -273,25 +273,25 @@ $K_V$ is the carrying capacity of vectors per plant
     {$\beta_P \frac{V_{ifst}}{P_s}$} (V_ifi.225);
 
     % \draw [<-] (V_sm.110) to node [left, pos = 0.8]
-    % {$b_V V_f \left(1 - \frac{V_f}{K_V P}\right)$} +(90: 1.5);
+    % {$b V_f \left(1 - \frac{V_f}{K P}\right)$} +(90: 1.5);
 
     % \draw [->] (V_sm.70) to node [right, pos = 0.8]
-    % {$\mu_{Vm}$} +(90: 1.5);
+    % {$\mu_m$} +(90: 1.5);
     % \draw [->] (V_im) to node [right, pos = 0.8]
-    % {$\mu_{Vm}$} +(270: 2);
+    % {$\mu_m$} +(270: 2);
 
     % \draw [->] (V_sfs) to node [right, pos = 0.8]
-    % {$\mu_{Vf}$} +(90: 2);
+    % {$\mu_f$} +(90: 2);
     % \draw [->] (V_sfip) to node [right, pos = 0.8]
-    % {$\mu_{Vf}$} +(90: 2);
+    % {$\mu_f$} +(90: 2);
     % \draw [->] (V_sfit) to node [right, pos = 0.8]
-    % {$\mu_{Vf}$} +(90: 2);
+    % {$\mu_f$} +(90: 2);
     % \draw [->] (V_ifsp) to node [right, pos = 0.8]
-    % {$\mu_{Vf}$} +(270: 2);
+    % {$\mu_f$} +(270: 2);
     % \draw [->] (V_ifst) to node [right, pos = 0.8]
-    % {$\mu_{Vf}$} +(270: 2);
+    % {$\mu_f$} +(270: 2);
     % \draw [->] (V_ifi) to node [right, pos = 0.8]
-    % {$\mu_{Vf}$} +(270: 2);
+    % {$\mu_f$} +(270: 2);
   \end{tikzpicture}
   \caption{Model diagram.  $P_s$ and $P_i$ are the numbers
     of susceptible and infectious plants.  $V_{sm}$ is the number of
@@ -317,17 +317,17 @@ $K_V$ is the carrying capacity of vectors per plant
     \multicolumn{2}{l}{\textbf{Parameter}}
     & \multicolumn{1}{r}{\textbf{Value}}
     \\
-    $f_V$ & Rate of vectors encountering new plants & $3\;\text{d}^{-1}$
+    $f$ & Rate of vectors encountering new plants & $3\;\text{d}^{-1}$
     \\
-    $\phi_V$ & Fraction of time vectors spend feeding & $0.5$
+    $\phi$ & Fraction of time vectors spend feeding & $0.5$
     \\
-    $\mu_{Vf}$ & Mortality rate for feeding vectors & $0.02\;\text{d}^{-1}$
+    $\mu_f$ & Mortality rate for feeding vectors & $0.02\;\text{d}^{-1}$
     \\
-    $\mu_{Vm}$ & Mortality rate for moving vectors & $0.04\;\text{d}^{-1}$
+    $\mu_m$ & Mortality rate for moving vectors & $0.04\;\text{d}^{-1}$
     \\
-    $b_V$ & Birth rate for feeding vectors & $0.08\;\text{d}^{-1}$
+    $b$ & Birth rate for feeding vectors & $0.08\;\text{d}^{-1}$
     \\
-    $K_V$ & Carrying capacity of vectors per plant & $100$
+    $K$ & Carrying capacity of vectors per plant & $100$
     \\
     $V(0)$ & Initial number of vectors & $100$
     \\
@@ -339,11 +339,11 @@ $K_V$ is the carrying capacity of vectors per plant
     \\
     $\beta_P$ & Transmission rate from vectors to plants & $5.5\;\text{d}^{-1}$
     \\
-    $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $48\;\text{d}^{-1}$
+    $\alpha$ & Rate of vectors becoming able to acquire or transmit & $48\;\text{d}^{-1}$
     \\
-    $\gamma_{Vf}$ & Rate of pathogen clearance in feeding vectors & $0\;\text{d}^{-1}$
+    $\gamma_f$ & Rate of pathogen clearance in feeding vectors & $0\;\text{d}^{-1}$
     \\
-    $\gamma_{Vm}$ & Rate of pathogen clearance in moving vectors & $0\;\text{d}^{-1}$
+    $\gamma_m$ & Rate of pathogen clearance in moving vectors & $0\;\text{d}^{-1}$
     \\
     \multicolumn{3}{c}{\textbf{Non-persistent}}
     \\
@@ -351,10 +351,10 @@ $K_V$ is the carrying capacity of vectors per plant
     \\
     $\beta_P$ & Transmission rate from vectors to plants & $10\,000\;\text{d}^{-1}$
     \\
-    $\alpha_V$ & Rate of vectors becoming able to acquire or transmit & $86\,400\;\text{d}^{-1}$
+    $\alpha$ & Rate of vectors becoming able to acquire or transmit & $86\,400\;\text{d}^{-1}$
     \\
-    $\gamma_{Vf}$ & Rate of pathogen clearance in feeding vectors & $288\;\text{d}^{-1}$ \\
-    $\gamma_{Vm}$ & Rate of pathogen clearance in moving vectors & $24\;\text{d}^{-1}$
+    $\gamma_f$ & Rate of pathogen clearance in feeding vectors & $288\;\text{d}^{-1}$ \\
+    $\gamma_m$ & Rate of pathogen clearance in moving vectors & $24\;\text{d}^{-1}$
   \end{tabular}
   \caption{Model parameters and initial conditions.}
   \label{params}
@@ -412,12 +412,48 @@ $K_V$ is the carrying capacity of vectors per plant
     at $50~\text{d}$.  The dotted horizontal lines show the baseline
     parameter values.  Parameter values and initial conditions are as
     in \autoref{fig:growth_rates}.
-    \comment{As $\phi_V \to 1$, the
+    \comment{As $\phi \to 1$, the
       growth rate does not go to $0$.  This limit is a bit odd: the
-      encounter rate $f_V$ is fixed, so there is still movement, just
+      encounter rate $f$ is fixed, so there is still movement, just
       the amount of time spent moving goes to $0$.  I.e.~all the time
       is spent feeding and moving happens instantaneously.  For
-      $\phi_V \to 0$ or $f_V \to 0$, the growth rate does go to $0$.}}
+      $\phi \to 0$ or $f \to 0$, the growth rate does go to $0$.}}
+  \label{fig:sensitivity_1param}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width = \textwidth]{sensitivity_1param_muV}
+  \caption{Intrinsic growth rate of the pathogen vs.~vector average
+    mortality at $50~\text{d}$.  Vector average mortality is the
+    weighted average of the moving and feeding mortalities: $\mu =
+    \mu_f \phi + \mu_m (1 - \phi)$.  The dotted horizontal
+    line shows the vector mortality at the baseline parameter values.
+    Parameter values and initial conditions are as in
+    \autoref{fig:growth_rates}.  \comment{The solid lines are for
+      changing $\mu_f$ and the dashed lines are for changing
+      $\mu_m$.  These curves overlap, showing that the effect of
+      changing either is captured by their effect on average mortality
+      and its effect on pathogen growth rate.}}
+  \label{fig:sensitivity_1param}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width = \textwidth]{sensitivity_1param_R0}
+  \caption{Intrinsic growth rate of the pathogen vs.~vector lifetime
+    reproductive output at $50~\text{d}$.  Vector lifetime
+    reproductive output, $R_0 = \frac{b \phi}{\mu_f \phi +
+      \mu_m (1 - \phi)}$.  The dotted horizontal line shows the
+    lifetime reproductive output at the baseline parameter values.
+    Parameter values and initial conditions are as in
+    \autoref{fig:growth_rates}.  \comment{The solid lines are for
+      changing $b$, the dashed lines are for changing $\mu_f$,
+      and the dotted lines are for changing $\mu_m$.  These curves
+      do not overlap, so that the effect of
+      changing each of them is \emph{not} captured by their effect on
+      lifetime reproductive output and its effect on pathogen growth
+      rate.}}
   \label{fig:sensitivity_1param}
 \end{figure}
 
@@ -425,7 +461,7 @@ $K_V$ is the carrying capacity of vectors per plant
   \centering
   \includegraphics[width = \textwidth]{sensitivity_1param_fV}
   \caption{Intrinsic growth rate of the pathogen vs.~the encounter
-    rate ($f_V$) at $50~\text{d}$.  The vertical axis has a linear scale,
+    rate ($f$) at $50~\text{d}$.  The vertical axis has a linear scale,
     compared to a log scale in \autoref{fig:growth_rates}, to show the
     smaller differences in growth rate as feeding rate varies.  The
     dotted horizontal lines show the baseline parameter values.
@@ -453,51 +489,51 @@ $K_V$ is the carrying capacity of vectors per plant
 \label{sec:QSSA}
 
 Under the quasi-steady-state approximation, we take the movement rate
-to be fast relative to all the other rates, i.e.~$f_V \to \infty$ and
-all other parameters $\operatorname{O}(1)$.  Then terms in $f_V$ from
+to be fast relative to all the other rates, i.e.~$f \to \infty$ and
+all other parameters $\operatorname{O}(1)$.  Then terms in $f$ from
 the differential equations give
 \begin{equation}
   \begin{split}
-    \frac{1}{1 - \phi_V} V_{sm} &=
-    \frac{1}{\phi_V} (V_{sfs} + V_{sfip} + V_{sfit}),
+    \frac{1}{1 - \phi} V_{sm} &=
+    \frac{1}{\phi} (V_{sfs} + V_{sfip} + V_{sfit}),
     \\
-    \frac{1}{1 - \phi_V} \frac{P_s}{P} V_{sm} &=
-    \frac{1}{\phi_V} V_{sfs},
+    \frac{1}{1 - \phi} \frac{P_s}{P} V_{sm} &=
+    \frac{1}{\phi} V_{sfs},
     \\
-    \frac{1}{1 - \phi_V} \frac{P_i}{P} V_{sm} &=
-    \frac{1}{\phi_V} V_{sfip},
+    \frac{1}{1 - \phi} \frac{P_i}{P} V_{sm} &=
+    \frac{1}{\phi} V_{sfip},
     \\
     0 &=
-    \frac{1}{\phi_V} V_{sfit},
+    \frac{1}{\phi} V_{sfit},
     \\
-    \frac{1}{1 - \phi_V} V_{im} &=
-    \frac{1}{\phi_V} (V_{ifsp} + V_{ifst} + V_{ifi}),
+    \frac{1}{1 - \phi} V_{im} &=
+    \frac{1}{\phi} (V_{ifsp} + V_{ifst} + V_{ifi}),
     \\
-    \frac{1}{1 - \phi_V} \frac{P_s}{P} V_{im} &= \frac{1}{\phi_V} V_{ifsp},
+    \frac{1}{1 - \phi} \frac{P_s}{P} V_{im} &= \frac{1}{\phi} V_{ifsp},
     \\
-    0 &= \frac{1}{\phi_V} V_{ifst},
+    0 &= \frac{1}{\phi} V_{ifst},
     \\
-    \frac{1}{1 - \phi_V} \frac{P_i}{P} V_{im} &= \frac{f_V}{\phi_V} V_{ifi}.
+    \frac{1}{1 - \phi} \frac{P_i}{P} V_{im} &= \frac{f}{\phi} V_{ifi}.
   \end{split}
 \end{equation}
 Thus, the QSSA is
 \begin{equation}
   \begin{aligned}
-    V_{sm} &= (1 - \phi_V) V_s,
+    V_{sm} &= (1 - \phi) V_s,
     &
-    V_{sfs} &= \phi_V \frac{P_s}{P} V_s,
+    V_{sfs} &= \phi \frac{P_s}{P} V_s,
     &
-    V_{sfip} &= \phi_V \frac{P_i}{P} V_s,
+    V_{sfip} &= \phi \frac{P_i}{P} V_s,
     &
     V_{sfit} &= 0,
     \\
-    V_{im} &= (1 - \phi_V) V_i,
+    V_{im} &= (1 - \phi) V_i,
     &
-    V_{ifsp} &= \phi_V \frac{P_s}{P} V_i,
+    V_{ifsp} &= \phi \frac{P_s}{P} V_i,
     &
     V_{ifst} &= 0,
     &
-    V_{ifi} &= \phi_V \frac{P_i}{P} V_i,
+    V_{ifi} &= \phi \frac{P_i}{P} V_i,
   \end{aligned}
 \end{equation}
 with
@@ -508,5 +544,185 @@ with
   \end{split}
 \end{equation}
 
+
+\section{Pathogen intrinsic growth rate}
+
+The infected states are $V_{sfip}$, $V_{sfit}$, $V_{im}$, $V_{ifsp}$,
+$V_{ifst}$, $V_{ifi}$, and $P_i$.
+The flow for the infected states is
+\begin{equation}
+  \frac{\md}{\md t}
+  \begin{pmatrix}
+    V_{sfip}
+    \\
+    V_{sfit}
+    \\
+    V_{im}
+    \\
+    V_{ifsp}
+    \\
+    V_{ifst}
+    \\
+    V_{ifi}
+    \\
+    P_i
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    \frac{f}{1 - \phi} \frac{P_i}{P} V_{sm}
+    - \frac{f}{\phi} V_{sfip}
+    + \gamma_f V_{ifi}
+    - \mu_f V_{sfip}
+    + \beta_P \frac{V_{ifst}}{P_s} V_{sfs}
+    - \alpha V_{sfip}
+    \\
+    - \frac{f}{\phi} V_{sfit}
+    - \mu_f V_{sfit}
+    + \alpha V_{sfip}
+    - \beta_V V_{sfit}
+    \\
+    - \frac{f}{1 - \phi} V_{im}
+    + \frac{f}{\phi} (V_{ifsp} + V_{ifst} + V_{ifi})
+    - \gamma_m V_{im}
+    - \mu_m V_{im}
+    \\
+    \frac{f}{1 - \phi} \frac{P_s}{P} V_{im}
+    - \frac{f}{\phi} V_{ifsp}
+    - \gamma_f V_{ifsp}
+    - \mu_f V_{ifsp}
+    - \beta_P \frac{V_{ifst}}{P_s} V_{ifsp}
+    - \alpha V_{ifsp}
+    \\
+    - \frac{f}{\phi} V_{ifst}
+    - \gamma_f V_{ifst}
+    - \mu_f V_{ifst}
+    - \beta_P \frac{V_{ifst}}{P_s} V_{ifst}
+    + \alpha V_{ifsp}
+    \\
+    \frac{f}{1 - \phi} \frac{P_i}{P} V_{im}
+    - \frac{f}{\phi} V_{ifi}
+    - \gamma_f V_{ifi}
+    - \mu_f V_{ifi}
+    + \beta_P \frac{V_{ifst}}{P_s} (V_{ifsp} + V_{ifst})
+    + \beta_V V_{sfit}
+    \\
+    \beta_P V_{ifst}
+  \end{pmatrix}.
+\end{equation}
+Linearizing at the disease-free state gives
+\begin{equation}
+  \tiny
+  \mat{J} =
+  \begin{bmatrix}
+    - \left(\sigma + \mu_f + \alpha\right)
+    &
+    0
+    &
+    0
+    &
+    0
+    &
+    \beta_P \frac{V_{sfs}}{P_s}
+    &
+    \gamma_f
+    &
+    \tau \frac{V_{sm}}{P}
+    \\
+    \alpha
+    &
+    - \left(\sigma + \mu_f + \beta_V\right)
+    &
+    0
+    &
+    0
+    &
+    0
+    &
+    0
+    &
+    0
+    \\
+    0
+    &
+    0
+    &
+    - \left(\tau + \gamma_m + \mu_m\right)
+    &
+    \sigma
+    &
+    \sigma
+    &
+    \sigma
+    &
+    0
+    \\
+    0
+    &
+    0
+    &
+    \tau \frac{P_s}{P}
+    &
+    - \left(\sigma + \gamma_f + \mu_f + \alpha\right)
+    &
+    0
+    &
+    0
+    &
+    0
+    \\
+    0
+    &
+    0
+    &
+    0
+    &
+    \alpha
+    &
+    - \left(\sigma + \gamma_f + \mu_f\right)
+    &
+    0
+    &
+    0
+    \\
+    0
+    &
+    \beta_V
+    &
+    \tau \frac{P_i}{P}
+    &
+    0
+    &
+    0
+    &
+    - \left(\sigma + \gamma_f + \mu_f\right)
+    &
+    0
+    \\
+    0
+    &
+    0
+    &
+    0
+    &
+    0
+    &
+    \beta_P
+    &
+    0
+    &
+    0
+  \end{bmatrix},
+\end{equation}
+with
+\begin{align}
+  \sigma &= \frac{f}{\phi}
+  & & \text{and} &
+  \tau &= \frac{f}{1 - \phi}.
+\end{align}
+The intrinsic growth rate for the pathogen is the dominant eigenvalue
+of $\mat{J}$:
+\begin{equation}
+  r_0 = \lambda_0(\mat{J}).
+\end{equation}
 
 \end{document}
