@@ -16,7 +16,6 @@ colors = seaborn.color_palette('Set1', 5)
 colors = [colors[ix] for ix in (0, 1, 3, 4, 2)]
 
 
-
 def main():
     fig, axes = pyplot.subplots(2, 2, sharex = 'col', sharey = 'row')
     for (ax, np) in zip(axes.T, parameters.parameter_sets.items()):
