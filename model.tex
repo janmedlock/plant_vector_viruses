@@ -435,7 +435,7 @@ $K$ is the carrying capacity of vectors per plant
       $\mu_m$.  These curves overlap, showing that the effect of
       changing either is captured by their effect on average mortality
       and its effect on pathogen growth rate.}}
-  \label{fig:sensitivity_1param}
+  \label{fig:sensitivity_1param_muV}
 \end{figure}
 
 \begin{figure}
@@ -454,7 +454,7 @@ $K$ is the carrying capacity of vectors per plant
       changing each of them is \emph{not} captured by their effect on
       lifetime reproductive output and its effect on pathogen growth
       rate.}}
-  \label{fig:sensitivity_1param}
+  \label{fig:sensitivity_1param_R0}
 \end{figure}
 
 \begin{figure}
@@ -610,8 +610,9 @@ The flow for the infected states is
   \end{pmatrix}.
 \end{equation}
 Linearizing at the disease-free state gives
+\begingroup\makeatletter\def\f@size{4.5}\check@mathfonts
+\def\maketag@@@#1{\hbox{\m@th\normalsize\normalfont#1}}
 \begin{equation}
-  \tiny
   \mat{J} =
   \begin{bmatrix}
     - \left(\sigma + \mu_f + \alpha\right)
@@ -713,6 +714,7 @@ Linearizing at the disease-free state gives
     0
   \end{bmatrix},
 \end{equation}
+\endgroup
 with
 \begin{align}
   \sigma &= \frac{f}{\phi}
