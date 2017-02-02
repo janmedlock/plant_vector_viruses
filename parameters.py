@@ -2,8 +2,6 @@
 
 import collections
 
-import numpy
-
 
 class Parameters:
     fV = 3        # Feeding on 3 plant per day
