@@ -28,7 +28,7 @@ def get_scale(param):
         return 'log'
 
 
-sensitivity_max_abs_mult_change = 3
+sensitivity_max_abs_mult_change = 4
 npoints = 201
 
 
