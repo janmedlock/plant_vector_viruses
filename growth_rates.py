@@ -17,6 +17,18 @@ seaborn.set_palette('Dark2')
 alpha = 0.7
 
 
+def get_growth_rate(p, t = common.tmax):
+    DFS0 = odes.get_DFS0(p)
+    if t > 0:
+        T = numpy.linspace(0, t, 101)
+        DFS = odes.solve(DFS0, T, p)
+        DFS1 = DFS.iloc[-1]
+    else:
+        DFS1 = DFS0
+    r, _ = odes.get_r_v_Jacobian(t, DFS1, p)
+    return r
+
+
 def get_pop_and_growth_rates(p, V0 = 0.1, t = 1000, Vmax = 1000):
     V0_old = p.V0
     p.V0 = V0
