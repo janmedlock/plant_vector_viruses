@@ -183,8 +183,8 @@ def plot(r0):
 
 
 if __name__ == '__main__':
-    r0 = build()
-    numpy.save('sensitivity_2params.npy', r0)
-    # r0 = numpy.load('sensitivity_2params.npy')
-    # plot(r0)
-    # pyplot.show()
+    # r0 = build()
+    # numpy.save('sensitivity_2params.npy', r0)
+    r0 = numpy.load('sensitivity_2params.npy')
+    plot(r0)
+    pyplot.show()

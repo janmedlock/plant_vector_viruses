@@ -14,15 +14,15 @@ t = numpy.linspace(0, tmax, 1001)
 vi0 = 0.01
 
 sensitivity_parameters = (
-    ('bV', 'Vector birth rate\n$b_V$ (d$^{-1}$)'),
-    ('muVf', 'Feeding death rate\n$\\mu_{Vf}$ (d$^{-1}$)'),
-    ('muVm', 'Moving death rate\n$\\mu_{Vm}$ (d$^{-1}$)'),
-    ('phiV', 'Time feeding\n$\\phi_V$'),
-    ('fV', 'Encounter rate\n$f_V$ (d$^{-1}$)'))
+    ('rho', 'Vector birth rate\n$\\rho$ (d$^{-1}$)'),
+    ('mu_f', 'Feeding death rate\n$\\mu_f$ (d$^{-1}$)'),
+    ('mu_m', 'Moving death rate\n$\\mu_m$ (d$^{-1}$)'),
+    ('phi', 'Time feeding\n$\\phi$'),
+    ('epsilon', 'Encounter rate\n$\\epsilon$ (d$^{-1}$)'))
 
 
 def get_scale(param):
-    if param == 'phiV':
+    if param == 'phi':
         return 'linear'
     else:
         return 'log'

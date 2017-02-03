@@ -19,7 +19,7 @@ import seaborn_quiet as seaborn
 save = True
 
 figsize = (8.5, 3)
-figsize_fV = (8.5, 6)
+figsize_epsilon = (8.5, 6)
 seaborn.set_palette('Dark2')
 alpha = 0.7
 
@@ -66,7 +66,7 @@ def main():
             ax.set_xlabel(param0_name, fontsize = 'x-small')
             if ax.is_first_col():
                 ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
-                              fontsize = 'small')
+                              fontsize = 'x-small')
 
             ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
                        alpha = alpha)
@@ -97,7 +97,7 @@ def main():
     return fig
 
 
-def sensitivity_mortality():
+def sensitivity_mu():
     nparams = len(common.sensitivity_parameters)
     linestyles = ('solid', 'dashed')
     fig, ax = pyplot.subplots()
@@ -109,7 +109,7 @@ def sensitivity_mortality():
             ax.set_xscale(common.get_scale(param0))
             ax.set_yscale('log')
 
-            ax.tick_params(labelsize = 'x-small')
+            ax.tick_params(labelsize = 'small')
 
             ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
             if ax.get_xscale() == 'linear':
@@ -127,23 +127,24 @@ def sensitivity_mortality():
                 r0 = numpy.asarray(r0)
                 ymin = min(r0.min(), ymin)
                 ymax = max(r0.max(), ymax)
-                if param0 == 'muVf':
-                    muVf = dPs
-                    muVm = p.muVm
+                if param0 == 'mu_f':
+                    mu_f = dPs
+                    mu_m = p.mu_m
                 else:
-                    muVm = dPs
-                    muVf = p.muVf
-                muV = p.phiV * muVf + (1 - p.phiV) * muVm
-                ax.plot(muV, r0, label = n, alpha = alpha,
+                    mu_m = dPs
+                    mu_f = p.mu_f
+                mu = p.phi * mu_f + (1 - p.phi) * mu_m
+                ax.plot(mu, r0, label = n, alpha = alpha,
                         color = next(colors), linestyle = linestyles[i])
 
-            ax.set_xlabel('Death rate ($\mu_V$)', fontsize = 'x-small')
+            ax.set_xlabel('Death rate\n$\\mu$ (d$^{-1}$)',
+                          fontsize = 'small')
             if ax.is_first_col():
                 ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
                               fontsize = 'small')
 
-            muV0 = p.phiV * p.muVf + (1 - p.phiV) * p.muVm
-            ax.axvline(muV0, linestyle = 'dotted', color = 'black',
+            mu0 = p.phi * p.mu_f + (1 - p.phi) * p.mu_m
+            ax.axvline(mu0, linestyle = 'dotted', color = 'black',
                        alpha = alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
@@ -167,7 +168,7 @@ def sensitivity_mortality():
                      numpoints = 1)
 
     if save:
-        common.savefig(fig, append = '_R0')
+        common.savefig(fig, append = '_mu')
 
     return fig
 
@@ -184,7 +185,7 @@ def sensitivity_R0():
             ax.set_xscale(common.get_scale(param0))
             ax.set_yscale('log')
 
-            ax.tick_params(labelsize = 'x-small')
+            ax.tick_params(labelsize = 'small')
 
             ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
             if ax.get_xscale() == 'linear':
@@ -202,32 +203,32 @@ def sensitivity_R0():
                 r0 = numpy.asarray(r0)
                 ymin = min(r0.min(), ymin)
                 ymax = max(r0.max(), ymax)
-                if param0 == 'muVf':
-                    bV = p.bV
-                    muVf = dPs
-                    muVm = p.muVm
-                elif param0 == 'muVm':
-                    bV = p.bV
-                    muVf = p.muVf
-                    muVm = dPs
+                if param0 == 'mu_f':
+                    rho = p.rho
+                    mu_f = dPs
+                    mu_m = p.mu_m
+                elif param0 == 'mu_m':
+                    rho = p.rho
+                    mu_f = p.mu_f
+                    mu_m = dPs
                 else:
-                    bV = dPs
-                    muVf = p.muVf
-                    muVm = p.muVm
-                muV = p.phiV * muVf + (1 - p.phiV) * muVm
-                R0 = bV * p.phiV / muV
+                    rho = dPs
+                    mu_f = p.mu_f
+                    mu_m = p.mu_m
+                mu = p.phi * mu_f + (1 - p.phi) * mu_m
+                R0 = rho * p.phi / mu
                 ax.plot(R0, r0, label = n, alpha = alpha,
                         color = next(colors), linestyle = linestyles[i])
 
-            ax.set_xlabel('Lifetime reproductive output ($R_0$)',
-                          fontsize = 'x-small')
+            ax.set_xlabel('Lifetime reproductive output\n$R_0$',
+                          fontsize = 'small')
             if ax.is_first_col():
                 ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
                               fontsize = 'small')
 
-            muV0 = p.phiV * p.muVf + (1 - p.phiV) * p.muVm
-            R00 = p.bV * p.phiV / muV0
-            ax.axvline(R00, linestyle = 'dotted', color = 'black',
+            mu0 = p.phi * p.mu_f + (1 - p.phi) * p.mu_m
+            R0_0 = p.rho * p.phi / mu0
+            ax.axvline(R0_0, linestyle = 'dotted', color = 'black',
                        alpha = alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
@@ -256,35 +257,35 @@ def sensitivity_R0():
     return fig
 
 
-def sensitivity_fV():
+def sensitivity_epsilon():
     # Get long name.
     for p_, n in common.sensitivity_parameters:
-        if p_ == 'fV':
+        if p_ == 'epsilon':
             label = n
             break
     else:
-        label = 'fV'
+        label = 'epsilon'
 
     xscale = 'linear'
     yscale = 'linear'
 
-    fig, ax = pyplot.subplots(figsize = figsize_fV,
+    fig, ax = pyplot.subplots(figsize = figsize_epsilon,
                               subplot_kw = dict(xscale = xscale,
                                                 yscale = yscale))
 
     dPs = numpy.linspace(0, 10, 1001)
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
         for (n, p) in parameters.parameter_sets.items():
-            fV_baseline = p.fV
-            r0 = parallel(joblib.delayed(_run_one)(p, 'fV', dP)
+            epsilon_baseline = p.epsilon
+            r0 = parallel(joblib.delayed(_run_one)(p, 'epsilon', dP)
                           for dP in dPs)
             l = ax.plot(dPs, r0, label = n, alpha = alpha)
 
     ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-    ax.set_xlabel(label, fontsize = 'x-small')
+    ax.set_xlabel(label, fontsize = 'small')
     ax.set_ylabel('Pathogen intrinsic growth rate (d${-1}$)',
                   fontsize = 'small')
-    ax.tick_params(labelsize = 'x-small')
+    ax.tick_params(labelsize = 'small')
 
     if xscale == 'linear':
         ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 6))
@@ -298,7 +299,7 @@ def sensitivity_fV():
         ax.yaxis.set_minor_locator(ticker.NullLocator())
         ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
-    ax.axvline(fV_baseline, linestyle = 'dotted', color = 'black',
+    ax.axvline(epsilon_baseline, linestyle = 'dotted', color = 'black',
                alpha = alpha)
 
     handles = (lines.Line2D([], [], color = c, alpha = alpha)
@@ -315,14 +316,14 @@ def sensitivity_fV():
     fig.tight_layout(rect = (0, 0.04, 1, 1))
 
     if save:
-        common.savefig(fig, append = '_fV')
+        common.savefig(fig, append = '_epsilon')
 
     return fig
 
 
 if __name__ == '__main__':
     main()
-    sensitivity_fV()
-    sensitivity_muV()
+    sensitivity_epsilon()
+    sensitivity_mu()
     sensitivity_R0()
     pyplot.show()
