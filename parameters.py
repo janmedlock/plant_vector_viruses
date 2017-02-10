@@ -15,16 +15,16 @@ class Parameters:
 
 
 class Persistent(Parameters):
-    betaV = 8.3    # 50% acquisition at 2 hrs
-    betaP = 5.5    # 50% innoculation at 3 hrs
+    beta_V = 8.3    # 50% acquisition at 2 hrs
+    beta_P = 5.5    # 50% innoculation at 3 hrs
     alpha = 48     # delay to acquisition/innoculation of 30 mins
     gamma_f = 0    # no clearance
     gamma_m = 0    # no clearance
 
 
 class Nonpersistent(Parameters):
-    betaV = 500    # 50% acquisition at 2 mins.
-    betaP = 10000  # 50% innoculation at 0.1 mins.
+    beta_V = 500    # 50% acquisition at 2 mins.
+    beta_P = 10000  # 50% innoculation at 0.1 mins.
     alpha = 86400  # delay to acquisition/innoculation of 1 sec
     gamma_f = 288  # 5 mins to clearance while feeding
     gamma_m = 24   # 1 hour to 50% clearance while moving
