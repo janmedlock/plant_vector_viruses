@@ -565,351 +565,352 @@ with
 \end{equation}
 
 
-\section{Pathogen intrinsic growth rate}
+% \section{Pathogen intrinsic growth rate}
 
-The infected states are $V_{sfip}$, $V_{sfit}$, $V_{im}$, $V_{ifsp}$,
-$V_{ifst}$, $V_{ifi}$, and $P_i$.
-The flow for the infected states is
-\begin{equation}
-  \frac{\md}{\md t}
-  \begin{pmatrix}
-    V_{sfip}
-    \\
-    V_{sfit}
-    \\
-    V_{im}
-    \\
-    V_{ifsp}
-    \\
-    V_{ifst}
-    \\
-    V_{ifi}
-    \\
-    P_i
-  \end{pmatrix}
-  =
-  \begin{pmatrix}
-    \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{sm}
-    - \frac{\epsilon}{\phi} V_{sfip}
-    + \gamma_f V_{ifi}
-    - \mu_f V_{sfip}
-    + \beta_P \frac{V_{ifst}}{P_s} V_{sfs}
-    - \alpha V_{sfip}
-    \\
-    - \frac{\epsilon}{\phi} V_{sfit}
-    - \mu_f V_{sfit}
-    + \alpha V_{sfip}
-    - \beta_V V_{sfit}
-    \\
-    - \frac{\epsilon}{1 - \phi} V_{im}
-    + \frac{\epsilon}{\phi} (V_{ifsp} + V_{ifst} + V_{ifi})
-    - \gamma_m V_{im}
-    - \mu_m V_{im}
-    \\
-    \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{im}
-    - \frac{\epsilon}{\phi} V_{ifsp}
-    - \gamma_f V_{ifsp}
-    - \mu_f V_{ifsp}
-    - \beta_P \frac{V_{ifst}}{P_s} V_{ifsp}
-    - \alpha V_{ifsp}
-    \\
-    - \frac{\epsilon}{\phi} V_{ifst}
-    - \gamma_f V_{ifst}
-    - \mu_f V_{ifst}
-    - \beta_P \frac{V_{ifst}}{P_s} V_{ifst}
-    + \alpha V_{ifsp}
-    \\
-    \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{im}
-    - \frac{\epsilon}{\phi} V_{ifi}
-    - \gamma_f V_{ifi}
-    - \mu_f V_{ifi}
-    + \beta_P \frac{V_{ifst}}{P_s} (V_{ifsp} + V_{ifst})
-    + \beta_V V_{sfit}
-    \\
-    \beta_P V_{ifst}
-  \end{pmatrix}.
-\end{equation}
-Linearizing at the disease-free state gives
-\begingroup\makeatletter\def\f@size{4.5}\check@mathfonts
-\def\maketag@@@#1{\hbox{\m@th\normalsize\normalfont#1}}
-\begin{equation}
-  \mat{J} =
-  \begin{bmatrix}
-    - \left(\sigma + \mu_f + \alpha\right)
-    &
-    0
-    &
-    0
-    &
-    0
-    &
-    \beta_P \frac{V_{sfs}}{P_s}
-    &
-    \gamma_f
-    &
-    \tau \frac{V_{sm}}{P}
-    \\
-    \alpha
-    &
-    - \left(\sigma + \mu_f + \beta_V\right)
-    &
-    0
-    &
-    0
-    &
-    0
-    &
-    0
-    &
-    0
-    \\
-    0
-    &
-    0
-    &
-    - \left(\tau + \gamma_m + \mu_m\right)
-    &
-    \sigma
-    &
-    \sigma
-    &
-    \sigma
-    &
-    0
-    \\
-    0
-    &
-    0
-    &
-    \tau \frac{P_s}{P}
-    &
-    - \left(\sigma + \gamma_f + \mu_f + \alpha\right)
-    &
-    0
-    &
-    0
-    &
-    0
-    \\
-    0
-    &
-    0
-    &
-    0
-    &
-    \alpha
-    &
-    - \left(\sigma + \gamma_f + \mu_f\right)
-    &
-    0
-    &
-    0
-    \\
-    0
-    &
-    \beta_V
-    &
-    \tau \frac{P_i}{P}
-    &
-    0
-    &
-    0
-    &
-    - \left(\sigma + \gamma_f + \mu_f\right)
-    &
-    0
-    \\
-    0
-    &
-    0
-    &
-    0
-    &
-    0
-    &
-    \beta_P
-    &
-    0
-    &
-    0
-  \end{bmatrix},
-\end{equation}
-\endgroup
-with
-\begin{align}
-  \sigma &= \frac{\epsilon}{\phi}
-  & & \text{and} &
-  \tau &= \frac{\epsilon}{1 - \phi}.
-\end{align}
-The intrinsic growth rate for the pathogen is the dominant eigenvalue
-of $\mat{J}$:
-\begin{equation}
-  r_0 = \lambda_0(\mat{J}).
-\end{equation}
-I do not see any possible simplifications...
+% The infected states are $V_{sfip}$, $V_{sfit}$, $V_{im}$, $V_{ifsp}$,
+% $V_{ifst}$, $V_{ifi}$, and $P_i$.
+% The flow for the infected states is
+% \begin{equation}
+%   \frac{\md}{\md t}
+%   \begin{pmatrix}
+%     V_{sfip}
+%     \\
+%     V_{sfit}
+%     \\
+%     V_{im}
+%     \\
+%     V_{ifsp}
+%     \\
+%     V_{ifst}
+%     \\
+%     V_{ifi}
+%     \\
+%     P_i
+%   \end{pmatrix}
+%   =
+%   \begin{pmatrix}
+%     \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{sm}
+%     - \frac{\epsilon}{\phi} V_{sfip}
+%     + \gamma_f V_{ifi}
+%     - \mu_f V_{sfip}
+%     + \beta_P \frac{V_{ifst}}{P_s} V_{sfs}
+%     - \alpha V_{sfip}
+%     \\
+%     - \frac{\epsilon}{\phi} V_{sfit}
+%     - \mu_f V_{sfit}
+%     + \alpha V_{sfip}
+%     - \beta_V V_{sfit}
+%     \\
+%     - \frac{\epsilon}{1 - \phi} V_{im}
+%     + \frac{\epsilon}{\phi} (V_{ifsp} + V_{ifst} + V_{ifi})
+%     - \gamma_m V_{im}
+%     - \mu_m V_{im}
+%     \\
+%     \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{im}
+%     - \frac{\epsilon}{\phi} V_{ifsp}
+%     - \gamma_f V_{ifsp}
+%     - \mu_f V_{ifsp}
+%     - \beta_P \frac{V_{ifst}}{P_s} V_{ifsp}
+%     - \alpha V_{ifsp}
+%     \\
+%     - \frac{\epsilon}{\phi} V_{ifst}
+%     - \gamma_f V_{ifst}
+%     - \mu_f V_{ifst}
+%     - \beta_P \frac{V_{ifst}}{P_s} V_{ifst}
+%     + \alpha V_{ifsp}
+%     \\
+%     \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{im}
+%     - \frac{\epsilon}{\phi} V_{ifi}
+%     - \gamma_f V_{ifi}
+%     - \mu_f V_{ifi}
+%     + \beta_P \frac{V_{ifst}}{P_s} (V_{ifsp} + V_{ifst})
+%     + \beta_V V_{sfit}
+%     \\
+%     \beta_P V_{ifst}
+%   \end{pmatrix}.
+% \end{equation}
+% Linearizing at the disease-free state gives
+% \begingroup\makeatletter\def\f@size{4.5}\check@mathfonts
+% \def\maketag@@@#1{\hbox{\m@th\normalsize\normalfont#1}}
+% \begin{equation}
+%   \mat{J} =
+%   \begin{bmatrix}
+%     - \left(\sigma + \mu_f + \alpha\right)
+%     &
+%     0
+%     &
+%     0
+%     &
+%     0
+%     &
+%     \beta_P \frac{V_{sfs}}{P_s}
+%     &
+%     \gamma_f
+%     &
+%     \tau \frac{V_{sm}}{P}
+%     \\
+%     \alpha
+%     &
+%     - \left(\sigma + \mu_f + \beta_V\right)
+%     &
+%     0
+%     &
+%     0
+%     &
+%     0
+%     &
+%     0
+%     &
+%     0
+%     \\
+%     0
+%     &
+%     0
+%     &
+%     - \left(\tau + \gamma_m + \mu_m\right)
+%     &
+%     \sigma
+%     &
+%     \sigma
+%     &
+%     \sigma
+%     &
+%     0
+%     \\
+%     0
+%     &
+%     0
+%     &
+%     \tau \frac{P_s}{P}
+%     &
+%     - \left(\sigma + \gamma_f + \mu_f + \alpha\right)
+%     &
+%     0
+%     &
+%     0
+%     &
+%     0
+%     \\
+%     0
+%     &
+%     0
+%     &
+%     0
+%     &
+%     \alpha
+%     &
+%     - \left(\sigma + \gamma_f + \mu_f\right)
+%     &
+%     0
+%     &
+%     0
+%     \\
+%     0
+%     &
+%     \beta_V
+%     &
+%     \tau \frac{P_i}{P}
+%     &
+%     0
+%     &
+%     0
+%     &
+%     - \left(\sigma + \gamma_f + \mu_f\right)
+%     &
+%     0
+%     \\
+%     0
+%     &
+%     0
+%     &
+%     0
+%     &
+%     0
+%     &
+%     \beta_P
+%     &
+%     0
+%     &
+%     0
+%   \end{bmatrix},
+% \end{equation}
+% \endgroup
+% with
+% \begin{align}
+%   \sigma &= \frac{\epsilon}{\phi}
+%   & & \text{and} &
+%   \tau &= \frac{\epsilon}{1 - \phi}.
+% \end{align}
+% The intrinsic growth rate for the pathogen is the dominant eigenvalue
+% of $\mat{J}$:
+% \begin{equation}
+%   r_0 = \lambda_0(\mat{J}).
+% \end{equation}
+% I do not see any possible simplifications...
 
 
-\section{Asymptotic analysis}
+% \section{Asymptotic analysis}
 
-Letting $\alpha \to \infty$ gives
-\begin{equation}
-  \begin{split}
-    \frac{\md V_{sm}}{\md t}
-    &=
-    - \frac{\epsilon}{1 - \phi} V_{sm}
-    + \frac{\epsilon}{\phi} V_{sf}
-    + \gamma_m V_{im}
-    - \mu_m V_{sm}
-    + \rho V_f \left(1 - \frac{V_f}{\kappa}\right),
-    \\
-    \frac{\md V_{sfs}}{\md t}
-    &=
-    \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{sm}
-    - \frac{\epsilon}{\phi} V_{sfs}
-    + \gamma_f V_{ifs}
-    - \mu_f V_{sfs}
-    - \beta_P \frac{V_{ifst}}{P_s} V_{sfs},
-    \\
-    \frac{\md V_{sfi}}{\md t}
-    &=
-    \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{sm}
-    - \frac{\epsilon}{\phi} V_{sfi}
-    + \gamma_f V_{ifi}
-    - \mu_f V_{sfi}
-    + \beta_P \frac{V_{ifst}}{P_s} V_{sfs}
-    - \beta_V V_{sfi},
-    \\
-    \frac{\md V_{im}}{\md t}
-    &=
-    - \frac{\epsilon}{1 - \phi} V_{im}
-    + \frac{\epsilon}{\phi} V_{if}
-    - \gamma_m V_{im}
-    - \mu_m V_{im},
-    \\
-    \frac{\md V_{ifs}}{\md t}
-    &=
-    \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{im}
-    - \frac{\epsilon}{\phi} V_{ifs}
-    - \gamma_f V_{ifs}
-    - \mu_f V_{ifs}
-    - \beta_P \frac{V_{ifs}}{P_s} V_{ifs},
-    \\
-    \frac{\md V_{ifi}}{\md t}
-    &=
-    \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{im}
-    - \frac{\epsilon}{\phi} V_{ifi}
-    - \gamma_f V_{ifi}
-    - \mu_f V_{ifi}
-    + \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
-    + \beta_V V_{sfi},
-    \\
-    \frac{\md P_s}{\md t}
-    &=
-    - \beta_P V_{ifs},
-    \\
-    \frac{\md P_i}{\md t}
-    &=
-    \beta_P V_{ifs}.
-  \end{split}
-\end{equation}
-Using the QSSA,
-\begin{equation}
-  \begin{split}
-    \frac{\md V_s}{\md t}
-    &=
-    \phi \rho V \left(1 - \phi \frac{V}{\kappa}\right)
-    - \mu V_s
-    + \gamma V_i
-    - \phi \beta_V \frac{P_i}{P} V_s,
-    \\
-    \frac{\md V_i}{\md t}
-    &=
-    - \mu V_i
-    - \gamma V_i
-    + \phi \beta_V \frac{P_i}{P} V_s,
-    \\
-    \frac{\md P_s}{\md t}
-    &=
-    - \phi \beta_P \frac{P_s}{P} V_i,
-    \\
-    \frac{\md P_i}{\md t}
-    &=
-    \phi \beta_P \frac{P_s}{P} V_i,
-  \end{split}
-\end{equation}
-with
-\begin{equation}
-  \begin{split}
-    \mu &= \phi \mu_f + (1 - \phi) \mu_m,
-    \\
-    \gamma &= \phi \gamma_f + (1 - \phi) \gamma_m.
-  \end{split}
-\end{equation}
-The vector population size is governed by
-\begin{equation}
-  \frac{\md V}{\md t}
-  =
-  \phi \rho V \left(1 - \phi \frac{V}{\kappa}\right)
-  - \mu V,
-\end{equation}
-so
-\begin{equation}
-  V(t)
-  = \frac{V(0) \me^{(\phi \rho - \mu) t}}{
-    1 - \frac{\phi^2 \rho}{\left(\phi \rho -
-        \mu\right)} \frac{V(0)}{\kappa P}
-    \left[1 - \me^{(\phi \rho - \mu) t}\right]
-  }.
-\end{equation}
-The infected states are
-\begin{equation}
-  \vec{x} =
-  \begin{pmatrix}
-    V_i
-    \\
-    P_i
-  \end{pmatrix}
-\end{equation}
-and the infected flows are
-\begin{equation}
-  \frac{\md}{\md t}
-  \begin{pmatrix}
-    V_i
-    \\
-    P_i
-  \end{pmatrix}
-  =
-  \begin{pmatrix}
-    - \mu V_i
-    - \gamma V_i
-    + \phi \beta_V \frac{P_i}{P} V_s
-    \\
-    \phi \beta_P \frac{P_s}{P} V_i
-  \end{pmatrix}.
-\end{equation}
-Linearizing at the disease-free state gives
-\begin{equation}
-  \mat{J}
-  =
-  \begin{bmatrix}
-    - (\gamma + \mu)
-    &
-    \phi \beta_V \frac{V(t)}{P}
-    \\
-    \phi \beta_P
-    &
-    0
-  \end{bmatrix},
-\end{equation}
-which has dominant eigenvalue
-\begin{equation}
-  r_0
-  =
-  \frac{-(\gamma + \mu)
-    + \sqrt{(\gamma + \mu)^2
-      + 4 \phi^2 \beta_P \beta_V \frac{V(t)}{P}}}{2}.
-\end{equation}
+% Letting $\alpha \to \infty$,
+% \begin{equation}
+%   \begin{split}
+%     \frac{\md V_{sm}}{\md t}
+%     &=
+%     - \frac{\epsilon}{1 - \phi} V_{sm}
+%     + \frac{\epsilon}{\phi} V_{sf}
+%     + \gamma_m V_{im}
+%     - \mu_m V_{sm}
+%     + \rho V_f \left(1 - \frac{V_f}{\kappa P}\right),
+%     \\
+%     \frac{\md V_{sfs}}{\md t}
+%     &=
+%     \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{sm}
+%     - \frac{\epsilon}{\phi} V_{sfs}
+%     + \gamma_f V_{ifs}
+%     - \mu_f V_{sfs}
+%     - \beta_P \frac{V_{ifs}}{P_s} V_{sfs},
+%     \\
+%     \frac{\md V_{sfi}}{\md t}
+%     &=
+%     \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{sm}
+%     - \frac{\epsilon}{\phi} V_{sfi}
+%     + \gamma_f V_{ifi}
+%     - \mu_f V_{sfi}
+%     + \beta_P \frac{V_{ifs}}{P_s} V_{sfs}
+%     - \beta_V V_{sfi},
+%     \\
+%     \frac{\md V_{im}}{\md t}
+%     &=
+%     - \frac{\epsilon}{1 - \phi} V_{im}
+%     + \frac{\epsilon}{\phi} V_{if}
+%     - \gamma_m V_{im}
+%     - \mu_m V_{im},
+%     \\
+%     \frac{\md V_{ifs}}{\md t}
+%     &=
+%     \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{im}
+%     - \frac{\epsilon}{\phi} V_{ifs}
+%     - \gamma_f V_{ifs}
+%     - \mu_f V_{ifs}
+%     - \beta_P \frac{V_{ifs}}{P_s} V_{ifs},
+%     \\
+%     \frac{\md V_{ifi}}{\md t}
+%     &=
+%     \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{im}
+%     - \frac{\epsilon}{\phi} V_{ifi}
+%     - \gamma_f V_{ifi}
+%     - \mu_f V_{ifi}
+%     + \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
+%     + \beta_V V_{sfi},
+%     \\
+%     \frac{\md P_s}{\md t}
+%     &=
+%     - \beta_P V_{ifs},
+%     \\
+%     \frac{\md P_i}{\md t}
+%     &=
+%     \beta_P V_{ifs}.
+%   \end{split}
+% \end{equation}
+% Using the QSSA,
+% \begin{equation}
+%   \begin{split}
+%     \frac{\md V_s}{\md t}
+%     &=
+%     \gamma V_i
+%     - \mu V_s
+%     + \phi \rho V \left(1 - \phi \frac{V}{\kappa P}\right)
+%     - \phi \beta_V \frac{P_i}{P} V_s,
+%     \\
+%     \frac{\md V_i}{\md t}
+%     &=
+%     - \gamma V_i
+%     - \mu V_i
+%     + \phi \beta_V \frac{P_i}{P} V_s,
+%     \\
+%     \frac{\md P_s}{\md t}
+%     &=
+%     - \phi \beta_P \frac{P_s}{P} V_i,
+%     \\
+%     \frac{\md P_i}{\md t}
+%     &=
+%     \phi \beta_P \frac{P_s}{P} V_i,
+%   \end{split}
+% \end{equation}
+% with
+% \begin{equation}
+%   \begin{split}
+%     \mu &= \phi \mu_f + (1 - \phi) \mu_m,
+%     \\
+%     \gamma &= \phi \gamma_f + (1 - \phi) \gamma_m.
+%   \end{split}
+% \end{equation}
+% The vector population size is governed by
+% \begin{equation}
+%   \frac{\md V}{\md t}
+%   =
+%   \phi \rho V \left(1 - \phi \frac{V}{\kappa P}\right)
+%   - \mu V,
+% \end{equation}
+% so
+% \begin{equation}
+%   V(t)
+%   = \frac{V(0) \me^{(\phi \rho - \mu) t}}{
+%     1 + \frac{\phi^2 \rho}{\left(\phi \rho -
+%         \mu\right)} \frac{V(0)}{\kappa P}
+%     \left[\me^{(\phi \rho - \mu) t} - 1\right]
+%   }.
+% \end{equation}
+% The infected states are
+% \begin{equation}
+%   \vec{x} =
+%   \begin{pmatrix}
+%     V_i
+%     \\
+%     P_i
+%   \end{pmatrix}
+% \end{equation}
+% and the infected flows are
+% \begin{equation}
+%   \frac{\md}{\md t}
+%   \begin{pmatrix}
+%     V_i
+%     \\
+%     P_i
+%   \end{pmatrix}
+%   =
+%   \begin{pmatrix}
+%     - \mu V_i
+%     - \gamma V_i
+%     + \phi \beta_V \frac{P_i}{P} V_s
+%     \\
+%     \phi \beta_P \frac{P_s}{P} V_i
+%   \end{pmatrix}.
+% \end{equation}
+% Linearizing at the disease-free state gives
+% \begin{equation}
+%   \mat{J}
+%   =
+%   \begin{bmatrix}
+%     - (\gamma + \mu)
+%     &
+%     \phi \beta_V \frac{V(t)}{P}
+%     \\
+%     \phi \beta_P
+%     &
+%     0
+%   \end{bmatrix},
+% \end{equation}
+% which has dominant eigenvalue
+% \begin{equation}
+%   r_0
+%   =
+%   \frac{-(\gamma + \mu)
+%     + \sqrt{(\gamma + \mu)^2
+%       + 4 \phi^2 \beta_P \beta_V \frac{V(t)}{P}}}{2}.
+% \end{equation}
 
-\comment{TODO: Test this!}
+% \comment{The approximation is not great, especially for the
+%   non-persistent pathogen.}
 
 \end{document}
