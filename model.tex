@@ -746,393 +746,170 @@ of $\mat{J}$:
 \begin{equation}
   r_0 = \lambda_0(\mat{J}).
 \end{equation}
+I do not see any possible simplifications...
+
 
 \section{Asymptotic analysis}
-
-Let
-\begin{equation}
-  \begin{aligned}
-    \hat{t} &= \epsilon t,
-    \\
-    \hat{V}_{sm} &= \frac{V_{sm}}{V(0)},
-    &
-    \hat{V}_{sfs} &= \frac{V_{sfs}}{V(0)},
-    &
-    \hat{V}_{sfip} &= \frac{V_{sfip}}{V(0)},
-    &
-    \hat{V}_{sfit} &= \frac{V_{sfit}}{V(0)},
-    \\
-    \hat{V}_{im} &= \frac{V_{im}}{V(0)},
-    &
-    \hat{V}_{ifsp} &= \frac{V_{ifsp}}{V(0)},
-    &
-    \hat{V}_{ifst} &= \frac{V_{ifst}}{V(0)},
-    &
-    \hat{V}_{ifi} &= \frac{V_{ifi}}{V(0)},
-    \\
-    \hat{P}_s &= \frac{P_s}{P},
-    &
-    \hat{P}_i &= \frac{P_i}{P},
-  \end{aligned}
-\end{equation}
-and
-\begin{equation}
-  \begin{aligned}
-    \hat{\kappa} &= \kappa \frac{P}{V(0)},
-    &
-    \hat{\alpha} &= \frac{\alpha}{\epsilon},
-    &
-    \hat{\beta}_P &= \frac{\beta_P}{\epsilon} \frac{V(0)}{P},
-    &
-    \hat{\beta}_V &= \frac{\beta_V}{\epsilon},
-    \\
-    \hat{\gamma}_m &= \frac{\gamma_m}{\epsilon},
-    &
-    \hat{\gamma}_f &= \frac{\gamma_f}{\epsilon},
-    &
-    \hat{\mu}_m &= \frac{\mu_m}{\epsilon},
-    &
-    \hat{\mu}_f &= \frac{\mu_f}{\epsilon},
-    &
-    \hat{\rho} &= \frac{\rho}{\epsilon},
-  \end{aligned}
-\end{equation}
-so then
-\begin{equation}
-  \begin{split}
-    \frac{\md \hat{V}_{sm}}{\md \hat{t}}
-    &=
-    - \frac{1}{1 - \phi} \hat{V}_{sm}
-    + \frac{1}{\phi} \hat{V}_{sf}
-    + \hat{\gamma}_m \hat{V}_{im}
-    - \hat{\mu}_m \hat{V}_{sm}
-    + \hat{\rho} \hat{V}_f \left(1 - \frac{\hat{V}_f}{\hat{\kappa}}\right),
-    \\
-    \frac{\md \hat{V}_{sfs}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfs}
-    + \hat{\gamma}_f \hat{V}_{ifs}
-    - \hat{\mu}_f \hat{V}_{sfs}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{sfs},
-    \\
-    \frac{\md \hat{V}_{sfip}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfip}
-    + \hat{\gamma}_f \hat{V}_{ifi}
-    - \hat{\mu}_f \hat{V}_{sfip}
-    + \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{sfs}
-    - \hat{\alpha} \hat{V}_{sfip},
-    \\
-    \frac{\md \hat{V}_{sfit}}{\md \hat{t}}
-    &=
-    - \frac{1}{\phi} \hat{V}_{sfit}
-    - \hat{\mu}_f \hat{V}_{sfit}
-    + \hat{\alpha} \hat{V}_{sfip}
-    - \hat{\beta}_V \hat{V}_{sfit},
-    \\
-    \frac{\md \hat{V}_{im}}{\md \hat{t}}
-    &=
-    - \frac{1}{1 - \phi} \hat{V}_{im}
-    + \frac{1}{\phi} \hat{V}_{if}
-    - \hat{\gamma}_m \hat{V}_{im}
-    - \hat{\mu}_m \hat{V}_{im},
-    \\
-    \frac{\md \hat{V}_{ifsp}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifsp}
-    - \hat{\gamma}_f \hat{V}_{ifsp}
-    - \hat{\mu}_f \hat{V}_{ifsp}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifsp}
-    - \hat{\alpha} \hat{V}_{ifsp},
-    \\
-    \frac{\md \hat{V}_{ifst}}{\md \hat{t}}
-    &=
-    - \frac{1}{\phi} \hat{V}_{ifst}
-    - \hat{\gamma}_f \hat{V}_{ifst}
-    - \hat{\mu}_f \hat{V}_{ifst}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifst}
-    + \hat{\alpha} \hat{V}_{ifsp},
-    \\
-    \frac{\md \hat{V}_{ifi}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifi}
-    - \hat{\gamma}_f \hat{V}_{ifi}
-    - \hat{\mu}_f \hat{V}_{ifi}
-    + \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifs}
-    + \hat{\beta}_V \hat{V}_{sfit},
-    \\
-    \frac{\md \hat{P}_s}{\md \hat{t}}
-    &=
-    - \hat{\beta}_P \hat{V}_{ifst},
-    \\
-    \frac{\md \hat{P}_i}{\md \hat{t}}
-    &=
-    \hat{\beta}_P \hat{V}_{ifst}.
-  \end{split}
-\end{equation}
-
-
-Using the parameter values,
-\begin{equation}
-  \begin{aligned}
-    \hat{\mu}_m &= \frac{1}{75},
-    &
-    \hat{\mu}_f &= \frac{1}{150},
-    &
-    \hat{\rho} &= \frac{2}{75},
-  \end{aligned}
-\end{equation}
-are small, so letting $\hat{\rho}, \hat{\mu}_f, \hat{\mu}_m \to 0$ gives
-\begin{equation}
-  \begin{split}
-    \frac{\md \hat{V}_{sm}}{\md \hat{t}}
-    &=
-    - \frac{1}{1 - \phi} \hat{V}_{sm}
-    + \frac{1}{\phi} \hat{V}_{sf}
-    + \hat{\gamma}_m \hat{V}_{im},
-    \\
-    \frac{\md \hat{V}_{sfs}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfs}
-    + \hat{\gamma}_f \hat{V}_{ifs}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{sfs},
-    \\
-    \frac{\md \hat{V}_{sfip}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfip}
-    + \hat{\gamma}_f \hat{V}_{ifi}
-    + \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{sfs}
-    - \hat{\alpha} \hat{V}_{sfip},
-    \\
-    \frac{\md \hat{V}_{sfit}}{\md \hat{t}}
-    &=
-    - \frac{1}{\phi} \hat{V}_{sfit}
-    + \hat{\alpha} \hat{V}_{sfip}
-    - \hat{\beta}_V \hat{V}_{sfit},
-    \\
-    \frac{\md \hat{V}_{im}}{\md \hat{t}}
-    &=
-    - \frac{1}{1 - \phi} \hat{V}_{im}
-    + \frac{1}{\phi} \hat{V}_{if}
-    - \hat{\gamma}_m \hat{V}_{im},
-    \\
-    \frac{\md \hat{V}_{ifsp}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifsp}
-    - \hat{\gamma}_f \hat{V}_{ifsp}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifsp}
-    - \hat{\alpha} \hat{V}_{ifsp},
-    \\
-    \frac{\md \hat{V}_{ifst}}{\md \hat{t}}
-    &=
-    - \frac{1}{\phi} \hat{V}_{ifst}
-    - \hat{\gamma}_f \hat{V}_{ifst}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifst}
-    + \hat{\alpha} \hat{V}_{ifsp},
-    \\
-    \frac{\md \hat{V}_{ifi}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifi}
-    - \hat{\gamma}_f \hat{V}_{ifi}
-    + \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifs}
-    + \hat{\beta}_V \hat{V}_{sfit},
-    \\
-    \frac{\md \hat{P}_s}{\md \hat{t}}
-    &=
-    - \hat{\beta}_P \hat{V}_{ifst},
-    \\
-    \frac{\md \hat{P}_i}{\md \hat{t}}
-    &=
-    \hat{\beta}_P \hat{V}_{ifst}.
-  \end{split}
-\end{equation}
-
-
-\subsection{Persistent pathogens}
-
-\begin{table}
-  \centering
-  \begin{tabular}{llr}
-    \textbf{Parameter}
-    & \multicolumn{1}{r}{\textbf{Value}}
-    \\
-    $\epsilon$ & $3\;\text{d}^{-1}$
-    \\
-    $\phi$ & $0.5$
-    \\
-    $\hat{\kappa}$ & $10\,000$
-    \\
-    $\beta_V$ & $8.3\;\text{d}^{-1}$
-    \\
-    $\beta_P$ & $5.5\;\text{d}^{-1}$
-    \\
-    $\alpha$ & $48\;\text{d}^{-1}$
-    \\
-    $\gamma_f$ & $0\;\text{d}^{-1}$
-    \\
-    $\gamma_m$ & $0\;\text{d}^{-1}$
-    \\
-  \end{tabular}
-  \caption{Persistent model parameters and initial conditions.}
-\end{table}
-
-Setting $\gamma_f = \gamma_m = 0$ gives
-\begin{equation}
-  \begin{split}
-    \frac{\md \hat{V}_{sm}}{\md \hat{t}}
-    &=
-    - \frac{1}{1 - \phi} \hat{V}_{sm}
-    + \frac{1}{\phi} \hat{V}_{sf},
-    \\
-    \frac{\md \hat{V}_{sfs}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfs}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{sfs},
-    \\
-    \frac{\md \hat{V}_{sfip}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfip}
-    + \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{sfs}
-    - \hat{\alpha} \hat{V}_{sfip},
-    \\
-    \frac{\md \hat{V}_{sfit}}{\md \hat{t}}
-    &=
-    - \frac{1}{\phi} \hat{V}_{sfit}
-    + \hat{\alpha} \hat{V}_{sfip}
-    - \hat{\beta}_V \hat{V}_{sfit},
-    \\
-    \frac{\md \hat{V}_{im}}{\md \hat{t}}
-    &=
-    - \frac{1}{1 - \phi} \hat{V}_{im}
-    + \frac{1}{\phi} \hat{V}_{if},
-    \\
-    \frac{\md \hat{V}_{ifsp}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifsp}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifsp}
-    - \hat{\alpha} \hat{V}_{ifsp},
-    \\
-    \frac{\md \hat{V}_{ifst}}{\md \hat{t}}
-    &=
-    - \frac{1}{\phi} \hat{V}_{ifst}
-    - \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifst}
-    + \hat{\alpha} \hat{V}_{ifsp},
-    \\
-    \frac{\md \hat{V}_{ifi}}{\md \hat{t}}
-    &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifi}
-    + \hat{\beta}_P \frac{\hat{V}_{ifst}}{\hat{P}_s} \hat{V}_{ifs}
-    + \hat{\beta}_V \hat{V}_{sfit},
-    \\
-    \frac{\md \hat{P}_s}{\md \hat{t}}
-    &=
-    - \hat{\beta}_P \hat{V}_{ifst},
-    \\
-    \frac{\md \hat{P}_i}{\md \hat{t}}
-    &=
-    \hat{\beta}_P \hat{V}_{ifst}.
-  \end{split}
-\end{equation}
-
-Letting $\epsilon \to \infty$ gives
-
-
-\subsection{Non-persistent pathogens}
-
-\begin{table}
-  \centering
-  \begin{tabular}{llr}
-    \textbf{Parameter}
-    & \multicolumn{1}{r}{\textbf{Value}}
-    \\
-    $\epsilon$ & $3\;\text{d}^{-1}$
-    \\
-    $\phi$ & $0.5$
-    \\
-    $\kappa$ & $100$
-    \\
-    $V(0)$ & $100$
-    \\
-    $P(0)$ & $10\,000$
-    \\
-    $\beta_V$ & $500\;\text{d}^{-1}$
-    \\
-    $\beta_P$ & $10\,000\;\text{d}^{-1}$
-    \\
-    $\alpha$ & $86\,400\;\text{d}^{-1}$
-    \\
-    $\gamma_f$ & $288\;\text{d}^{-1}$ \\
-    $\gamma_m$ & $24\;\text{d}^{-1}$
-  \end{tabular}
-  \caption{Non-persistent model parameters and initial conditions.}
-\end{table}
 
 Letting $\alpha \to \infty$ gives
 \begin{equation}
   \begin{split}
-    \frac{\md \hat{V}_{sm}}{\md \hat{t}}
+    \frac{\md V_{sm}}{\md t}
     &=
-    - \frac{1}{1 - \phi} \hat{V}_{sm}
-    + \frac{1}{\phi} \hat{V}_{sf}
-    + \hat{\gamma}_m \hat{V}_{im},
+    - \frac{\epsilon}{1 - \phi} V_{sm}
+    + \frac{\epsilon}{\phi} V_{sf}
+    + \gamma_m V_{im}
+    - \mu_m V_{sm}
+    + \rho V_f \left(1 - \frac{V_f}{\kappa}\right),
     \\
-    \frac{\md \hat{V}_{sfs}}{\md \hat{t}}
+    \frac{\md V_{sfs}}{\md t}
     &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfs}
-    + \hat{\gamma}_f \hat{V}_{ifs}
-    - \hat{\beta}_P \frac{\hat{V}_{ifs}}{\hat{P}_s} \hat{V}_{sfs},
+    \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{sm}
+    - \frac{\epsilon}{\phi} V_{sfs}
+    + \gamma_f V_{ifs}
+    - \mu_f V_{sfs}
+    - \beta_P \frac{V_{ifst}}{P_s} V_{sfs},
     \\
-    \frac{\md \hat{V}_{sfi}}{\md \hat{t}}
+    \frac{\md V_{sfi}}{\md t}
     &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{sm}
-    - \frac{1}{\phi} \hat{V}_{sfi}
-    + \hat{\gamma}_f \hat{V}_{ifi}
-    + \hat{\beta}_P \frac{\hat{V}_{ifs}}{\hat{P}_s} \hat{V}_{sfs}
-    - \hat{\beta}_V \hat{V}_{sfi},
+    \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{sm}
+    - \frac{\epsilon}{\phi} V_{sfi}
+    + \gamma_f V_{ifi}
+    - \mu_f V_{sfi}
+    + \beta_P \frac{V_{ifst}}{P_s} V_{sfs}
+    - \beta_V V_{sfi},
     \\
-    \frac{\md \hat{V}_{im}}{\md \hat{t}}
+    \frac{\md V_{im}}{\md t}
     &=
-    - \frac{1}{1 - \phi} \hat{V}_{im}
-    + \frac{1}{\phi} \hat{V}_{if}
-    - \hat{\gamma}_m \hat{V}_{im},
+    - \frac{\epsilon}{1 - \phi} V_{im}
+    + \frac{\epsilon}{\phi} V_{if}
+    - \gamma_m V_{im}
+    - \mu_m V_{im},
     \\
-    \frac{\md \hat{V}_{ifs}}{\md \hat{t}}
+    \frac{\md V_{ifs}}{\md t}
     &=
-    \frac{1}{1 - \phi} \hat{P}_s \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifs}
-    - \hat{\gamma}_f \hat{V}_{ifs}
-    - \hat{\beta}_P \frac{\hat{V}_{ifs}}{\hat{P}_s} \hat{V}_{ifs},
+    \frac{\epsilon}{1 - \phi} \frac{P_s}{P} V_{im}
+    - \frac{\epsilon}{\phi} V_{ifs}
+    - \gamma_f V_{ifs}
+    - \mu_f V_{ifs}
+    - \beta_P \frac{V_{ifs}}{P_s} V_{ifs},
     \\
-    \frac{\md \hat{V}_{ifi}}{\md \hat{t}}
+    \frac{\md V_{ifi}}{\md t}
     &=
-    \frac{1}{1 - \phi} \hat{P}_i \hat{V}_{im}
-    - \frac{1}{\phi} \hat{V}_{ifi}
-    - \hat{\gamma}_f \hat{V}_{ifi}
-    + \hat{\beta}_P \frac{\hat{V}_{ifs}}{\hat{P}_s} \hat{V}_{ifs}
-    + \hat{\beta}_V \hat{V}_{sfi},
+    \frac{\epsilon}{1 - \phi} \frac{P_i}{P} V_{im}
+    - \frac{\epsilon}{\phi} V_{ifi}
+    - \gamma_f V_{ifi}
+    - \mu_f V_{ifi}
+    + \beta_P \frac{V_{ifs}}{P_s} V_{ifs}
+    + \beta_V V_{sfi},
     \\
-    \frac{\md \hat{P}_s}{\md \hat{t}}
+    \frac{\md P_s}{\md t}
     &=
-    - \hat{\beta}_P \hat{V}_{ifs},
+    - \beta_P V_{ifs},
     \\
-    \frac{\md \hat{P}_i}{\md \hat{t}}
+    \frac{\md P_i}{\md t}
     &=
-    \hat{\beta}_P \hat{V}_{ifs}.
+    \beta_P V_{ifs}.
   \end{split}
 \end{equation}
+Using the QSSA,
+\begin{equation}
+  \begin{split}
+    \frac{\md V_s}{\md t}
+    &=
+    \phi \rho V \left(1 - \phi \frac{V}{\kappa}\right)
+    - \mu V_s
+    + \gamma V_i
+    - \phi \beta_V \frac{P_i}{P} V_s,
+    \\
+    \frac{\md V_i}{\md t}
+    &=
+    - \mu V_i
+    - \gamma V_i
+    + \phi \beta_V \frac{P_i}{P} V_s,
+    \\
+    \frac{\md P_s}{\md t}
+    &=
+    - \phi \beta_P \frac{P_s}{P} V_i,
+    \\
+    \frac{\md P_i}{\md t}
+    &=
+    \phi \beta_P \frac{P_s}{P} V_i,
+  \end{split}
+\end{equation}
+with
+\begin{equation}
+  \begin{split}
+    \mu &= \phi \mu_f + (1 - \phi) \mu_m,
+    \\
+    \gamma &= \phi \gamma_f + (1 - \phi) \gamma_m.
+  \end{split}
+\end{equation}
+The vector population size is governed by
+\begin{equation}
+  \frac{\md V}{\md t}
+  =
+  \phi \rho V \left(1 - \phi \frac{V}{\kappa}\right)
+  - \mu V,
+\end{equation}
+so
+\begin{equation}
+  V(t)
+  = \frac{V(0) \me^{(\phi \rho - \mu) t}}{
+    1 - \frac{\phi^2 \rho}{\left(\phi \rho -
+        \mu\right)} \frac{V(0)}{\kappa P}
+    \left[1 - \me^{(\phi \rho - \mu) t}\right]
+  }.
+\end{equation}
+The infected states are
+\begin{equation}
+  \vec{x} =
+  \begin{pmatrix}
+    V_i
+    \\
+    P_i
+  \end{pmatrix}
+\end{equation}
+and the infected flows are
+\begin{equation}
+  \frac{\md}{\md t}
+  \begin{pmatrix}
+    V_i
+    \\
+    P_i
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    - \mu V_i
+    - \gamma V_i
+    + \phi \beta_V \frac{P_i}{P} V_s
+    \\
+    \phi \beta_P \frac{P_s}{P} V_i
+  \end{pmatrix}.
+\end{equation}
+Linearizing at the disease-free state gives
+\begin{equation}
+  \mat{J}
+  =
+  \begin{bmatrix}
+    - (\gamma + \mu)
+    &
+    \phi \beta_V \frac{V(t)}{P}
+    \\
+    \phi \beta_P
+    &
+    0
+  \end{bmatrix},
+\end{equation}
+which has dominant eigenvalue
+\begin{equation}
+  r_0
+  =
+  \frac{-(\gamma + \mu)
+    + \sqrt{(\gamma + \mu)^2
+      + 4 \phi^2 \beta_P \beta_V \frac{V(t)}{P}}}{2}.
+\end{equation}
 
+\comment{TODO: Test this!}
 
 \end{document}
