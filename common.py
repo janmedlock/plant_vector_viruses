@@ -4,8 +4,7 @@ import os.path
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
-
-import seaborn_quiet as seaborn
+import seaborn
 
 
 tmax = 100
@@ -20,6 +19,16 @@ sensitivity_parameters = (
     ('phi', 'Time feeding\n$\\phi$'),
     ('epsilon', 'Encounter rate\n$\\epsilon$ (d$^{-1}$)'))
 
+
+seaborn.set_palette('Dark2')
+alpha = 0.9
+
+baseline_style = dict(
+    linestyle = 'dotted',
+    color = 'black',
+    linewidth = pyplot.rcParams['lines.linewidth'] / 2,
+    alpha = alpha / 2
+)
 
 def get_scale(param):
     if param == 'phi':

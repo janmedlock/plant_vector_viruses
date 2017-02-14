@@ -8,20 +8,17 @@ from matplotlib import lines
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
+import seaborn
 
 import common
 import growth_rates
 import parameters
-
-import seaborn_quiet as seaborn
 
 
 save = True
 
 figsize = (8.5, 3)
 figsize_epsilon = (8.5, 6)
-seaborn.set_palette('Dark2')
-alpha = 0.7
 
 
 def _run_one(p, param0, dP):
@@ -53,23 +50,29 @@ def main():
             elif ax.get_xscale() == 'log':
                 ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
 
-            for (n, p) in parameters.parameter_sets.items():
+            for (k, x) in enumerate(parameters.parameter_sets.items()):
+                n, p = x
+
                 param0baseline = getattr(p, param0)
+
+                # We only need to draw these once.
+                if k == 0:
+                    ax.axvline(param0baseline, **common.baseline_style)
+
                 dPs = common.get_dPs(param0, param0baseline)
+
                 r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
                               for dP in dPs)
                 r0 = numpy.asarray(r0)
+
                 ymin = min(r0.min(), ymin)
                 ymax = max(r0.max(), ymax)
-                ax.plot(dPs, r0, label = n, alpha = alpha)
+                ax.plot(dPs, r0, label = n, alpha = common.alpha)
 
             ax.set_xlabel(param0_name, fontsize = 'x-small')
             if ax.is_first_col():
                 ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
                               fontsize = 'x-small')
-
-            ax.axvline(param0baseline, linestyle = 'dotted', color = 'black',
-                       alpha = alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
@@ -80,7 +83,7 @@ def main():
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
-    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
@@ -134,7 +137,7 @@ def sensitivity_mu():
                     mu_m = dPs
                     mu_f = p.mu_f
                 mu = p.phi * mu_f + (1 - p.phi) * mu_m
-                ax.plot(mu, r0, label = n, alpha = alpha,
+                ax.plot(mu, r0, label = n, alpha = common.alpha,
                         color = next(colors), linestyle = linestyles[i])
 
             ax.set_xlabel('Death rate\n$\\mu$ (d$^{-1}$)',
@@ -145,7 +148,7 @@ def sensitivity_mu():
 
             mu0 = p.phi * p.mu_f + (1 - p.phi) * p.mu_m
             ax.axvline(mu0, linestyle = 'dotted', color = 'black',
-                       alpha = alpha)
+                       alpha = common.alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
@@ -156,7 +159,7 @@ def sensitivity_mu():
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
-    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
@@ -217,7 +220,7 @@ def sensitivity_R0():
                     mu_m = p.mu_m
                 mu = p.phi * mu_f + (1 - p.phi) * mu_m
                 R0 = rho * p.phi / mu
-                ax.plot(R0, r0, label = n, alpha = alpha,
+                ax.plot(R0, r0, label = n, alpha = common.alpha,
                         color = next(colors), linestyle = linestyles[i])
 
             ax.set_xlabel('Lifetime reproductive output\n$R_0$',
@@ -229,7 +232,7 @@ def sensitivity_R0():
             mu0 = p.phi * p.mu_f + (1 - p.phi) * p.mu_m
             R0_0 = p.rho * p.phi / mu0
             ax.axvline(R0_0, linestyle = 'dotted', color = 'black',
-                       alpha = alpha)
+                       alpha = common.alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
@@ -240,7 +243,7 @@ def sensitivity_R0():
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
-    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
@@ -279,7 +282,7 @@ def sensitivity_epsilon():
             epsilon_baseline = p.epsilon
             r0 = parallel(joblib.delayed(_run_one)(p, 'epsilon', dP)
                           for dP in dPs)
-            l = ax.plot(dPs, r0, label = n, alpha = alpha)
+            l = ax.plot(dPs, r0, label = n, alpha = common.alpha)
 
     ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
     ax.set_xlabel(label, fontsize = 'small')
@@ -300,9 +303,9 @@ def sensitivity_epsilon():
         ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
     ax.axvline(epsilon_baseline, linestyle = 'dotted', color = 'black',
-               alpha = alpha)
+               alpha = common.alpha)
 
-    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     fig.legend(handles, labels,

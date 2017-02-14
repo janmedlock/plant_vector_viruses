@@ -7,8 +7,7 @@ import numpy
 import pandas
 from scipy import integrate
 from scipy import sparse
-
-import seaborn_quiet as seaborn
+import seaborn
 
 
 def ODEs(Y, t, p):

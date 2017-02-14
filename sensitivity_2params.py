@@ -8,19 +8,16 @@ from matplotlib import lines
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
+import seaborn
 
 import common
 import growth_rates
 import parameters
 
-import seaborn_quiet as seaborn
-
 
 save = True
 
 figsize = (8.5, 8)
-seaborn.set_palette('Dark2')
-alpha = 0.7
 
 
 def _run_one(p, param0, param1, dP0, dP1):
@@ -138,6 +135,11 @@ def plot(r0):
                     param0baseline = getattr(p, param0)
                     param1baseline = getattr(p, param1)
 
+                    # We only need to draw these once.
+                    if k == 0:
+                        ax.axvline(param1baseline, **common.baseline_style)
+                        ax.axhline(param0baseline, **common.baseline_style)
+
                     y = common.get_dPs(param0, param0baseline)
                     x = common.get_dPs(param1, param1baseline)
                     X, Y = numpy.meshgrid(x, y)
@@ -156,19 +158,14 @@ def plot(r0):
                     cs = ax.contour(X, Y, Z,
                                     contour_levels,
                                     colors = [colors[k]],
-                                    alpha = alpha,
+                                    alpha = common.alpha,
                                     linestyles = 'solid')
                     ax.clabel(cs, inline = 1, fmt = '%.4g d$^{-1}$',
                               fontsize = fontsize,
                               colors = [colors[k]],
-                              alpha = alpha)
+                              alpha = common.alpha)
 
-                    ax.axvline(param1baseline, linestyle = 'dotted',
-                               color = 'black', alpha = alpha)
-                    ax.axhline(param0baseline, linestyle = 'dotted',
-                               color = 'black', alpha = alpha)
-
-    handles = (lines.Line2D([], [], color = c, alpha = alpha)
+    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,

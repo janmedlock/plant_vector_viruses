@@ -2,19 +2,16 @@
 
 from matplotlib import pyplot
 import numpy
+import seaborn
 
 import common
 import odes
 import parameters
 
-import seaborn_quiet as seaborn
-
 
 save = True
 
 figsize = (8.5, 5)
-seaborn.set_palette('Dark2')
-alpha = 0.7
 
 
 def get_growth_rate(p, t = common.tmax):
@@ -49,7 +46,7 @@ def main():
     fig, axes = pyplot.subplots(1, 1, figsize = figsize)
     for (n, p) in parameters.parameter_sets.items():
         pop, r = get_pop_and_growth_rates(p)
-        axes.plot(pop, r, label = n, alpha = alpha)
+        axes.plot(pop, r, label = n, alpha = common.alpha)
     axes.set_xlabel('Initial vector population size')
     axes.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)')
     axes.legend(loc = 'upper left')

@@ -3,15 +3,14 @@
 from matplotlib import pyplot
 import numpy
 import pandas
+import seaborn
 
 import common
 import odes
 import parameters
-import seaborn_quiet as seaborn
 
 
 save = True
-alpha = 0.7
 colors = seaborn.color_palette('Set1', 5)
 colors = [colors[ix] for ix in (0, 1, 3, 4, 2)]
 
@@ -24,7 +23,7 @@ def main():
         Y0 = odes.get_initial_conditions(p, common.vi0)
         Y = odes.solve(Y0, t, p)
 
-        style = dict(alpha = alpha)
+        style = dict(alpha = common.alpha)
         style_s = dict(linestyle = 'solid')
         style_s.update(style)
         style_i = dict(linestyle = 'dashed')
