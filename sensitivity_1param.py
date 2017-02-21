@@ -101,30 +101,30 @@ def main():
 
 
 def sensitivity_mu():
-    nparams = len(common.sensitivity_parameters)
     linestyles = ('solid', 'dashed')
     fig, ax = pyplot.subplots()
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.tick_params(labelsize = 'small')
+    ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+    ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
+    ax.xaxis.set_minor_locator(ticker.NullLocator())
+
+    ymin, ymax = (numpy.inf, - numpy.inf)
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        ymin, ymax = (numpy.inf, - numpy.inf)
-        for (i, param) in enumerate(common.sensitivity_parameters[1 : 3]):
-            param0, param0_name = param
-
-            ax.set_xscale(common.get_scale(param0))
-            ax.set_yscale('log')
-
-            ax.tick_params(labelsize = 'small')
-
-            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-            if ax.get_xscale() == 'linear':
-                ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-            elif ax.get_xscale() == 'log':
-                ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
-                ax.xaxis.set_minor_locator(ticker.NullLocator())
-
+        for (i, param0) in enumerate(('mu_f', 'mu_m')):
             colors = iter(seaborn.color_palette())
             for (n, p) in parameters.parameter_sets.items():
                 param0baseline = getattr(p, param0)
-                dPs = common.get_dPs(param0, param0baseline)
+                parammin = 1e-3
+                mumax = p.mu * common.sensitivity_max_abs_mult_change
+                if param0 == 'mu_f':
+                    parammax = (mumax - (1 - p.phi) * p.mu_m) / p.phi
+                else:
+                    parammax = (mumax - p.phi * p.mu_f)  / (1 - p.phi)
+                dPs = numpy.logspace(numpy.log10(parammin),
+                                     numpy.log10(parammax),
+                                     common.npoints)
                 r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
                               for dP in dPs)
                 r0 = numpy.asarray(r0)
@@ -177,25 +177,19 @@ def sensitivity_mu():
 
 
 def sensitivity_R0():
-    nparams = len(common.sensitivity_parameters)
     linestyles = ('solid', 'dashed', 'dotted')
     fig, ax = pyplot.subplots()
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.tick_params(labelsize = 'small')
+    ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+    ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
+    ax.xaxis.set_minor_locator(ticker.NullLocator())
+
+    ymin, ymax = (numpy.inf, - numpy.inf)
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        ymin, ymax = (numpy.inf, - numpy.inf)
         for (i, param) in enumerate(common.sensitivity_parameters[0 : 3]):
             param0, param0_name = param
-
-            ax.set_xscale(common.get_scale(param0))
-            ax.set_yscale('log')
-
-            ax.tick_params(labelsize = 'small')
-
-            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-            if ax.get_xscale() == 'linear':
-                ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-            elif ax.get_xscale() == 'log':
-                ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
-                ax.xaxis.set_minor_locator(ticker.NullLocator())
 
             colors = iter(seaborn.color_palette())
             for (n, p) in parameters.parameter_sets.items():
@@ -260,73 +254,8 @@ def sensitivity_R0():
     return fig
 
 
-def sensitivity_epsilon():
-    # Get long name.
-    for p_, n in common.sensitivity_parameters:
-        if p_ == 'epsilon':
-            label = n
-            break
-    else:
-        label = 'epsilon'
-
-    xscale = 'linear'
-    yscale = 'linear'
-
-    fig, ax = pyplot.subplots(figsize = figsize_epsilon,
-                              subplot_kw = dict(xscale = xscale,
-                                                yscale = yscale))
-
-    dPs = numpy.linspace(0, 10, 1001)
-    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        for (n, p) in parameters.parameter_sets.items():
-            epsilon_baseline = p.epsilon
-            r0 = parallel(joblib.delayed(_run_one)(p, 'epsilon', dP)
-                          for dP in dPs)
-            l = ax.plot(dPs, r0, label = n, alpha = common.alpha)
-
-    ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-    ax.set_xlabel(label, fontsize = 'small')
-    ax.set_ylabel('Pathogen intrinsic growth rate (d${-1}$)',
-                  fontsize = 'small')
-    ax.tick_params(labelsize = 'small')
-
-    if xscale == 'linear':
-        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 6))
-    elif xscale == 'log':
-        ax.xaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
-        ax.xaxis.set_minor_locator(ticker.NullLocator())
-        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-
-    if yscale == 'log':
-        ax.yaxis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
-        ax.yaxis.set_minor_locator(ticker.NullLocator())
-        ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-
-    ax.axvline(epsilon_baseline, linestyle = 'dotted', color = 'black',
-               alpha = common.alpha)
-
-    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
-               for c in seaborn.color_palette())
-    labels = parameters.parameter_sets.keys()
-    fig.legend(handles, labels,
-               loc = 'lower center',
-               ncol = len(parameters.parameter_sets),
-               columnspacing = 10,
-               frameon = False,
-               fontsize = 'small',
-               numpoints = 1)
-
-    fig.tight_layout(rect = (0, 0.04, 1, 1))
-
-    if save:
-        common.savefig(fig, append = '_epsilon')
-
-    return fig
-
-
 if __name__ == '__main__':
     main()
-    sensitivity_epsilon()
-    sensitivity_mu()
-    sensitivity_R0()
+    # sensitivity_mu()
+    # sensitivity_R0()
     pyplot.show()

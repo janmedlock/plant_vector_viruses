@@ -14,8 +14,7 @@ vi0 = 0.01
 
 sensitivity_parameters = (
     ('rho', 'Vector birth rate\n$\\rho$ (d$^{-1}$)'),
-    ('mu_f', 'Feeding death rate\n$\\mu_f$ (d$^{-1}$)'),
-    ('mu_m', 'Moving death rate\n$\\mu_m$ (d$^{-1}$)'),
+    ('mu', 'Vector death rate\n$\\mu$ (d$^{-1}$)'),
     ('phi', 'Time feeding\n$\\phi$'),
     ('epsilon', 'Encounter rate\n$\\epsilon$ (d$^{-1}$)'))
 
@@ -29,6 +28,7 @@ baseline_style = dict(
     linewidth = pyplot.rcParams['lines.linewidth'] / 2,
     alpha = alpha / 2
 )
+
 
 def get_scale(param):
     if param == 'phi':

@@ -391,8 +391,43 @@ and $\kappa$ is the carrying capacity of vectors per plant
 
 \item The growth rate is insensitive to the encounter rate
   (\hyperref[fig:sensitivity_1param]{Figures
-    \ref*{fig:sensitivity_1param}}--\ref{fig:sensitivity_2params}).
+    \ref*{fig:sensitivity_1param}} \& \ref{fig:sensitivity_2params}).
 \end{itemize}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width = \textwidth]{sensitivity_1param}
+  \caption{Intrinsic growth rate of the pathogen vs.~parameter values
+    at $50~\text{d}$.  The dotted horizontal lines show the baseline
+    parameter values.  Parameter values and initial conditions are as
+    in \autoref{fig:growth_rates}.  The vector death rate $\mu$ is the
+    average of the feeding and moving death rates weighted by the time
+    spent feeding and moving: $\mu = \phi \mu_f + (1 - \phi) \mu_m$.
+    \comment{As $\phi \to 1$, the
+      growth rate does not go to $0$.  This limit is a bit odd: the
+      encounter rate $f$ is fixed, so there is still movement, just
+      the amount of time spent moving goes to $0$.  I.e.~all the time
+      is spent feeding and moving happens instantaneously.  For
+      $\phi \to 0$ or $\epsilon \to 0$, the growth rate does go to
+      $0$.}}
+  \label{fig:sensitivity_1param}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width = \textwidth]{sensitivity_2params}
+  \caption{Intrinsic growth rate of the pathogen vs.~parameter values
+    at $50~\text{d}$.  Parameter values and initial conditions are as
+    in \autoref{fig:growth_rates}.}
+  \label{fig:sensitivity_2params}
+\end{figure}
+
+
+\clearpage
+\appendix
+\renewcommand{\thefigure}{A\arabic{figure}}
+\setcounter{figure}{0}
 
 
 \begin{figure}
@@ -426,23 +461,6 @@ and $\kappa$ is the carrying capacity of vectors per plant
 
 \begin{figure}
   \centering
-  \includegraphics[width = \textwidth]{sensitivity_1param}
-  \caption{Intrinsic growth rate of the pathogen vs.~parameter values
-    at $50~\text{d}$.  The dotted horizontal lines show the baseline
-    parameter values.  Parameter values and initial conditions are as
-    in \autoref{fig:growth_rates}.
-    \comment{As $\phi \to 1$, the
-      growth rate does not go to $0$.  This limit is a bit odd: the
-      encounter rate $f$ is fixed, so there is still movement, just
-      the amount of time spent moving goes to $0$.  I.e.~all the time
-      is spent feeding and moving happens instantaneously.  For
-      $\phi \to 0$ or $\epsilon \to 0$, the growth rate does go to
-      $0$.}}
-  \label{fig:sensitivity_1param}
-\end{figure}
-
-\begin{figure}
-  \centering
   \includegraphics[width = \textwidth]{sensitivity_1param_mu}
   \caption{Intrinsic growth rate of the pathogen vs.~vector average
     mortality at $50~\text{d}$.  Vector average mortality is the
@@ -458,52 +476,7 @@ and $\kappa$ is the carrying capacity of vectors per plant
   \label{fig:sensitivity_1param_mu}
 \end{figure}
 
-\begin{figure}
-  \centering
-  \includegraphics[width = \textwidth]{sensitivity_1param_R0}
-  \caption{Intrinsic growth rate of the pathogen vs.~vector lifetime
-    reproductive output at $50~\text{d}$.  Vector lifetime
-    reproductive output, $R_0 = \frac{\rho \phi}{\mu_f \phi +
-      \mu_m (1 - \phi)}$.  The dotted horizontal line shows the
-    lifetime reproductive output at the baseline parameter values.
-    Parameter values and initial conditions are as in
-    \autoref{fig:growth_rates}.  \comment{The solid lines are for
-      changing $\rho$, the dashed lines are for changing $\mu_f$,
-      and the dotted lines are for changing $\mu_m$.  These curves
-      do not overlap, so that the effect of
-      changing each of them is \emph{not} captured by their effect on
-      lifetime reproductive output and its effect on pathogen growth
-      rate.  This figure should probably be removed.}}
-  \label{fig:sensitivity_1param_R0}
-\end{figure}
 
-\begin{figure}
-  \centering
-  \includegraphics[width = \textwidth]{sensitivity_1param_epsilon}
-  \caption{Intrinsic growth rate of the pathogen vs.~the encounter
-    rate ($\epsilon$) at $50~\text{d}$.  The vertical axis has a linear scale,
-    compared to a log scale in \autoref{fig:growth_rates}, to show the
-    smaller differences in growth rate as feeding rate varies.  The
-    dotted horizontal lines show the baseline parameter values.
-    Parameter values and initial conditions are as in
-    \autoref{fig:growth_rates}.  \comment{We probably don't need this
-      figure anymore since the lines are not flat in the log-log
-      version (leftmost panel in \autoref{fig:growth_rates}).}}
-  \label{fig:sensitivity_1param_epsilon}
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width = \textwidth]{sensitivity_2params}
-  \caption{Intrinsic growth rate of the pathogen vs.~parameter values
-    at $50~\text{d}$.  Parameter values and initial conditions are as
-    in \autoref{fig:growth_rates}.}
-  \label{fig:sensitivity_2params}
-\end{figure}
-
-
-\clearpage
-\appendix
 \section{Quasi-steady-state approximation}
 \label{sec:QSSA}
 
@@ -911,5 +884,6 @@ with
 
 % \comment{The approximation is not great, especially for the
 %   non-persistent pathogen.}
+
 
 \end{document}

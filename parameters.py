@@ -13,6 +13,16 @@ class Parameters:
     V0 = 100       # 100 initial vectors
     P0 = 10000     # 10000 plants
 
+    @property
+    def mu(self):
+        return self.phi * self.mu_f + (1 - self.phi) * self.mu_m
+
+    @mu.setter
+    def mu(self, mu_new):
+        mu_old = self.mu
+        self.mu_f *= mu_new / mu_old
+        self.mu_m *= mu_new / mu_old
+
 
 class Persistent(Parameters):
     beta_V = 8.3    # 50% acquisition at 2 hrs
