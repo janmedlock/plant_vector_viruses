@@ -27,59 +27,61 @@ def _run_one(p, param0, dP):
     return growth_rates.get_growth_rate(p)
 
 
-def main():
+def build():
+    nparamsets = len(parameters.parameter_sets)
+    nparams = len(common.sensitivity_parameters)
+    r0 = numpy.ones((nparamsets, nparams, common.npoints))
+    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
+        for (k, p) in enumerate(parameters.parameter_sets.values()):
+            for (i, param) in enumerate(common.sensitivity_parameters):
+                param0, param0_name = param
+                param0baseline = getattr(p, param0)
+                dPs = common.get_dPs(param0, param0baseline)
+                r0_ = parallel(joblib.delayed(_run_one)(p, param0, dP)
+                              for dP in dPs)
+                r0[k, i] = r0_
+    return r0
+
+
+def plot(r0):
     nparams = len(common.sensitivity_parameters)
     fig, axes = pyplot.subplots(1, nparams,
                                 sharey = True,
-                                figsize = figsize)
-    with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        ymin, ymax = (numpy.inf, - numpy.inf)
-        for (i, param) in enumerate(common.sensitivity_parameters):
-            param0, param0_name = param
+                                figsize = figsize,
+                                squeeze = False)
+    for (i, param) in enumerate(common.sensitivity_parameters):
+        param0, param0_name = param
+        ax = axes[0, i]
+        for (k, x) in enumerate(parameters.parameter_sets.items()):
+            n, p = x
+            param0baseline = getattr(p, param0)
+            dPs = common.get_dPs(param0, param0baseline)
+            ax.plot(dPs, r0[k, i], label = n, alpha = common.alpha)
+            # We only need to draw these once.
+            if k == 0:
+                ax.axvline(param0baseline, **common.baseline_style)
+        ax.set_xlabel(param0_name, fontsize = 'x-small')
+        if ax.is_first_col():
+            ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
+                          fontsize = 'x-small')
+        # ax.autoscale(tight = True)  # Bug!
+        ax.tick_params(labelsize = 'x-small')
+        ax.set_xscale(common.get_scale(param0))
+        ax.set_yscale('log')
+        ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+        ax.xaxis.set_minor_locator(ticker.NullLocator())
+        if ax.get_xscale() in ('linear', 'logit'):
+            ax.xaxis.set_major_locator(ticker.FixedLocator(
+                [0.1, 0.3, 0.5, 0.7, 0.9]))
+        elif ax.get_xscale() == 'log':
+            ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
+        ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+        ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+        ax.yaxis.set_minor_locator(ticker.NullLocator())
 
-            ax = axes[i]
-            # ax.autoscale(tight = True)  # Bug!
-            ax.set_xscale(common.get_scale(param0))
-            ax.set_yscale('log')
-
-            ax.tick_params(labelsize = 'x-small')
-
-            ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-            if ax.get_xscale() == 'linear':
-                ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins = 4))
-            elif ax.get_xscale() == 'log':
-                ax.xaxis.set_major_locator(ticker.LogLocator(subs = (1, 2, 5)))
-
-            for (k, x) in enumerate(parameters.parameter_sets.items()):
-                n, p = x
-
-                param0baseline = getattr(p, param0)
-
-                # We only need to draw these once.
-                if k == 0:
-                    ax.axvline(param0baseline, **common.baseline_style)
-
-                dPs = common.get_dPs(param0, param0baseline)
-
-                r0 = parallel(joblib.delayed(_run_one)(p, param0, dP)
-                              for dP in dPs)
-                r0 = numpy.asarray(r0)
-
-                ymin = min(r0.min(), ymin)
-                ymax = max(r0.max(), ymax)
-                ax.plot(dPs, r0, label = n, alpha = common.alpha)
-
-            ax.set_xlabel(param0_name, fontsize = 'x-small')
-            if ax.is_first_col():
-                ax.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)',
-                              fontsize = 'x-small')
-
-            ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
-            ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
-
-    ymin = 10 ** numpy.floor(numpy.log10(ymin))
-    ymax = 10 ** numpy.ceil(numpy.log10(ymax))
-    ax.set_ylim(ymin, ymax)
+    # ymin = 10 ** numpy.floor(numpy.log10(r0.min()))
+    # ymax = 10 ** numpy.ceil(numpy.log10(r0.max()))
+    # ax.set_ylim(ymin, ymax)
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
@@ -255,7 +257,12 @@ def sensitivity_R0():
 
 
 if __name__ == '__main__':
-    main()
+    # r0 = build()
+    # numpy.save('sensitivity_1param.npy', r0)
+    r0 = numpy.load('sensitivity_1param.npy')
+    plot(r0)
+
     # sensitivity_mu()
     # sensitivity_R0()
+
     pyplot.show()

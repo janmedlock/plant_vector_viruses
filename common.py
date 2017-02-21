@@ -4,6 +4,7 @@ import os.path
 from matplotlib import pyplot
 from matplotlib import ticker
 import numpy
+from scipy import special
 import seaborn
 
 
@@ -15,8 +16,9 @@ vi0 = 0.01
 sensitivity_parameters = (
     ('rho', 'Vector birth rate\n$\\rho$ (d$^{-1}$)'),
     ('mu', 'Vector death rate\n$\\mu$ (d$^{-1}$)'),
-    ('phi', 'Time feeding\n$\\phi$'),
-    ('epsilon', 'Encounter rate\n$\\epsilon$ (d$^{-1}$)'))
+    ('epsilon', 'Encounter rate\n$\\epsilon$ (d$^{-1}$)'),
+    ('phi', 'Proportion feeding\n$\\phi$')
+)
 
 
 seaborn.set_palette('Dark2')
@@ -26,26 +28,32 @@ baseline_style = dict(
     linestyle = 'dotted',
     color = 'black',
     linewidth = pyplot.rcParams['lines.linewidth'] / 2,
-    alpha = alpha / 2
+    alpha = alpha / 2,
+    zorder = 1
 )
 
 
 def get_scale(param):
     if param == 'phi':
+        # return 'logit'  # Bug!
         return 'linear'
     else:
         return 'log'
 
 
-sensitivity_max_abs_mult_change = 4
+sensitivity_max_abs_mult_change = 3
 npoints = 201
 
 
 def get_dPs(param, value_baseline):
     scale = get_scale(param)
-    if scale == 'linear':
+    if scale in ('linear', 'logit'):
         eps = 0.1
-        return numpy.linspace(eps, 1 - eps, npoints)
+        if scale == 'linear':
+            return numpy.linspace(eps, 1 - eps, npoints)
+        else:
+            return special.expit(numpy.linspace(
+                special.logit(eps), special.logit(1 - eps), npoints))
     elif scale == 'log':
         return value_baseline * numpy.logspace(
             - numpy.log10(sensitivity_max_abs_mult_change),

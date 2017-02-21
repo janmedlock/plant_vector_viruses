@@ -135,11 +135,6 @@ def plot(r0):
                     param0baseline = getattr(p, param0)
                     param1baseline = getattr(p, param1)
 
-                    # We only need to draw these once.
-                    if k == 0:
-                        ax.axvline(param1baseline, **common.baseline_style)
-                        ax.axhline(param0baseline, **common.baseline_style)
-
                     y = common.get_dPs(param0, param0baseline)
                     x = common.get_dPs(param1, param1baseline)
                     X, Y = numpy.meshgrid(x, y)
@@ -165,11 +160,16 @@ def plot(r0):
                               colors = [colors[k]],
                               alpha = common.alpha)
 
+                    # We only need to draw these once.
+                    if k == 0:
+                        ax.axvline(param1baseline, **common.baseline_style)
+                        ax.axhline(param0baseline, **common.baseline_style)
+
     handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
-                     loc = (0.76, 0.115),
+                     loc = (0.73, 0.153),
                      frameon = False,
                      fontsize = fontsize + 2)
 
