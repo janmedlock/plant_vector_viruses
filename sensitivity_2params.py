@@ -169,7 +169,7 @@ def plot(r0):
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
     leg = fig.legend(handles, labels,
-                     loc = (0.73, 0.153),
+                     loc = (0.74, 0.153),
                      frameon = False,
                      fontsize = fontsize + 2)
 

@@ -41,6 +41,10 @@ def get_scale(param):
         return 'log'
 
 
+def logitspace(start, stop, *args, **kwargs):
+    return special.expit(numpy.linspace(start, stop, *args, **kwargs))
+
+
 sensitivity_max_abs_mult_change = 3
 npoints = 201
 
@@ -48,17 +52,18 @@ npoints = 201
 def get_dPs(param, value_baseline):
     scale = get_scale(param)
     if scale in ('linear', 'logit'):
-        eps = 0.1
+        a = 0.1
+        b = 1 - a
+        assert a <= value_baseline <= b
         if scale == 'linear':
-            return numpy.linspace(eps, 1 - eps, npoints)
+            return numpy.linspace(a, b, npoints)
         else:
-            return special.expit(numpy.linspace(
-                special.logit(eps), special.logit(1 - eps), npoints))
+            a, b = special.logit((a, b))
+            return logitspace(a, b, npoints)
     elif scale == 'log':
-        return value_baseline * numpy.logspace(
-            - numpy.log10(sensitivity_max_abs_mult_change),
-            + numpy.log10(sensitivity_max_abs_mult_change),
-            npoints)
+        a = numpy.log10(value_baseline / sensitivity_max_abs_mult_change)
+        b = numpy.log10(value_baseline * sensitivity_max_abs_mult_change)
+        return numpy.logspace(a, b, npoints)
     else:
         raise NotImplementedError('scale = {}'.format(scale))
 

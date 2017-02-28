@@ -37,9 +37,8 @@ def build():
                 param0, param0_name = param
                 param0baseline = getattr(p, param0)
                 dPs = common.get_dPs(param0, param0baseline)
-                r0_ = parallel(joblib.delayed(_run_one)(p, param0, dP)
-                              for dP in dPs)
-                r0[k, i] = r0_
+                r0[k, i] = parallel(joblib.delayed(_run_one)(p, param0, dP)
+                                    for dP in dPs)
     return r0
 
 
