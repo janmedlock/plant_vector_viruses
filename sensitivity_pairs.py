@@ -35,17 +35,19 @@ def build():
     ndirs = 2
     r0 = numpy.ones((nparamsets, npairs, ndirs, common.npoints))
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        for (k, p) in enumerate(parameters.parameter_sets.values()):
+        for (k, paramset) in enumerate(parameters.parameter_sets.items()):
+            p_name, p = paramset
+            print('Running parameter set {}.'.format(p_name))
             ij = 0
             for i in range(nparams - 1):
+                param0, param0_name = common.sensitivity_parameters[i]
+                param0baseline = getattr(p, param0)
+                dPs0 = common.get_dPs(param0, param0baseline)
                 for j in range(i + 1, nparams):
-                    param0, param0_name = common.sensitivity_parameters[i]
                     param1, param1_name = common.sensitivity_parameters[j]
-                    print('Running {} and {}.'.format(param0, param1))
-                    param0baseline = getattr(p, param0)
                     param1baseline = getattr(p, param1)
-                    dPs0 = common.get_dPs(param0, param0baseline)
                     dPs1 = common.get_dPs(param1, param1baseline)
+                    print('\tRunning {} and {}.'.format(param0, param1))
                     for l in range(2):
                         if l == 1:
                             dPs1 = dPs1[ : : -1]
@@ -138,8 +140,6 @@ def plot(r0):
 
 
 if __name__ == '__main__':
-    # r0 = build()
-    # numpy.save('sensitivity_pairs.npy', r0)
-    r0 = numpy.load('sensitivity_pairs.npy')
+    r0 = common.load_or_build_data(build)
     plot(r0)
     pyplot.show()

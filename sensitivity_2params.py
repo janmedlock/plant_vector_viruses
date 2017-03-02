@@ -34,15 +34,18 @@ def build():
                      nparams - 1, nparams - 1,
                      common.npoints, common.npoints))
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        for (k, p) in enumerate(parameters.parameter_sets.values()):
+        for (k, paramset) in enumerate(parameters.parameter_sets.items()):
+            p_name, p = paramset
+            print('Running parameter set {}.'.format(p_name))
             for i in range(nparams - 1):
+                param0, param0_name = common.sensitivity_parameters[i + 1]
+                param0baseline = getattr(p, param0)
+                dPs0 = common.get_dPs(param0, param0baseline)
                 for j in range(i + 1):
-                    param0, param0_name = common.sensitivity_parameters[i + 1]
                     param1, param1_name = common.sensitivity_parameters[j]
-                    param0baseline = getattr(p, param0)
                     param1baseline = getattr(p, param1)
-                    dPs0 = common.get_dPs(param0, param0baseline)
                     dPs1 = common.get_dPs(param1, param1baseline)
+                    print('\tRunning {} and {}.'.format(param0, param1))
                     r0_ = parallel(joblib.delayed(_run_one)(p, param0, param1,
                                                             dP0, dP1)
                                    for dP0 in dPs0
@@ -61,12 +64,13 @@ def _format_axis(ax, param0_name, param1_name, left, right, top, bottom,
                  fontsize):
     for axis in (ax.xaxis, ax.yaxis):
         axis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
+        axis.set_minor_locator(ticker.NullLocator())
         scale = axis.get_scale()
-        if scale == 'linear':
-            axis.set_major_locator(ticker.MaxNLocator(nbins = 4))
+        if scale in ('linear', 'logit'):
+            axis.set_major_locator(ticker.FixedLocator(
+                [0.1, 0.3, 0.5, 0.7, 0.9]))
         elif scale == 'log':
             axis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
-            axis.set_minor_locator(ticker.NullLocator())
 
     ax.tick_params(labelsize = fontsize)
 
@@ -89,6 +93,14 @@ def _format_axis(ax, param0_name, param1_name, left, right, top, bottom,
         ax.set_ylabel(param0_name, fontsize = fontsize)
     if not (left or right):
         _hide_ticklabels(ax.yaxis)
+
+    # Stupid bug in matplotlib.
+    if ax.get_xscale() == 'logit':
+        for loc in ('bottom', 'top'):
+            ax.spines[loc]._adjust_location()
+    if ax.get_yscale() == 'logit':
+        for loc in ('left', 'right'):
+            ax.spines[loc]._adjust_location()
 
 
 def plot(r0):
@@ -113,22 +125,11 @@ def plot(r0):
             if row != col:
                 param0, param0_name = common.sensitivity_parameters[row]
                 param1, param1_name = common.sensitivity_parameters[col]
-
                 yscale = common.get_scale(param0)
                 xscale = common.get_scale(param1)
-
                 ax = fig.add_subplot(gs[row, col],
                                      xscale = xscale,
                                      yscale = yscale)
-
-                left = (col == 0)
-                # left = (col == 0) or (row == 0 and col == 1)
-                right = (col == ncols - 1)
-                top = (row == 0)
-                bottom = (row == nrows - 1)
-                _format_axis(ax, param0_name, param1_name, left, right,
-                             top, bottom, fontsize)
-
                 for (k, x) in enumerate(parameters.parameter_sets.items()):
                     n, p = x
 
@@ -165,6 +166,14 @@ def plot(r0):
                         ax.axvline(param1baseline, **common.baseline_style)
                         ax.axhline(param0baseline, **common.baseline_style)
 
+                left = (col == 0)
+                # left = (col == 0) or (row == 0 and col == 1)
+                right = (col == ncols - 1)
+                top = (row == 0)
+                bottom = (row == nrows - 1)
+                _format_axis(ax, param0_name, param1_name, left, right,
+                             top, bottom, fontsize)
+
     handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette())
     labels = parameters.parameter_sets.keys()
@@ -180,8 +189,6 @@ def plot(r0):
 
 
 if __name__ == '__main__':
-    # r0 = build()
-    # numpy.save('sensitivity_2params.npy', r0)
-    r0 = numpy.load('sensitivity_2params.npy')
+    r0 = common.load_or_build_data(build)
     plot(r0)
     pyplot.show()

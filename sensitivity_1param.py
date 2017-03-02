@@ -32,9 +32,12 @@ def build():
     nparams = len(common.sensitivity_parameters)
     r0 = numpy.ones((nparamsets, nparams, common.npoints))
     with joblib.parallel.Parallel(n_jobs = -1) as parallel:
-        for (k, p) in enumerate(parameters.parameter_sets.values()):
+        for (k, paramset) in enumerate(parameters.parameter_sets.items()):
+            p_name, p = paramset
+            print('Running parameter set {}.'.format(p_name))
             for (i, param) in enumerate(common.sensitivity_parameters):
                 param0, param0_name = param
+                print('\tRunning {}.'.format(param0))
                 param0baseline = getattr(p, param0)
                 dPs = common.get_dPs(param0, param0baseline)
                 r0[k, i] = parallel(joblib.delayed(_run_one)(p, param0, dP)
@@ -66,6 +69,9 @@ def plot(r0):
         # ax.autoscale(tight = True)  # Bug!
         ax.tick_params(labelsize = 'x-small')
         ax.set_xscale(common.get_scale(param0))
+        # Stupid bug in matplotlib.
+        if ax.get_xscale() == 'logit':
+            ax.spines['bottom']._adjust_location()
         ax.set_yscale('log')
         ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
         ax.xaxis.set_minor_locator(ticker.NullLocator())
@@ -256,9 +262,7 @@ def sensitivity_R0():
 
 
 if __name__ == '__main__':
-    # r0 = build()
-    # numpy.save('sensitivity_1param.npy', r0)
-    r0 = numpy.load('sensitivity_1param.npy')
+    r0 = common.load_or_build_data(build)
     plot(r0)
 
     # sensitivity_mu()

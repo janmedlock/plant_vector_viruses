@@ -35,8 +35,7 @@ baseline_style = dict(
 
 def get_scale(param):
     if param == 'phi':
-        # return 'logit'  # Bug!
-        return 'linear'
+        return 'logit'
     else:
         return 'log'
 
@@ -72,10 +71,26 @@ def style_axis(ax):
     ax.xaxis.set_major_locator(ticker.MultipleLocator(20))
 
 
-def savefig(fig, append = '', format_ = 'pdf', *args, **kwargs):
+def _get_filebase():
     stack = inspect.stack()
-    caller = stack[1]
+    caller = stack[2]
     _, basename = os.path.split(caller.filename)
     filebase, _ = os.path.splitext(basename)
+    return filebase
+
+
+def savefig(fig, append = '', format_ = 'pdf', *args, **kwargs):
+    filebase = _get_filebase()
     outfile = '{}{}.{}'.format(filebase, append, format_)
     fig.savefig(outfile, *args, **kwargs)
+
+
+def load_or_build_data(builder):
+    filebase = _get_filebase()
+    savefile = '{}.npy'.format(filebase)
+    try:
+        retval = numpy.load(savefile)
+    except FileNotFoundError:
+        retval = builder()
+        numpy.save(savefile, retval)
+    return retval
