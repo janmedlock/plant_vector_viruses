@@ -18,7 +18,7 @@ import parameters
 
 save = True
 
-figsize = (8.5, 8)
+figsize = (8.5, 4)
 
 
 def _run_one(p, param0, param1, dP0, dP1):
@@ -74,33 +74,31 @@ def plot(r0):
     nparams = len(common.sensitivity_parameters)
     npairs = nparams * (nparams - 1) // 2
     with seaborn.axes_style('dark'):
-        fig, axes = pyplot.subplots(4, npairs,
+        fig, axes = pyplot.subplots(2, npairs,
                                     sharey = True,
                                     figsize = figsize,
                                     squeeze = False)
-    x0 = int((r0.shape[-1] - 1) / 2)
+    x0 = (r0.shape[-1] - 1) / 2
     ij = 0
     for i in range(nparams - 1):
         for j in range(i + 1, nparams):
             param0, param0_name = common.sensitivity_parameters[i]
             param1, param1_name = common.sensitivity_parameters[j]
-            for l in range(4):
+            for l in range(axes.shape[0]):
                 ax = axes[l, ij]
                 if l == 0:
                     m = (1, 1)
                     d = 0
                 elif l == 1:
-                    m = (-1, -1)
-                    d = 0
-                elif l == 2:
                     m = (1, -1)
                     d = 1
-                else:
-                    m = (-1, 1)
-                    d = 1
                 for (k, n) in enumerate(parameters.parameter_sets.keys()):
-                    ax.plot(r0[k, ij, d, x0 : : m[0]], label = n,
+                    ax.plot(r0[k, ij, d, : : m[0]], label = n,
                             alpha = common.alpha)
+                    # We only need to draw these once.
+                    if k == 0:
+                        ax.axvline(x0, **common.baseline_style)
+
                 s = '${}, {}$'.format(_get_sym(param0_name, m[0]),
                                       _get_sym(param1_name, m[1]))
                 ax.set_xlabel(s, fontsize = 'x-small')
