@@ -78,6 +78,7 @@ def plot(r0):
                                     sharey = True,
                                     figsize = figsize,
                                     squeeze = False)
+    x0 = int((r0.shape[-1] - 1) / 2)
     ij = 0
     for i in range(nparams - 1):
         for j in range(i + 1, nparams):
@@ -98,12 +99,8 @@ def plot(r0):
                     m = (-1, 1)
                     d = 1
                 for (k, n) in enumerate(parameters.parameter_sets.keys()):
-                    ax.plot(r0[k, ij, d, : : m[0]], label = n,
+                    ax.plot(r0[k, ij, d, x0 : : m[0]], label = n,
                             alpha = common.alpha)
-                    # We only need to draw these once.
-                    if k == 0:
-                        x0 = (r0.shape[-1] - 1) / 2
-                        ax.axvline(x0, **common.baseline_style)
                 s = '${}, {}$'.format(_get_sym(param0_name, m[0]),
                                       _get_sym(param1_name, m[1]))
                 ax.set_xlabel(s, fontsize = 'x-small')
