@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import copy
+import itertools
 import re
 
 import joblib
@@ -67,10 +68,20 @@ _sym_regex = re.compile(r'\$([^$]+)\$')
 def _get_sym(pn, s):
     sign = '+' if s > 0 else '-'
     m = _sym_regex.search(pn)
-    return '{} {}'.format(sign, m.group(1))
+    return '{}{}'.format(sign, m.group(1))
+
+
+def _get_xlabel(param_names, m):
+    m = numpy.asarray(m)
+    # Label for x > 0
+    sp = ','.join(itertools.starmap(_get_sym, zip(param_names, m)))
+    # Label for x < 0
+    sn = ','.join(itertools.starmap(_get_sym, zip(param_names, -m)))
+    return '${} \\quad {}$'.format(sn, sp)
 
 
 def plot(r0):
+    arrowpos = - 0.18
     nparams = len(common.sensitivity_parameters)
     npairs = nparams * (nparams - 1) // 2
     with seaborn.axes_style('dark'):
@@ -92,23 +103,30 @@ def plot(r0):
                 elif l == 1:
                     m = (1, -1)
                     d = 1
+                ax.axvline(x0, ymin = arrowpos - 0.025,
+                           clip_on = False,
+                           **common.baseline_style)
                 for (k, n) in enumerate(parameters.parameter_sets.keys()):
                     ax.plot(r0[k, ij, d, : : m[0]], label = n,
                             alpha = common.alpha)
-                    # We only need to draw these once.
-                    if k == 0:
-                        ax.axvline(x0, **common.baseline_style)
-
-                s = '${}, {}$'.format(_get_sym(param0_name, m[0]),
-                                      _get_sym(param1_name, m[1]))
-                ax.set_xlabel(s, fontsize = 'x-small')
+                param_names = (param0_name, param1_name)
+                xlabel = _get_xlabel(param_names, m)
+                ax.set_xlabel(xlabel, fontsize = 'x-small')
                 # ax.autoscale(tight = True)  # Bug!
                 ax.set_yscale('log')
                 ax.xaxis.set_major_locator(ticker.NullLocator())
                 ax.yaxis.set_major_locator(ticker.NullLocator())
+                for i in (-1, +1):
+                    ax.annotate('',
+                                xy = (0.5 + 0.45 * i, arrowpos),
+                                xytext = (0.5 + 0.05 * i, arrowpos),
+                                xycoords = 'axes fraction',
+                                annotation_clip = False,
+                                arrowprops = dict(arrowstyle = '->',
+                                                  linewidth = 0.6))
             ij += 1
 
-    fig.tight_layout(rect = (0.03, 0.03, 1, 1))
+    fig.tight_layout(rect = (0.02, 0.075, 1, 1), h_pad = 1.4)
 
     fig.text(0.01, 0.55,
              'Pathogen intrinsic growth rate (d$^{-1}$)',

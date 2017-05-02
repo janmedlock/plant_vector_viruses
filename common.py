@@ -1,10 +1,10 @@
 import inspect
 import os.path
 
-from matplotlib import pyplot
-from matplotlib import ticker
+import matplotlib
+import matplotlib.ticker
 import numpy
-from scipy import special
+import scipy.special
 import seaborn
 
 
@@ -27,7 +27,7 @@ alpha = 0.9
 baseline_style = dict(
     linestyle = 'dotted',
     color = 'black',
-    linewidth = pyplot.rcParams['lines.linewidth'] / 2,
+    linewidth = matplotlib.rcParams['lines.linewidth'] / 2,
     alpha = alpha / 2,
     zorder = 1
 )
@@ -41,7 +41,7 @@ def get_scale(param):
 
 
 def logitspace(start, stop, *args, **kwargs):
-    return special.expit(numpy.linspace(start, stop, *args, **kwargs))
+    return scipy.special.expit(numpy.linspace(start, stop, *args, **kwargs))
 
 
 sensitivity_max_abs_mult_change = 3
@@ -57,7 +57,7 @@ def get_dPs(param, value_baseline):
         if scale == 'linear':
             return numpy.linspace(a, b, npoints)
         else:
-            a, b = special.logit((a, b))
+            a, b = scipy.special.logit((a, b))
             return logitspace(a, b, npoints)
     elif scale == 'log':
         a = numpy.log10(value_baseline / sensitivity_max_abs_mult_change)
@@ -68,7 +68,7 @@ def get_dPs(param, value_baseline):
 
 
 def style_axis(ax):
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(20))
+    ax.xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(20))
 
 
 def _get_filebase():
