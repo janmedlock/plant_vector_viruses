@@ -19,7 +19,7 @@ import parameters
 
 save = True
 
-figsize = (8.5, 4)
+figsize = (8.5, 8)
 
 
 def _run_one(p, param0, param1, dP0, dP1):
@@ -73,22 +73,18 @@ def _get_sym(pn, s):
 
 def _get_xlabel(param_names, m):
     m = numpy.asarray(m)
-    # Label for x > 0
-    sp = ','.join(itertools.starmap(_get_sym, zip(param_names, m)))
-    # Label for x < 0
-    sn = ','.join(itertools.starmap(_get_sym, zip(param_names, -m)))
-    return '${} \\quad {}$'.format(sn, sp)
+    s = ','.join(itertools.starmap(_get_sym, zip(param_names, m)))
+    return '${}$'.format(s)
 
 
 def plot(r0):
-    arrowpos = - 0.18
     nparams = len(common.sensitivity_parameters)
     npairs = nparams * (nparams - 1) // 2
-    fig, axes = pyplot.subplots(2, npairs,
+    fig, axes = pyplot.subplots(4, npairs,
                                 sharey = True,
                                 figsize = figsize,
                                 squeeze = False)
-    x0 = (r0.shape[-1] - 1) / 2
+    x0 = int((r0.shape[-1] - 1) / 2)
     ij = 0
     for i in range(nparams - 1):
         for j in range(i + 1, nparams):
@@ -100,13 +96,16 @@ def plot(r0):
                     m = (1, 1)
                     d = 0
                 elif l == 1:
+                    m = (-1, -1)
+                    d = 0
+                elif l == 2:
                     m = (1, -1)
                     d = 1
-                ax.axvline(x0, ymin = arrowpos - 0.025,
-                           clip_on = False,
-                           **common.baseline_style)
+                elif l == 3:
+                    m = (-1, 1)
+                    d = 1
                 for (k, n) in enumerate(parameters.parameter_sets.keys()):
-                    ax.plot(r0[k, ij, d, : : m[0]], label = n,
+                    ax.plot(r0[k, ij, d, x0 : : m[0]], label = n,
                             alpha = common.alpha)
                 param_names = (param0_name, param1_name)
                 xlabel = _get_xlabel(param_names, m)
@@ -115,17 +114,9 @@ def plot(r0):
                 ax.set_yscale('log')
                 ax.xaxis.set_major_locator(ticker.NullLocator())
                 ax.yaxis.set_major_locator(ticker.NullLocator())
-                for i in (-1, +1):
-                    ax.annotate('',
-                                xy = (0.5 + 0.45 * i, arrowpos),
-                                xytext = (0.5 + 0.05 * i, arrowpos),
-                                xycoords = 'axes fraction',
-                                annotation_clip = False,
-                                arrowprops = dict(arrowstyle = '->',
-                                                  linewidth = 0.6))
             ij += 1
 
-    fig.tight_layout(rect = (0.02, 0.075, 1, 1), h_pad = 1.4)
+    fig.tight_layout(rect = (0.02, 0.03, 1, 1))
 
     fig.text(0.01, 0.55,
              'Pathogen intrinsic growth rate (d$^{-1}$)',
