@@ -10,6 +10,9 @@ from scipy import sparse
 import seaborn
 
 
+colors = seaborn.color_palette('tab10')
+
+
 def ODEs(Y, t, p):
     Vsm, Vim, Vsfs, Vifsp, Vifst, Vsfip, Vsfit, Vifi, Ps, Pi = Y
     Vm = Vsm + Vim
@@ -185,9 +188,9 @@ def plot_solution(ax, t, Y):
     # Reorder to get legend right.
     cols = list(Y.columns)
     cols = cols[0 : : 2] + cols[1 : : 2]
-    for k in cols:
+    for (k, c) in zip(cols, colors):
         k0 = k[0]
-        ax.plot(t, Y[k] / N[k0], label = k)
+        ax.plot(t, Y[k] / N[k0], label = k, color = c)
 
 
 if __name__ == '__main__':
