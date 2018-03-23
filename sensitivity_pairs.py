@@ -84,11 +84,10 @@ def plot(r0):
     arrowpos = - 0.18
     nparams = len(common.sensitivity_parameters)
     npairs = nparams * (nparams - 1) // 2
-    with seaborn.axes_style('dark'):
-        fig, axes = pyplot.subplots(2, npairs,
-                                    sharey = True,
-                                    figsize = figsize,
-                                    squeeze = False)
+    fig, axes = pyplot.subplots(2, npairs,
+                                sharey = True,
+                                figsize = figsize,
+                                squeeze = False)
     x0 = (r0.shape[-1] - 1) / 2
     ij = 0
     for i in range(nparams - 1):
@@ -135,9 +134,9 @@ def plot(r0):
              rotation = 'vertical',
              fontsize = 'x-small')
 
-    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
-               for c in seaborn.color_palette())
-    labels = parameters.parameter_sets.keys()
+    handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
+               for c in seaborn.color_palette()]
+    labels = list(parameters.parameter_sets.keys())
     leg = fig.legend(handles, labels,
                      loc = 'lower center',
                      ncol = len(labels),
