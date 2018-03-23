@@ -158,6 +158,7 @@ def sensitivity_mu():
                        alpha = common.alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+            ax.yaxis.set_minor_locator(ticker.NullLocator())
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
     ymin = 10 ** numpy.floor(numpy.log10(ymin))
@@ -236,6 +237,7 @@ def sensitivity_R0():
                        alpha = common.alpha)
 
             ax.yaxis.set_major_locator(ticker.LogLocator(subs = (1, )))
+            ax.yaxis.set_minor_locator(ticker.NullLocator())
             ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:g}'))
 
     ymin = 10 ** numpy.floor(numpy.log10(ymin))
