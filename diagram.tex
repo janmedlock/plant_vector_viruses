@@ -1,0 +1,108 @@
+\begin{tikzpicture}[
+  thick,
+  scale = 1,
+  compartment/.style = {draw,
+    font = \large},
+  plant/.style = {circle,
+    minimum size = {4em}},
+  susceptible/.style = {},
+  infected/.style = {},
+  vector/.style = {rectangle,
+    minimum size = {3.5em}},
+  front/.style = {minimum size = {4em}},
+  back/.style = {minimum size = {3em}},
+  ]
+
+  \node at (0, 10)
+  [compartment, vector, susceptible, name = V_sm] {$V_{sm}$};
+
+  \node at (5, 10)
+  [compartment, vector, susceptible, name = V_sfs] {$V_{sfs}$};
+
+  \node at (9, 11)
+  [compartment, vector, susceptible, back, name = V_sfip] {$V_{sfip}$};
+  \node at (11, 9)
+  [compartment, vector, susceptible, front, name = V_sfit] {$V_{sfit}$};
+
+  \node at (0, 4)
+  [compartment, vector, infected, name = V_im] {$V_{im}$};
+
+  \node at (4, 5)
+  [compartment, vector, infected, back, name = V_ifsp] {$V_{ifsp}$};
+  \node at (6, 3)
+  [compartment, vector, infected, front, name = V_ifst] {$V_{ifst}$};
+
+  \node at (10, 4)
+  [compartment, vector, infected, name = V_ifi] {$V_{ifi}$};
+
+  \node at (5, 0)
+  [compartment, plant, susceptible, name = P_s] {$P_s$};
+  \node at (10, 0)
+  [compartment, plant, infected, name = P_i] {$P_i$};
+
+  \draw [->] (P_s) to node [above] {$\beta_P \frac{V_{ifst}}{P_s}$} (P_i);
+
+  \draw [->] (V_sfip) to node [right, pos = 0.35] {$\alpha$} (V_sfit);
+  \draw [->] (V_ifsp) to node [right, pos = 0.35] {$\alpha$} (V_ifst);
+
+  \draw [->] (V_sfit.270) to node [right, pos = 0.4] {$\beta_V$} (V_ifi.45);
+
+  \draw [->] (V_im) to node [left, pos = 0.58] {$\gamma_m$} (V_sm);
+  \draw [->] (V_ifsp.90) to node [left] {$\gamma_f$} (V_sfs.250);
+  \draw [->] (V_ifst.90) to node [right, pos = 0.66] {$\gamma_f$} (V_sfs.290);
+  \draw [->] (V_ifi.90) to node [left, pos = 0.48] {$\gamma_f$} (V_sfip.270);
+
+  \draw [->] (V_sm.20) to node [above, pos = 0.65]
+  {$\frac{\epsilon}{1 - \phi} \frac{P_s}{P}$} (V_sfs.160);
+  \draw [->] (V_sm.90) to [bend left = 40] node
+  [left, pos = 0.25, xshift = -8]
+  {$\frac{\epsilon}{1 - \phi} \frac{P_i}{P}$} (V_sfip.90);
+
+  \draw [->] (V_im.20) to node [above]
+  {$\frac{\epsilon}{1 - \phi} \frac{P_s}{P}$} (V_ifsp.160);
+  \draw [->] (V_im.45) to [bend left = 50] node
+  [left, pos = 0.2, xshift = -6]
+  {$\frac{\epsilon}{1 - \phi} \frac{P_i}{P}$} (V_ifi.135);
+
+  \draw [->] (V_sfs.200) to node [below, pos = 0.35]
+  {$\frac{\epsilon}{\phi}$} (V_sm.340);
+  \draw [->] (V_sfip.180) to [bend right = 30] node [below, pos = 0.3]
+  {$\frac{\epsilon}{\phi}$} (V_sm.45);
+  \draw [->] (V_sfit.180) to [bend left = 15] node [below, pos = 0.3]
+  {$\frac{\epsilon}{\phi}$} (V_sm.315);
+
+  \draw [->] (V_ifsp.200) to node [below, pos = 0.35]
+  {$\frac{\epsilon}{\phi}$} (V_im.340);
+  \draw [->] (V_ifst.180) to node [below, pos = 0.35]
+  {$\frac{\epsilon}{\phi}$} (V_im.315);
+  \draw [->] (V_ifi.270) to [bend left = 40] node [below, pos = 0.2]
+  {$\frac{\epsilon}{\phi}$} (V_im.270);
+
+  \draw [->] (V_sfs.0) to node [below, pos = 0.55]
+  {$\beta_P \frac{V_{ifst}}{P_s}$} (V_sfip.225);
+  \draw [->] (V_ifsp.0) to node [above, pos = 0.55]
+  {$\beta_P \frac{V_{ifst}}{P_s}$} (V_ifi.180);
+  \draw [->] (V_ifst.0) to node [above, pos = 0.35]
+  {$\beta_P \frac{V_{ifst}}{P_s}$} (V_ifi.225);
+
+  % \draw [<-] (V_sm.110) to node [left, pos = 0.8]
+  % {$\rho V_f \left(1 - \frac{V_f}{\kappa P}\right)$} +(90: 1.5);
+
+  % \draw [->] (V_sm.70) to node [right, pos = 0.8]
+  % {$\mu_m$} +(90: 1.5);
+  % \draw [->] (V_im) to node [right, pos = 0.8]
+  % {$\mu_m$} +(270: 2);
+
+  % \draw [->] (V_sfs) to node [right, pos = 0.8]
+  % {$\mu_f$} +(90: 2);
+  % \draw [->] (V_sfip) to node [right, pos = 0.8]
+  % {$\mu_f$} +(90: 2);
+  % \draw [->] (V_sfit) to node [right, pos = 0.8]
+  % {$\mu_f$} +(90: 2);
+  % \draw [->] (V_ifsp) to node [right, pos = 0.8]
+  % {$\mu_f$} +(270: 2);
+  % \draw [->] (V_ifst) to node [right, pos = 0.8]
+  % {$\mu_f$} +(270: 2);
+  % \draw [->] (V_ifi) to node [right, pos = 0.8]
+  % {$\mu_f$} +(270: 2);
+\end{tikzpicture}
