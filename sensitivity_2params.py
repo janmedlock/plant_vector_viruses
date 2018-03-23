@@ -72,11 +72,11 @@ def _format_axis(ax, param0_name, param1_name, left, right, top, bottom,
         elif scale == 'log':
             axis.set_major_locator(ticker.LogLocator(subs = [1, 2, 5]))
 
-    ax.tick_params(labelsize = fontsize)
+    ax.tick_params(top = True, bottom = True, right = True, left = True,
+                   labelsize = fontsize)
 
     if top:
-        ax.tick_params(axis = 'x', top = True, labeltop = True,
-                       bottom = False, labelbottom = False)
+        ax.tick_params(labeltop = True, labelbottom = False)
         ax.xaxis.set_label_position('top')
         ax.set_xlabel(param1_name, fontsize = fontsize)
     if bottom:
@@ -87,8 +87,7 @@ def _format_axis(ax, param0_name, param1_name, left, right, top, bottom,
     if left:
         ax.set_ylabel(param0_name, fontsize = fontsize)
     if right:
-        ax.tick_params(axis = 'y', right = True, labelright = True,
-                       left = False, labelleft = False)
+        ax.tick_params(labelright = True, labelleft = False)
         ax.yaxis.set_label_position('right')
         ax.set_ylabel(param0_name, fontsize = fontsize)
     if not (left or right):
