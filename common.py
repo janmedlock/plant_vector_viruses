@@ -24,10 +24,7 @@ sensitivity_parameters = (
 
 matplotlib.style.use('default')
 matplotlib.rc('legend', frameon=False)
-# Purple and gold, which should be OK in grayscale, too.
-colors = seaborn.color_palette('Dark2')
-colors = [colors[ix] for ix in [2, 5]]
-seaborn.set_palette(colors)
+seaborn.set_palette(['black', 'darkgray'])
 alpha = 0.9
 
 baseline_style = dict(
