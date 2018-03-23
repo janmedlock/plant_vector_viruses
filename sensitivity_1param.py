@@ -265,7 +265,7 @@ if __name__ == '__main__':
     r0 = common.load_or_build_data(build)
     plot(r0)
 
-    sensitivity_mu()
-    sensitivity_R0()
+    # sensitivity_mu()
+    # sensitivity_R0()
 
     pyplot.show()
