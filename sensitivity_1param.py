@@ -90,9 +90,9 @@ def plot(r0):
 
     fig.tight_layout(rect = (0, 0.07, 1, 1))
 
-    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
-               for c in seaborn.color_palette())
-    labels = parameters.parameter_sets.keys()
+    handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
+               for c in seaborn.color_palette()]
+    labels = list(parameters.parameter_sets.keys())
     leg = fig.legend(handles, labels,
                      loc = 'lower center',
                      ncol = len(labels),
