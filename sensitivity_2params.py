@@ -174,9 +174,9 @@ def plot(r0):
                 _format_axis(ax, param0_name, param1_name, left, right,
                              top, bottom, fontsize)
 
-    handles = (lines.Line2D([], [], color = c, alpha = common.alpha)
-               for c in seaborn.color_palette())
-    labels = parameters.parameter_sets.keys()
+    handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
+               for c in seaborn.color_palette()]
+    labels = list(parameters.parameter_sets.keys())
     leg = fig.legend(handles, labels,
                      loc = (0.74, 0.153),
                      frameon = False,
