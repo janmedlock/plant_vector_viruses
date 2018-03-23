@@ -21,7 +21,10 @@ sensitivity_parameters = (
 )
 
 
-seaborn.set_palette('Dark2')
+
+matplotlib.style.use('default')
+matplotlib.rc('legend', frameon=False)
+seaborn.set_palette(['black', 'darkgray'])
 alpha = 0.9
 
 baseline_style = dict(
