@@ -11,8 +11,8 @@ import parameters
 
 
 save = True
-colors = seaborn.color_palette('Set1', 5)
-colors = [colors[ix] for ix in (0, 1, 3, 4, 2)]
+colors = seaborn.color_palette('tab10', 5)
+colors = [colors[ix] for ix in (0, 1, 4, 3, 2)]
 
 
 def main():
