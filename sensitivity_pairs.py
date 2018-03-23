@@ -78,6 +78,7 @@ def _get_xlabel(param_names, m):
 
 
 def plot(r0):
+    arrowpos = -0.065
     nparams = len(common.sensitivity_parameters)
     npairs = nparams * (nparams - 1) // 2
     fig, axes = pyplot.subplots(4, npairs,
@@ -109,11 +110,20 @@ def plot(r0):
                             alpha = common.alpha)
                 param_names = (param0_name, param1_name)
                 xlabel = _get_xlabel(param_names, m)
-                ax.set_xlabel(xlabel, fontsize = 'x-small')
+                ax.set_xlabel(xlabel,
+                              horizontalalignment = 'right',
+                              fontsize = 'x-small')
                 # ax.autoscale(tight = True)  # Bug!
                 ax.set_yscale('log')
                 ax.xaxis.set_major_locator(ticker.NullLocator())
                 ax.yaxis.set_major_locator(ticker.NullLocator())
+                ax.annotate('',
+                            xy = (0.85, arrowpos),
+                            xytext = (0.55, arrowpos),
+                            xycoords = 'axes fraction',
+                            annotation_clip = False,
+                            arrowprops = dict(arrowstyle = '->',
+                                              linewidth = 0.6))
             ij += 1
 
     fig.tight_layout(rect = (0.02, 0.03, 1, 1))
