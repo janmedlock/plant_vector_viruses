@@ -17,18 +17,16 @@ colors = [colors[ix] for ix in (0, 1, 4, 3, 2)]
 
 def main():
     fig, axes = pyplot.subplots(2, 2, sharex = 'col', sharey = 'row')
-    for (ax, np) in zip(axes.T, parameters.parameter_sets.items()):
-        n, p = np
+    for (ax, n) in zip(axes.T, common.parameter_sets_ordered):
+        p = parameters.parameter_sets[n]
         t = common.t
         Y0 = odes.get_initial_conditions(p, common.vi0)
         Y = odes.solve(Y0, t, p)
-
         style = dict(alpha = common.alpha)
         style_s = dict(linestyle = 'solid')
         style_s.update(style)
         style_i = dict(linestyle = 'dashed')
         style_i.update(style)
-
         ax[0].plot(t, Y['Vsm'], label = '$V_{sm}$',
                    color = colors[0], **style_s)
         ax[0].plot(t, Y['Vsfs'], label = '$V_{sfs}$',
@@ -49,7 +47,6 @@ def main():
                    color = colors[4], **style_s)
         ax[1].plot(t, Y['Pi'], label = '$P_i$',
                    color = colors[4], **style_i)
-
         ax[0].set_title(n)
         ax[1].set_xlabel('Time (d)')
         if ax[0].is_first_col():
@@ -57,15 +54,11 @@ def main():
             ax[1].set_ylabel('Plants')
             ax[0].legend(loc = 'upper left', ncol = 2)
             ax[1].legend(loc = 'upper left', ncol = 1)
-
         common.style_axis(ax[0])
         common.style_axis(ax[1])
-
     fig.tight_layout()
-
     if save:
         common.savefig(fig)
-
     return fig
 
 

@@ -129,16 +129,13 @@ def plot(r0):
                 ax = fig.add_subplot(gs[row, col],
                                      xscale = xscale,
                                      yscale = yscale)
-                for (k, x) in enumerate(parameters.parameter_sets.items()):
-                    n, p = x
-
+                for (k, n) in enumerate(common.parameter_sets_ordered):
+                    p = parameters.parameter_sets[n]
                     param0baseline = getattr(p, param0)
                     param1baseline = getattr(p, param1)
-
                     y = common.get_dPs(param0, param0baseline)
                     x = common.get_dPs(param1, param1baseline)
                     X, Y = numpy.meshgrid(x, y)
-
                     if row > col:
                         i = row - 1
                         j = col
@@ -149,7 +146,6 @@ def plot(r0):
                         Z = r0[k, i, j].T
                     else:
                         raise RuntimeError
-
                     cs = ax.contour(X, Y, Z,
                                     contour_levels,
                                     colors = [colors[k]],
@@ -159,12 +155,10 @@ def plot(r0):
                               fontsize = fontsize,
                               colors = [colors[k]],
                               alpha = common.alpha)
-
                     # We only need to draw these once.
                     if k == 0:
                         ax.axvline(param1baseline, **common.baseline_style)
                         ax.axhline(param0baseline, **common.baseline_style)
-
                 left = (col == 0)
                 # left = (col == 0) or (row == 0 and col == 1)
                 right = (col == ncols - 1)
@@ -172,19 +166,17 @@ def plot(r0):
                 bottom = (row == nrows - 1)
                 _format_axis(ax, param0_name, param1_name, left, right,
                              top, bottom, fontsize)
-
     handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette()]
-    labels = list(parameters.parameter_sets.keys())
+    labels = common.parameter_sets_ordered
     leg = fig.legend(handles, labels,
                      loc = (0.74, 0.153),
                      frameon = False,
                      fontsize = fontsize + 2)
-
     fig.tight_layout()
-
     if save:
         common.savefig(fig)
+    return fig
 
 
 if __name__ == '__main__':

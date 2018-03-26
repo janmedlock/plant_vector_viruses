@@ -146,7 +146,7 @@ def plot_a(r0):
         for (j, column) in enumerate(columns_a):
             params = column
             ax = axes[i, j]
-            for (k, n) in enumerate(parameters.parameter_sets.keys()):
+            for (k, n) in enumerate(common.parameter_sets_ordered):
                 ax.plot(r0[n][params + signs[j]], label = n,
                         alpha = common.alpha)
             xlabel = _get_xlabel(params, signs[j])
@@ -205,7 +205,7 @@ def plot_a(r0):
     fig.tight_layout(rect = (0.247, 0.06, 1, 1))
     handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette()]
-    labels = list(parameters.parameter_sets.keys())
+    labels = common.parameter_sets_ordered
     leg = fig.legend(handles, labels,
                      loc = 'lower left',
                      frameon = False,
@@ -231,7 +231,7 @@ def plot_bc(column_param, row_param, r0):
         for (j, sign_col) in enumerate(signs):
             signs_ = (sign_row, sign_col)
             ax = axes[i, j]
-            for (k, n) in enumerate(parameters.parameter_sets.keys()):
+            for (k, n) in enumerate(common.parameter_sets_ordered):
                 ax.plot(r0[n][params + signs_], label = n,
                         alpha = common.alpha)
             xlabel = _get_xlabel(params, signs_)
@@ -279,7 +279,7 @@ def plot_bc(column_param, row_param, r0):
     fig.tight_layout(rect = (0.25, 0.06, 1, 1))
     handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette()]
-    labels = list(parameters.parameter_sets.keys())
+    labels = common.parameter_sets_ordered
     leg = fig.legend(handles, labels,
                      loc = (0, 0),
                      frameon = False,
@@ -306,7 +306,7 @@ def plot_c(r0):
 if __name__ == '__main__':
     r0 = common.load_or_build_data(build)
     r0 = convert_to_dict(r0)
-    # plot_a(r0)
+    plot_a(r0)
     plot_b(r0)
     plot_c(r0)
-    # pyplot.show()
+    pyplot.show()

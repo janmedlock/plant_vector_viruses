@@ -47,17 +47,14 @@ def get_pop_and_growth_rates(V0 = 0.1, t = 1000, Vmax = 1000):
 
 def plot(pop, r):
     fig, axes = pyplot.subplots(1, 1, figsize = figsize)
-    for n in parameters.parameter_sets.keys():
+    for n in common.parameter_sets_ordered:
         axes.plot(pop[n], r[n], label = n, alpha = common.alpha)
     axes.set_xlabel('Initial vector population size')
     axes.set_ylabel('Pathogen intrinsic growth rate (d$^{-1}$)')
     axes.legend(loc = 'upper left')
-
     fig.tight_layout()
-
     if save:
         common.savefig(fig)
-
     return fig
 
 

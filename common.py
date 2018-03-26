@@ -21,6 +21,8 @@ sensitivity_parameters = (
 )
 
 
+parameter_sets_ordered = ('Non-persistent', 'Persistent')
+
 
 matplotlib.style.use('default')
 matplotlib.rc('legend', frameon=False)
