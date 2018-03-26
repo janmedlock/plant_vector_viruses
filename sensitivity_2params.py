@@ -151,7 +151,9 @@ def plot(r0):
                                     colors = [colors[k]],
                                     alpha = common.alpha,
                                     linestyles = 'solid')
-                    ax.clabel(cs, inline = 1, fmt = '%.4g d$^{-1}$',
+                    ax.clabel(cs,
+                              inline = True,
+                              fmt = '%g d$^{-1}$',
                               fontsize = fontsize,
                               colors = [colors[k]],
                               alpha = common.alpha)
