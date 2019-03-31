@@ -1,6 +1,4 @@
-# plant_vector_viruses
-
-## Analyzing the impact of ecological interactions on vector-borne plant viruses
+# Analyzing the impact of ecological interactions on vector-borne plant viruses
 
 **[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
 [\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
