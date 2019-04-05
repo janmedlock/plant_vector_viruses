@@ -33,8 +33,8 @@ plant pathogens.
 <!-- > *Ecology*. 2019. -->
 <!-- > [doi:10.1073/pnas.1620788114](https://doi.org/10.1073/pnas.1620788114). -->
 
-The scripts and model code are written in Python3, using many
-third-party libraries, most notably
+The scripts and model code are written in Python3, using some
+third-party libraries.  See
 [Python3](http://www.python.org/),
 [NumPy & SciPy](http://www.scipy.org/),
 [matplotlib](http://matplotlib.org/),
