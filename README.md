@@ -1,8 +1,6 @@
 # plant_vector_viruses
 
-Species interactions affect the spread of vector-borne plant pathogens
-independent of transmission mode
-----------------------------------------------------------------------
+## Species interactions affect the spread of vector-borne plant pathogens independent of transmission mode
 
 **[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
 [\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
