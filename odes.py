@@ -143,7 +143,7 @@ def get_r_v_Jacobian(t, Y, p, use_sparse_solver = False):
             v /= v[i]
             break
     return map(numpy.real_if_close, (r, v))
-    
+
 
 def get_r_empirical(t, x, n = 1):
     if n == 0:
