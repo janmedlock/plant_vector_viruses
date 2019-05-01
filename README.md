@@ -1,6 +1,8 @@
+# plant_vector_viruses
+
 Species interactions affect the spread of vector-borne plant pathogens
 independent of transmission mode
-======================================================================
+----------------------------------------------------------------------
 
 **[Jan Medlock](http://people.oregonstate.edu/~medlockj/)
 [\<jan.medlock@oregonstate.edu\>](mailto:jan.medlock@oregonstate.edu),
@@ -43,8 +45,7 @@ third-party libraries.  See
 [joblib](https://github.com/joblib/joblib/), and
 [ad](https://pythonhosted.org/ad/).
 
-Files
------
+### Files
 
 * Core
     * [odes.py](odes.py) defines the model as a system of differential
