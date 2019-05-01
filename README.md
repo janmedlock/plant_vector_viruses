@@ -47,26 +47,26 @@ Files
 -----
 
 * Core
-    * [odes.py](odes.py) Defines the model as a system of differential
+    * [odes.py](odes.py) defines the model as a system of differential
 	  equations and functions for building initial conditions and
 	  solving the model.
-    * [parameters.py](parameters.py) Defines two baseline parameter
+    * [parameters.py](parameters.py) defines two baseline parameter
       sets, one for a persistent pathogen and one for a non-persistent
       pathogen.
-	* [common.py](common.py) Has common definitions and functions used
+	* [common.py](common.py) has common definitions and functions used
       by the analysis and plotting scripts.
 * Analysis & plotting scripts
-	* [solutions.py](solutions.py) Plots model solutions vs. time for
+	* [solutions.py](solutions.py) plots model solutions vs. time for
       the two basic parameter sets.
-    * [growth_rates.py](growth_rates.py) Analyzes & plots the pathogen
+    * [growth_rates.py](growth_rates.py) analyzes & plots the pathogen
       intrinsic growth rate vs. initial vector population size.
-    * [sensitivity_1param.py](sensitivity_1param.py) Analyzes & plots
+    * [sensitivity_1param.py](sensitivity_1param.py) analyzes & plots
       the sensitivity of the pathogen intrinsic growth rate to the
 	  parameters, 1 parameter at a time.
-	* [sensitivity_2params.py](sensitivity_2params.py) Analyzes & plots
+	* [sensitivity_2params.py](sensitivity_2params.py) analyzes & plots
       the sensitivity of the pathogen intrinsic growth rate to the
 	  parameters, 2 parameters at a time.
-	* [sensitivity_pairs.py](sensitivity_pairs.py) Analyzes & plots
+	* [sensitivity_pairs.py](sensitivity_pairs.py) analyzes & plots
       the sensitivity of the pathogen intrinsic growth rate to the
 	  parameters, for pairs of parameters that are linked to each
       other.
