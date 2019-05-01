@@ -35,8 +35,38 @@ plant pathogens.
 
 The scripts and model code are written in Python3, using some
 third-party libraries.  See
-[Python3](http://www.python.org/),
-[NumPy & SciPy](http://www.scipy.org/),
-[matplotlib](http://matplotlib.org/),
-[pandas](http://pandas.pydata.org/), and
-[Seaborn](https://seaborn.pydata.org/).
+[Python3](https://www.python.org/),
+[NumPy & SciPy](https://www.scipy.org/),
+[matplotlib](https://matplotlib.org/),
+[pandas](https://pandas.pydata.org/),
+[Seaborn](https://seaborn.pydata.org/),
+[joblib](https://github.com/joblib/joblib/), and
+[ad](https://pythonhosted.org/ad/).
+
+Files
+-----
+
+* Core
+    * [odes.py](odes.py) Defines the model as a system of differential
+	  equations and functions for building initial conditions and
+	  solving the model.
+    * [parameters.py](parameters.py) Defines two baseline parameter
+      sets, one for a persistent pathogen and one for a non-persistent
+      pathogen.
+	* [common.py](common.py) Has common definitions and functions used
+      by the analysis and plotting scripts.
+* Analysis & plotting scripts
+	* [solutions.py](solutions.py) Plots model solutions vs. time for
+      the two basic parameter sets.
+    * [growth_rates.py](growth_rates.py) Analyzes & plots the pathogen
+      intrinsic growth rate vs. initial vector population size.
+    * [sensitivity_1param.py](sensitivity_1param.py) Analyzes & plots
+      the sensitivity of the pathogen intrinsic growth rate to the
+	  parameters, 1 parameter at a time.
+	* [sensitivity_2params.py](sensitivity_2params.py) Analyzes & plots
+      the sensitivity of the pathogen intrinsic growth rate to the
+	  parameters, 2 parameters at a time.
+	* [sensitivity_pairs.py](sensitivity_pairs.py) Analyzes & plots
+      the sensitivity of the pathogen intrinsic growth rate to the
+	  parameters, for pairs of parameters that are linked to each
+      other.
