@@ -29,8 +29,8 @@ plant pathogens.
 > Crowder DW, Li J, Borer ET, Finke DL, Sharon R, Pattemore D,
 > Medlock J.
 > Species interactions affect the spread of vector-borne plant pathogens
-> independent of transmission mode. In preparation.
-<!-- > *Ecology*. 2019. -->
+> independent of transmission mode. *Ecology*. In press.
+<!-- > 2019. -->
 <!-- > [doi:10.1073/pnas.1620788114](https://doi.org/10.1073/pnas.1620788114). -->
 
 The scripts and model code are written in Python3, using some
