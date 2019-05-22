@@ -134,9 +134,9 @@ rows_a = ((('Increased fitness\nIncreased movement',
             (+1, -1))))
 
 def plot_a(r0):
-    arrow_pos = -0.065
-    row_label_pos = -1.7
-    figsize = (8.5, 8)
+    arrow_pos = -0.12
+    row_label_pos = -2.2
+    figsize = (6, 5)
     fig, axes = pyplot.subplots(len(columns_a), len(rows_a),
                                 sharey = True,
                                 figsize = figsize,
@@ -155,7 +155,7 @@ def plot_a(r0):
                           fontsize = 'x-small')
             ax.annotate('',
                         xy = (0.85, arrow_pos),
-                        xytext = (0.55, arrow_pos),
+                        xytext = (0.52, arrow_pos),
                         xycoords = 'axes fraction',
                         annotation_clip = False,
                         arrowprops = dict(arrowstyle = '->',
@@ -168,41 +168,44 @@ def plot_a(r0):
         params = column
         label = ' &\n'.join(param_labels[p].capitalize() for p in params)
         ax.annotate(label,
-                    xy = (0.2, -0.2),
+                    xy = (-0.05, -0.3),
                     xycoords = 'axes fraction',
                     annotation_clip = False,
                     horizontalalignment = 'left',
                     verticalalignment = 'top',
+                    fontsize = 'small',
                     weight = 'bold')
-    fig.text(0.625, 0, 'Pairings',
+    fig.text(0.68, 0.01, 'Pairings',
              horizontalalignment = 'center',
-             verticalalignment = 'bottom',
-             size = 'large',
+             verticalalignment = 'baseline',
+             size = 'medium',
              weight = 'bold')
     for (ax, row) in zip(axes[:, 0], rows_a):
         row_labels, signs = row
         ax.annotate(row_labels[0],
-                    xy = (row_label_pos, 0.6),
+                    xy = (row_label_pos, 0.55),
                     xycoords = 'axes fraction',
                     annotation_clip = False,
                     horizontalalignment = 'left',
-                    verticalalignment = 'center',
+                    verticalalignment = 'baseline',
+                    fontsize = 'small',
                     weight = 'bold')
         ax.annotate(row_labels[1],
-                    xy = (row_label_pos, 0.42),
+                    xy = (row_label_pos, 0.33),
                     xycoords = 'axes fraction',
                     annotation_clip = False,
                     horizontalalignment = 'left',
-                    verticalalignment = 'center',
+                    verticalalignment = 'baseline',
+                    fontsize = 'small',
                     weight = 'normal')
-    fig.text(0.23, 0.535,
+    fig.text(0.05, 0.55,
              'Pathogen intrinsic growth rate',
              horizontalalignment = 'left',
              verticalalignment = 'center',
              rotation = 'vertical',
-             size = 'large',
+             size = 'medium',
              weight = 'bold')
-    fig.tight_layout(rect = (0.247, 0.06, 1, 1))
+    fig.tight_layout(rect = (0, 0, 1, 1))
     handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette()]
     labels = common.parameter_sets_ordered
@@ -220,7 +223,7 @@ def plot_a(r0):
 
 def plot_bc(column_param, row_param, r0):
     signs = (+1, -1)
-    arrow_pos = -0.065
+    arrow_pos = -0.075
     figsize = (4.5, 4)
     params = (column_param, row_param)
     fig, axes = pyplot.subplots(len(signs), len(signs),
@@ -240,7 +243,7 @@ def plot_bc(column_param, row_param, r0):
                           fontsize = 'x-small')
             ax.annotate('',
                         xy = (0.85, arrow_pos),
-                        xytext = (0.55, arrow_pos),
+                        xytext = (0.52, arrow_pos),
                         xycoords = 'axes fraction',
                         annotation_clip = False,
                         arrowprops = dict(arrowstyle = '->',
@@ -254,29 +257,31 @@ def plot_bc(column_param, row_param, r0):
     for (ax, sign) in zip(axes[-1, :], signs):
         label = '{}\n{}'.format(label_pre[sign], param_labels[row_param])
         ax.annotate(label,
-                    xy = (0.2, -0.2),
+                    xy = (0.25, -0.25),
                     xycoords = 'axes fraction',
                     annotation_clip = False,
                     horizontalalignment = 'left',
                     verticalalignment = 'top',
-                    weight = 'bold')
+                    weight = 'bold',
+                    fontsize = 'small')
     for (ax, sign) in zip(axes[:, 0], signs):
         label = '{}\n{}'.format(label_pre[sign], param_labels[column_param])
         ax.annotate(label,
-                    xy = (-0.9, 0.5),
+                    xy = (-0.55, 0.48),
                     xycoords = 'axes fraction',
                     annotation_clip = False,
                     horizontalalignment = 'left',
                     verticalalignment = 'center',
-                    weight = 'bold')
-    fig.text(0.23, 0.535,
+                    weight = 'bold',
+                    fontsize = 'small')
+    fig.text(0.02, 0.6,
              'Pathogen intrinsic growth rate',
              horizontalalignment = 'left',
              verticalalignment = 'center',
              rotation = 'vertical',
-             size = 'large',
+             size = 'medium',
              weight = 'bold')
-    fig.tight_layout(rect = (0.25, 0.06, 1, 1))
+    fig.tight_layout(rect = (0.05, 0.06, 1, 1))
     handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette()]
     labels = common.parameter_sets_ordered

@@ -17,8 +17,7 @@ import parameters
 
 save = True
 
-figsize = (8.5, 3)
-figsize_epsilon = (8.5, 6)
+figsize = (6, 3)
 
 
 def _run_one(p, param0, dP):

@@ -17,7 +17,7 @@ import parameters
 
 save = True
 
-figsize = (8.5, 8)
+figsize = (6, 5.5)
 
 
 def _run_one(p, param0, param1, dP0, dP1):
@@ -155,8 +155,7 @@ def plot(r0):
                               inline = True,
                               fmt = '%g d$^{-1}$',
                               fontsize = fontsize,
-                              colors = [colors[k]],
-                              alpha = common.alpha)
+                              colors = [colors[k] + (common.alpha, )])
                     # We only need to draw these once.
                     if k == 0:
                         ax.axvline(param1baseline, **common.baseline_style)
@@ -168,6 +167,7 @@ def plot(r0):
                 bottom = (row == nrows - 1)
                 _format_axis(ax, param0_name, param1_name, left, right,
                              top, bottom, fontsize)
+    fig.align_ylabels()
     handles = [lines.Line2D([], [], color = c, alpha = common.alpha)
                for c in seaborn.color_palette()]
     labels = common.parameter_sets_ordered
